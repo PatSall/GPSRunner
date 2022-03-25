@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/GPSRunner.iml" filepath="$PROJECT_DIR$/.idea/GPSRunner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SE_PR_GPSRunner/SE_PR_GPSRunner.iml" filepath="$PROJECT_DIR$/SE_PR_GPSRunner/SE_PR_GPSRunner.iml" />
     </modules>
   </component>
 </project>

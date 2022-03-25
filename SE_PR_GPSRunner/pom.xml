@@ -5,4 +5,19 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>SE_PR_GPSRunner</name>
   <description>-</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+
+
 </project>
