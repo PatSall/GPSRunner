@@ -4,6 +4,10 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.File;
 
 public class Controller {
@@ -21,17 +25,21 @@ public class Controller {
             Activity sportData = (Activity) jaxbUnmarshaller.unmarshal(file);
 
             //List<Fruit>  fits = sportData.getId();
+            //Iterator s = sportData.getSport();
+            for  (Field activity : sportData.getClass().getDeclaredFields()) {
+                System.out.println(sportData);
+                System.out.println(sportData.getSport());
 
-            System.out.println(sportData);
-            System.out.println(sportData.getSport());
-            System.out.println(sportData.getCalories());
-            System.out.println(sportData.getDestination());
-            System.out.println(sportData.getIntensity());
-            System.out.println(sportData.getMaximumHeartRateBpm());
-            System.out.println(sportData.getTotalTimeSeconds());
-            System.out.println(sportData.getAverageHeartRateBpm());
-            System.out.println(sportData.getStartTime());
-
+               /*for (Field lap : sportData.getLap());  {
+                /*System.out.println(sportData.getCalories());
+                System.out.println(sportData.getDestination());
+                System.out.println(sportData.getIntensity());
+                System.out.println(sportData.getMaximumHeartRateBpm());
+                System.out.println(sportData.getTotalTimeSeconds());
+                System.out.println(sportData.getAverageHeartRateBpm());
+                System.out.println(sportData.getStartTime());
+               }*/
+            }
 
         } catch (JAXBException e) {
             e.printStackTrace();
