@@ -3,7 +3,7 @@ package sports;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-
+import java.util.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -23,23 +23,24 @@ public class Controller {
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             Activity sportData = (Activity) jaxbUnmarshaller.unmarshal(file);
-
+            System.out.println(sportData);
             //List<Fruit>  fits = sportData.getId();
             //Iterator s = sportData.getSport();
-            for  (Field activity : sportData.getClass().getDeclaredFields()) {
+            //for  (Field activity : sportData.getClass().getDeclaredFields()) {
+            /*for  (Field activity : sportData.getClass().getDeclaredFields()) {
                 System.out.println(sportData);
                 System.out.println(sportData.getSport());
 
-               /*for (Field lap : sportData.getLap());  {
-                /*System.out.println(sportData.getCalories());
-                System.out.println(sportData.getDestination());
-                System.out.println(sportData.getIntensity());
-                System.out.println(sportData.getMaximumHeartRateBpm());
-                System.out.println(sportData.getTotalTimeSeconds());
-                System.out.println(sportData.getAverageHeartRateBpm());
-                System.out.println(sportData.getStartTime());
-               }*/
-            }
+               //for (Lap lap : sportData.getLap());  {
+                //System.out.println(
+                //System.out.println(lap.getDestination());
+                //System.out.println(lap.getIntensity());
+                //System.out.println(lap.getMaximumHeartRateBpm());
+                //System.out.println(lap.getTotalTimeSeconds());
+                //System.out.println(lap.getAverageHeartRateBpm());
+                //System.out.println(lap.getStartTime());
+               //}
+            }*/
 
         } catch (JAXBException e) {
             e.printStackTrace();

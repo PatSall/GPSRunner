@@ -1,8 +1,11 @@
 package sports;
 
+import jakarta.xml.bind.Unmarshaller;
 import jakarta.xml.bind.annotation.*;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
+
 
 
 // order of the fields in XML
@@ -13,8 +16,9 @@ import java.sql.Timestamp;
 })*/
 //@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-public class Activity {
+public class Activity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String sport;
 
     private String destination;
@@ -161,5 +165,28 @@ public class Activity {
 
     public void setTriggerMethod(String triggerMethod) {
         this.triggerMethod = triggerMethod;
+    }
+
+    @Override
+    public String toString () {
+        return "Activity " + this.sport + " destination " +
+        this.destination + " \n startTime " +
+        this.startTime + " totalTimeSeconds " +
+        this.totalTimeSeconds + " distanceMeters " +
+        this.distanceMeters + " maximumSpeed " +
+        this.maximumSpeed + " \n calories " +
+        this.calories + " averageHeartRateBpm " +
+        this.averageHeartRateBpm + " maximumHeartRateBpm " +
+        this.maximumHeartRateBpm + " intensity " +
+        this.intensity + " triggerMethod " +
+        this.triggerMethod ;
+    }
+
+    void beforeUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        System.out.println("Before Unmarshaller Callback");
+    }
+
+    void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+        System.out.println("After Unmarshaller Callback");
     }
 }
