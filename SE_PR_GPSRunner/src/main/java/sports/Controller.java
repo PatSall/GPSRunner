@@ -1,4 +1,5 @@
 package sports;
+import gui.*;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
@@ -9,9 +10,17 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.File;
-
+import java.awt.EventQueue;
 public class Controller {
     public static void main(String[] args) {
+    	
+    	EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				GUI g = new GUI();
+				g.setVisible(true);
+			}
+		});
+    	
         System.out.println("READ XML File with JAXB");
 
 
