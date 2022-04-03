@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="SE_PR_GPSRunner" target="1.5" />
+      <module name="SE_PR_GPSRunner" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>
