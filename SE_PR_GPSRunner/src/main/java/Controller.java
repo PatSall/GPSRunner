@@ -19,17 +19,20 @@ import java.util.List;
 public class Controller {
     public static void main(String[] args) {
     	
-    	EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				GUI g = new GUI();
-				g.setVisible(true);
-			}
-		});
+
     	
         System.out.println("READ XML File with JAXB");
 
 
         List<Activity> activities = parseActivitiesXML();
+
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                GUI g = new GUI();
+                g.setVisible(true);
+                g.setActivities(activities);
+            }
+        });
         for (Activity a: activities) {
             //System.out.println(a.getActivity());
             //System.out.println(a.getId());
@@ -38,6 +41,7 @@ public class Controller {
             //System.out.println()
 
         }
+
 
     }
 
@@ -57,7 +61,7 @@ public class Controller {
         }
         Document document = null;
         try {
-            document = builder.parse(new File("C://temp//activity.xml"));
+            document = builder.parse(new File("C://temp//activity.xml")); //relativen pfad auf file im projekt..file muss im projekt sein(normalerweise im Resource folder, den wir nicht haben)
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {

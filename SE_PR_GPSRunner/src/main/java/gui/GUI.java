@@ -3,9 +3,22 @@ package gui;
 //import java.awt.EventQueue;
 //import java.awt.*;
 //import java.awt.Color;
-import java.awt.BorderLayout;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
+import sports.Activity;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 //import java.io.File;
 //import java.io.IOException;
 //import java.net.MalformedURLException;
@@ -28,17 +41,40 @@ public class GUI extends JFrame {
 	JPanel upperPanel = new JPanel();
 	JPanel lowerPanel = new JPanel();
 	JPanel sidePanel = new JPanel();
-	
+	ChartPanel chartPanel= new ChartPanel(null);
+	Collection<Activity> activities = new ArrayList<>();
+
+
+	public void setActivities(Collection<Activity> activities) {
+		this.activities = activities;
+		DefaultCategoryDataset cd = new DefaultCategoryDataset();
+
+		//mit Streams activities transformieren
+
+		cd.addValue(3.5,"stefan", "distance");
+		cd.addValue(5,"Jan", "distance");
+
+
+		JFreeChart chart = ChartFactory.createBarChart("Distance Overview",
+				null, "km", cd, PlotOrientation.VERTICAL, true, true,
+				false);
+		chartPanel.setChart(chart);
+	}
+
 	public GUI() {
 		setTitle("GPSRunner");
 		setSize(500,500);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+
 		setLayout(new BorderLayout());
 		
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, lowerPanel);
 		JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, sidePanel);
+
+		chartPanel.setPreferredSize(new Dimension(200,200));
+
+		lowerPanel.add(chartPanel);
 		
 		this.add(sp2, BorderLayout.CENTER);
 		
@@ -125,7 +161,7 @@ public class GUI extends JFrame {
 		//add to submenu-elems
 		open.add(tcx);
 	}
-	
+
 
 //	public static void main(String[] args) {
 //		EventQueue.invokeLater(new Runnable() {
