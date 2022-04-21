@@ -5,18 +5,10 @@ import jakarta.xml.bind.annotation.*;
 import java.util.*;
 
 
-// order of the fields in XML
-/*@XmlType(propOrder = {"sport", "destination", "startTime",
-                "totalTimeSeconds", "distanceMeters",
-        "maximumSpeed","calories" , "averageHeartRateBpm",
-        "maximumHeartRateBpm", "intensity", "triggerMethod"
-})*/
-//@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement
 public class Activity  {
 
     private static final long serialVersionUID = 1L;
-    public List<Lap> lap;
+    private List<Lap> lap;
     private String activity;
     private String id;
 
@@ -28,7 +20,7 @@ public class Activity  {
         this.activity = activity;
     }
 
-    @XmlAttribute
+
     public String getActivity() {
         return activity;
     }
@@ -56,13 +48,5 @@ public class Activity  {
     @Override
     public String toString () {
         return "Activity " + this.activity + "\n ID " + this.id + "\n Lap" +  this.lap;
-    }
-
-    void beforeUnmarshal(Unmarshaller unmarshaller, Object parent) {
-        System.out.println("Before Unmarshaller Callback");
-    }
-
-    void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
-        System.out.println("After Unmarshaller Callback");
     }
 }

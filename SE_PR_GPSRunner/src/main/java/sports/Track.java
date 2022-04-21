@@ -29,7 +29,7 @@ public class Track extends Lap{
         this.runCadence = runCadence;
     }
 
-    public Track(String startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod, Timestamp time, Double latitudeDegrees, Double latitudeDegrees1, Double altitudeMeters, Double distanceMeters1, Integer heartRateBpm, Double speed, Integer runCadence) {
+    public Track(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod, Timestamp time, Double latitudeDegrees, Double latitudeDegrees1, Double altitudeMeters, Double distanceMeters1, Integer heartRateBpm, Double speed, Integer runCadence) {
         super(startTime, totalTimeSeconds, distanceMeters, maximumSpeed, calories, averageHeartRateBpm, maximumHeartRateBpm, intensity, triggerMethod);
 
         this.latitudeDegrees = latitudeDegrees;

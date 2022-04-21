@@ -1,11 +1,12 @@
 package sports;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 
 public class Lap extends Activity{
 
-    private String startTime;
+    private LocalDateTime startTime;
 
     private Double totalTimeSeconds;
 
@@ -23,13 +24,13 @@ public class Lap extends Activity{
 
     private String triggerMethod;
 
-    public List<Track> track;
+    private List<Track> track;
 
     public Lap () {
         super();
     }
 
-    public Lap(String startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod) {
+    public Lap(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod) {
         super();
 
         this.startTime = startTime;
@@ -45,7 +46,7 @@ public class Lap extends Activity{
 
 
 
-    public String getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
@@ -90,7 +91,7 @@ public class Lap extends Activity{
         return triggerMethod;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
