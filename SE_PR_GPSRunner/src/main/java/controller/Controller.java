@@ -20,14 +20,16 @@ import java.util.List;
 public class Controller {
 	public static void main(String[] args) {
 
+		List<Activity> activities = parseActivitiesXML();
+
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				GUI g = new GUI();
 				g.setVisible(true);
-				// g.setActivities(activities);
+				g.setActivities(activities);
+
 			}
 		});
-		List<Activity> activities = parseActivitiesXML();
 		for (Activity a : activities) {
 			System.out.println();
 			// System.out.println(a.toString());

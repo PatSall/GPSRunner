@@ -102,7 +102,7 @@ public class GUI extends JFrame {
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, lowerPanel);
 		JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, sidePanel);
 
-		chartPanel.setPreferredSize(new Dimension(200,200));
+		chartPanel.setPreferredSize(new Dimension(250,250));
 
 		lowerPanel.add(chartPanel);
 
