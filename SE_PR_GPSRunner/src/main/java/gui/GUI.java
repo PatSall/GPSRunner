@@ -6,26 +6,52 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JCheckBoxMenuItem;
 //import java.io.File;
 //import java.io.IOException;
 //import java.net.MalformedURLException;
 //import java.net.URISyntaxException;
 //import java.net.URL;
 import javax.swing.JFileChooser;
-
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTable;
 //import javax.swing.plaf.synth.ColorType;
 
 //import org.w3c.dom.css.RGBColor;
 
 public class GUI extends JFrame {
 	
-	JPanel upperPanel = new JPanel();
+	public class Filter{
+		private String name;
+		private boolean state;
+		
+		public Filter(String name, boolean state) {
+			this.name = name;
+			this.state = state;
+		}
+		
+		public boolean getState() {
+			return this.state;
+		}
+		
+		public String getName() {
+			return this.name;
+		}
+		
+		public void setState(boolean state) {
+			this.state = state;
+		}
+	}
+	
+	Filter[] filters = new Filter[6];
+	JScrollPane upperPanel = new JScrollPane();
 	JPanel lowerPanel = new JPanel();
 	JPanel sidePanel = new JPanel();
 	
@@ -36,6 +62,10 @@ public class GUI extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		setLayout(new BorderLayout());
+		
+		JTable table = table();
+		table.setFillsViewportHeight(true);
+		upperPanel = new JScrollPane(table);
 		
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, lowerPanel);
 		JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, sidePanel);
@@ -51,6 +81,7 @@ public class GUI extends JFrame {
 		JMenu view = new JMenu("View");
 		JMenu years = new JMenu("Years");
 		JMenu columns = new JMenu("Columns");
+		
 		//submenu(s) elements
 		JMenu open = new JMenu("Open...");
 		
@@ -71,31 +102,37 @@ public class GUI extends JFrame {
 
 			public void actionPerformed(ActionEvent e) {
 				
-				JFileChooser chooser = new JFileChooser("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Software Engineering - Team");
+				JFileChooser chooser = new JFileChooser("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test");
 			    chooser.showOpenDialog(null);
 			    
-//				Desktop desktop = Desktop.getDesktop();
-//				URL url = null;
-//				try {
-//					url = new URL("https://kusss.jku.at");
-//				} catch (MalformedURLException e1) {
-//					e1.printStackTrace();
-//				}
-//				try {
-//					desktop.browse(url.toURI());
-//				} catch (IOException e1) {
-//					e1.printStackTrace();
-//				} catch (URISyntaxException e1) {
-//					e1.printStackTrace();
-//				}
 			} 
 		});
 		//Tracks
-		JMenuItem running = new JMenuItem("Running");
-		JMenuItem skiing = new JMenuItem("Skiing");
-		JMenuItem diving = new JMenuItem("Diving");
-		JMenuItem flying = new JMenuItem("Flying");
-		JMenuItem hiking = new JMenuItem("Hiking");
+		JCheckBoxMenuItem all = new JCheckBoxMenuItem("All", true);
+		JCheckBoxMenuItem running = new JCheckBoxMenuItem("Running");
+		JCheckBoxMenuItem skiing = new JCheckBoxMenuItem("Skiing");
+		JCheckBoxMenuItem diving = new JCheckBoxMenuItem("Diving");
+		JCheckBoxMenuItem flying = new JCheckBoxMenuItem("Flying");
+		JCheckBoxMenuItem hiking = new JCheckBoxMenuItem("Hiking");
+		
+		filters[0] = new Filter(all.getLabel(), all.getState());
+		filters[1] = new Filter(running.getLabel(), running.getState());
+		filters[2] = new Filter(skiing.getLabel(), skiing.getState());
+		filters[3] = new Filter(diving.getLabel(), diving.getState());
+		filters[4] = new Filter(flying.getLabel(), flying.getState());
+		filters[5] = new Filter(hiking.getLabel(), hiking.getState());
+		
+		all.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				filters[0].setState(!filters[0].getState());
+				upperPanel = new JScrollPane(table());
+				upperPanel.updateUI();
+				for(int i = 0; i < filters.length; i++) {
+					System.out.println(filters[i].getName()+"|"+filters[i].getState());
+				}
+			}
+		});
 		
 		//Segments
 		JMenuItem tenM = new JMenuItem("10m");
@@ -109,6 +146,7 @@ public class GUI extends JFrame {
 		//add to menu-elems
 		file.add(neo);
 		file.add(open);
+		tracks.add(all);
 		tracks.add(running);
 		tracks.add(skiing);
 		tracks.add(diving);
@@ -124,6 +162,14 @@ public class GUI extends JFrame {
 		
 		//add to submenu-elems
 		open.add(tcx);
+	}
+
+	public JTable table() {
+		
+		String[] columnNames = new String[]{"name","date","distance","time","speed","bpm","elevation"};
+		Object[][] data = new Object[][]{{"Egypt", "01.01.2022", new Integer(3000), "1:30", new Double(6.4), new Double(146.4), new Integer(2700)}};
+		
+		return new JTable(data, columnNames);
 	}
 	
 
