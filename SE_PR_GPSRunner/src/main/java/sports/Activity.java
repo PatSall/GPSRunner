@@ -1,11 +1,9 @@
 package sports;
 
-import jakarta.xml.bind.Unmarshaller;
-import jakarta.xml.bind.annotation.*;
 import java.util.*;
 
 
-public class Activity  {
+public class Activity {
 
     private static final long serialVersionUID = 1L;
     private List<Lap> lap;

@@ -2,9 +2,8 @@ package sports;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
-public class Track extends Lap{
+public class Track extends Lap {
     private LocalDateTime time;
     private  Double latitudeDegrees;
     private  Double longitudeDegrees;

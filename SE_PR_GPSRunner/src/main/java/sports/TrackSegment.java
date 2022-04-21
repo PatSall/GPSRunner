@@ -1,7 +1,5 @@
 package sports;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
 public class TrackSegment extends TrackGPS {
@@ -11,7 +9,7 @@ public class TrackSegment extends TrackGPS {
     private Double elem;
     private LocalDateTime time;
 
-    public TrackSegment () {
+    public TrackSegment() {
         super();
     }
 

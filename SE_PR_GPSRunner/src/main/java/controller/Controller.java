@@ -1,21 +1,19 @@
 package controller;
-import gui.GUI;
+
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import sports.*;
+import gui.*;
 
 import javax.xml.parsers.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
 
 public class Controller {
 	public static void main(String[] args) {
@@ -74,11 +72,11 @@ public class Controller {
 		}
 		Document document = null;
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths
-				.get("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test\\"))) {
+				.get("C:\\temp\\Files\\"))) {
 			for (Path file : stream) {
 				System.out.println(file.getFileName());
 				document = builder.parse(
-						"C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test\\"
+						"C:\\temp\\Files\\"
 								+ file.getFileName());
 				document.getDocumentElement().normalize();
 				nTrackList = document.getElementsByTagName("trk");
@@ -171,11 +169,11 @@ public class Controller {
 		}
 		Document document = null;
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths
-				.get("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test\\"))) {
+				.get("C:\\temp\\Files\\"))) {
 			for (Path file : stream) {
 				System.out.println(file.getFileName());
 				document = builder.parse(
-						"C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test\\"
+						"C:\\temp\\Files\\"
 								+ file.getFileName());
 				document.getDocumentElement().normalize();
 				nList = document.getElementsByTagName("Activity");

@@ -26,7 +26,7 @@ public class Lap extends Activity{
 
     private List<Track> track;
 
-    public Lap () {
+    public Lap() {
         super();
     }
 
