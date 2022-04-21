@@ -3,11 +3,24 @@ package gui;
 //import java.awt.EventQueue;
 //import java.awt.*;
 //import java.awt.Color;
-import java.awt.BorderLayout;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.xy.DefaultXYDataset;
+import org.jfree.data.xy.XYDataset;
+import sports.Activity;
+
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBoxMenuItem;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 //import java.io.File;
 //import java.io.IOException;
 //import java.net.MalformedURLException;
@@ -31,45 +44,68 @@ public class GUI extends JFrame {
 	public class Filter{
 		private String name;
 		private boolean state;
-		
+
 		public Filter(String name, boolean state) {
 			this.name = name;
 			this.state = state;
 		}
-		
+
 		public boolean getState() {
 			return this.state;
 		}
-		
+
 		public String getName() {
 			return this.name;
 		}
-		
+
 		public void setState(boolean state) {
 			this.state = state;
 		}
 	}
-	
+
 	Filter[] filters = new Filter[6];
 	JScrollPane upperPanel = new JScrollPane();
 	JPanel lowerPanel = new JPanel();
 	JPanel sidePanel = new JPanel();
-	
+	ChartPanel chartPanel= new ChartPanel(null);
+	Collection<Activity> activities = new ArrayList<>();
+
+
+	public void setActivities(Collection<Activity> activities) {
+		this.activities = activities;
+		DefaultCategoryDataset cd = new DefaultCategoryDataset();
+
+		//mit Streams activities transformieren
+
+		cd.addValue(3.5,"stefan", "distance");
+		cd.addValue(5,"Jan", "distance");
+
+
+		JFreeChart chart = ChartFactory.createBarChart("Distance Overview",
+				null, "km", cd, PlotOrientation.VERTICAL, true, true,
+				false);
+		chartPanel.setChart(chart);
+	}
+
 	public GUI() {
 		setTitle("GPSRunner");
 		setSize(500,500);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+
 		setLayout(new BorderLayout());
 		
 		JTable table = table();
 		table.setFillsViewportHeight(true);
 		upperPanel = new JScrollPane(table);
-		
+
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, lowerPanel);
 		JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, sidePanel);
-		
+
+		chartPanel.setPreferredSize(new Dimension(200,200));
+
+		lowerPanel.add(chartPanel);
+
 		this.add(sp2, BorderLayout.CENTER);
 		
 		//menu elements
@@ -81,7 +117,7 @@ public class GUI extends JFrame {
 		JMenu view = new JMenu("View");
 		JMenu years = new JMenu("Years");
 		JMenu columns = new JMenu("Columns");
-		
+
 		//submenu(s) elements
 		JMenu open = new JMenu("Open...");
 		
@@ -104,7 +140,7 @@ public class GUI extends JFrame {
 				
 				JFileChooser chooser = new JFileChooser("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test");
 			    chooser.showOpenDialog(null);
-			    
+
 			} 
 		});
 		//Tracks
@@ -114,14 +150,14 @@ public class GUI extends JFrame {
 		JCheckBoxMenuItem diving = new JCheckBoxMenuItem("Diving");
 		JCheckBoxMenuItem flying = new JCheckBoxMenuItem("Flying");
 		JCheckBoxMenuItem hiking = new JCheckBoxMenuItem("Hiking");
-		
+
 		filters[0] = new Filter(all.getLabel(), all.getState());
 		filters[1] = new Filter(running.getLabel(), running.getState());
 		filters[2] = new Filter(skiing.getLabel(), skiing.getState());
 		filters[3] = new Filter(diving.getLabel(), diving.getState());
 		filters[4] = new Filter(flying.getLabel(), flying.getState());
 		filters[5] = new Filter(hiking.getLabel(), hiking.getState());
-		
+
 		all.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -165,13 +201,14 @@ public class GUI extends JFrame {
 	}
 
 	public JTable table() {
-		
+
 		String[] columnNames = new String[]{"name","date","distance","time","speed","bpm","elevation"};
 		Object[][] data = new Object[][]{{"Egypt", "01.01.2022", new Integer(3000), "1:30", new Double(6.4), new Double(146.4), new Integer(2700)}};
-		
+
 		return new JTable(data, columnNames);
 	}
-	
+
+
 
 //	public static void main(String[] args) {
 //		EventQueue.invokeLater(new Runnable() {
