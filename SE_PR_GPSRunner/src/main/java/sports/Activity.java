@@ -39,8 +39,8 @@ public class Activity {
         return lap;
     }
 
-    public void setLap(List<Lap> lap) {
-        this.lap = lap;
+    public void setLap(List<Lap> laps) {
+        this.lap = laps;
     }
 
     @Override

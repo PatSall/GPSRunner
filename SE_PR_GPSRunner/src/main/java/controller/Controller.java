@@ -5,6 +5,7 @@ import org.xml.sax.SAXException;
 import sports.*;
 import gui.*;
 
+import javax.lang.model.element.ElementKind;
 import javax.xml.parsers.*;
 import java.awt.*;
 import java.io.*;
@@ -20,41 +21,41 @@ public class Controller {
 
 		List<Activity> activities = parseActivitiesXML();
 
-		EventQueue.invokeLater(new Runnable() {
+		/*EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				GUI g = new GUI();
 				g.setVisible(true);
 				g.setActivities(activities);
 
 			}
-		});
-		for (Activity a : activities) {
-			System.out.println();
+		});*/
+		//for (Activity a : activities) {
+			//System.out.println();
 			// System.out.println(a.toString());
+			//System.out.println(a.getId());
 
-			System.out.println(a.getId());
+		for (int j= 0; j < activities.size(); j++) {
+			for (int i = 0; i < activities.get(j).getLap().size(); i++) {
+				//System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
+				//System.out.println(activities.get(j).getLap().get(i).getStartTime());
+				//System.out.println(activities.get(j).getLap().get(i).getCalories());
+				//System.out.println("Track");
+				for (int k = 0; k < activities.get(j).getLap().get(i).getTrack().size(); k++) {
+					System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getHeartRateBpm());
+				}
+			}
 		}
+		System.out.println("Ende");
+		//}
 
 		List<TrackGPS> trackGPS = parseTracksGPS();
 		for (TrackGPS t : trackGPS) {
-			System.out.println();
-			System.out.println(t.toString());
-			System.out.println(t.getName());
+			//System.out.println();
+			//System.out.println(t.toString());
+			//System.out.println(t.getName());
 		}
 
 	}
-	/*
-	 * private static final DateFormat timeFormat = new SimpleDateFormat("HH:mm a");
-	 * 
-	 * private static final SimpleDateFormat displayFormat = new
-	 * SimpleDateFormat("HH:mm");
-	 */
-
-	/*
-	 * Date date = parseFormat.parse("10:30 PM");
-	 * System.out.println(parseFormat.format(date) + " = " +
-	 * displayFormat.format(date)); System.out.println("READ XML File with JAXB");
-	 */
 
 	private static List<TrackGPS> parseTracksGPS() {
 		List<TrackGPS> trackGPSs = new ArrayList<>();
@@ -74,7 +75,7 @@ public class Controller {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths
 				.get("C:\\temp\\Files\\"))) {
 			for (Path file : stream) {
-				System.out.println(file.getFileName());
+				//System.out.println(file.getFileName());
 				document = builder.parse(
 						"C:\\temp\\Files\\"
 								+ file.getFileName());
@@ -160,8 +161,10 @@ public class Controller {
 		NodeList nList = null;
 		NodeList lapList = null;
 		NodeList trackList = null;
+
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = null;
+
 		try {
 			builder = factory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
@@ -171,28 +174,37 @@ public class Controller {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths
 				.get("C:\\temp\\Files\\"))) {
 			for (Path file : stream) {
-				System.out.println(file.getFileName());
+				activity = null;
+				lap = null;
+				track = null;
+				nList = null;
+				lapList = null;
+				trackList = null;
+
 				document = builder.parse(
 						"C:\\temp\\Files\\"
 								+ file.getFileName());
 				document.getDocumentElement().normalize();
+
 				nList = document.getElementsByTagName("Activity");
-				lapList = document.getElementsByTagName("Lap");
-				trackList = document.getElementsByTagName("Trackpoint");
 				for (int temp = 0; temp < nList.getLength(); temp++) {
 					Node node = nList.item(temp);
+
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
 						Element eElement = (Element) node;
-						// Create new Activity Object
+
 						activity = new Activity();
 						activity.setActivity(eElement.getAttribute("Sport"));
 						activity.setId(eElement.getElementsByTagName("Id").item(temp).getTextContent());
+						//lapList = eElement.getElementsByTagName("Lap");
+						lapList = ((Element) node).getElementsByTagName("Lap");
 
 						for (int i = 0; i < lapList.getLength(); i++) {
 							Node lapNode = lapList.item(i);
+
 							if (lapNode.getNodeType() == Node.ELEMENT_NODE) {
 								Element lElement = (Element) node;
-								// Create new Lap Object
+
 								lap = new Lap();
 
 								if (lElement.getElementsByTagName("Lap").item(i).getAttributes()
@@ -222,7 +234,7 @@ public class Controller {
 									if (!lElement.getElementsByTagName("DistanceMeters").item(i).getTextContent()
 											.isEmpty()) {
 										lap.setDistanceMetersTracks(Double.parseDouble(lElement
-												.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
+											.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
 									}
 								}
 								if (lElement.getElementsByTagName("Calories").item(i) != null) {
@@ -261,87 +273,90 @@ public class Controller {
 												.getTextContent());
 									}
 								}
-							}
-							for (int j = 0; j < trackList.getLength(); j++) {
-								Node trackNode = trackList.item(j);
-								if (trackNode.getNodeType() == Node.ELEMENT_NODE) {
-									Element tElement = (Element) node;
-									// Create new Track Object
-									track = new Track();
-									if (tElement.getElementsByTagName("Time").item(i) != null) {
-										if (!tElement.getElementsByTagName("Time").item(j).getTextContent().isEmpty()) {
-											track.setTime(LocalDateTime.parse(tElement.getElementsByTagName("Time")
-													.item(j).getTextContent().substring(0, 19)));
+
+								trackList = ((Element) lapNode).getElementsByTagName("Trackpoint");
+
+								for (int j = 0; j < trackList.getLength(); j++) {
+									//Node trackNode = lapNode.appendChild(trackList.item(j));
+									Node trackNode = trackList.item(j);
+									if (trackNode.getNodeType() == Node.ELEMENT_NODE) {
+										//Element tElement = (Element) node;
+										Element tElement = (Element) lapNode;
+
+										// Create new Track Object
+										track = new Track();
+										if (tElement.getElementsByTagName("Time").item(j) != null) {
+											if (!tElement.getElementsByTagName("Time").item(j).getTextContent().isEmpty()) {
+												track.setTime(LocalDateTime.parse(tElement.getElementsByTagName("Time")
+														.item(j).getTextContent().substring(0, 19)));
+											}
 										}
-									}
-									if (tElement.getElementsByTagName("LatitudeDegrees").item(i) != null) {
-										if (!tElement.getElementsByTagName("LatitudeDegrees").item(i).getTextContent()
-												.isEmpty()) {
-											track.setLatitudeDegrees(Double.parseDouble(tElement
-													.getElementsByTagName("LatitudeDegrees").item(i).getTextContent()));
+										track.addPosition(new Position(
+										Double.parseDouble(tElement.getElementsByTagName("LatitudeDegrees")
+												.item(j).getTextContent()),
+										Double.parseDouble(tElement.getElementsByTagName("LongitudeDegrees")
+												.item(j).getTextContent())));
+
+										if (tElement.getElementsByTagName("AltitudeMeters").item(j) != null) {
+											if (!tElement.getElementsByTagName("AltitudeMeters").item(j).getTextContent()
+													.isEmpty()) {
+												track.setAltitudeMeters(Double.parseDouble(tElement
+														.getElementsByTagName("AltitudeMeters").item(j).getTextContent()));
+											}
 										}
-									}
-									if (tElement.getElementsByTagName("LongitudeDegrees").item(i) != null) {
-										if (!tElement.getElementsByTagName("LongitudeDegrees").item(i).getTextContent()
-												.isEmpty()) {
-											track.setLongitudeDegrees(
-													Double.parseDouble(tElement.getElementsByTagName("LongitudeDegrees")
-															.item(i).getTextContent()));
+										if (tElement.getElementsByTagName("DistanceMeters").item(j) != null) {
+											if (!tElement.getElementsByTagName("DistanceMeters").item(j).getTextContent()
+													.isEmpty()) {
+												track.setDistanceMetersTracks(Double.parseDouble(tElement
+														.getElementsByTagName("DistanceMeters").item(j).getTextContent()));
+											}
 										}
-									}
-									if (tElement.getElementsByTagName("AltitudeMeters").item(i) != null) {
-										if (!tElement.getElementsByTagName("AltitudeMeters").item(i).getTextContent()
-												.isEmpty()) {
-											track.setAltitudeMeters(Double.parseDouble(tElement
-													.getElementsByTagName("AltitudeMeters").item(i).getTextContent()));
+										if (tElement.getElementsByTagName("HeartRateBpm").item(j) != null) {
+											if (!tElement.getElementsByTagName("HeartRateBpm").item(j).getTextContent()
+													.isEmpty()) {
+												track.setHeartRateBpm(
+														Integer.parseInt(tElement.getElementsByTagName("HeartRateBpm")
+																.item(j).getTextContent().trim()));
+											}
 										}
+
+										track.addExtension(new Extension(
+												Double.parseDouble(tElement.getElementsByTagName("Speed")
+														.item(j).getTextContent()),
+												Integer.parseInt(tElement.getElementsByTagName("RunCadence")
+														.item(j).getTextContent())));
+										//
 									}
-									if (tElement.getElementsByTagName("DistanceMeters").item(i) != null) {
-										if (!tElement.getElementsByTagName("DistanceMeters").item(i).getTextContent()
-												.isEmpty()) {
-											track.setDistanceMetersTracks(Double.parseDouble(tElement
-													.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
-										}
-									}
-									if (tElement.getElementsByTagName("HeartRateBpm").item(i) != null) {
-										if (!tElement.getElementsByTagName("HeartRateBpm").item(i).getTextContent()
-												.isEmpty()) {
-											track.setHeartRateBpm(
-													Integer.parseInt(tElement.getElementsByTagName("HeartRateBpm")
-															.item(i).getTextContent().trim()));
-										}
-									}
-									if (tElement.getElementsByTagName("Speed").item(i) != null) {
-										if (!tElement.getElementsByTagName("Speed").item(i).getTextContent()
-												.isEmpty()) {
-											track.setSpeed(Double.parseDouble(
-													tElement.getElementsByTagName("Speed").item(i).getTextContent()));
-										}
-									}
-									if (tElement.getElementsByTagName("RunCadence").item(i) != null) {
-										if (!tElement.getElementsByTagName("RunCadence").item(i).getTextContent()
-												.isEmpty()) {
-											track.setRunCadence(Integer.parseInt(tElement
-													.getElementsByTagName("RunCadence").item(i).getTextContent()));
-										}
-									}
+									System.out.println("track " + j + " "+ track.getHeartRateBpm());
+
+									tracks.add(track);
+
 								}
-								tracks.add(track);
+								System.out.println("lap " + i + " "+ lap.getDistanceMetersTracks());
+								lap.setTrack(new ArrayList<>(tracks));
+								/*for (int l = 0; l< tracks.size(); l++) {
+									System.out.println("for " + tracks.get(l).getHeartRateBpm());
+								}*/
+								tracks.clear();
+								laps.add(lap);
+
 
 							}
-							lap.setTrack(tracks);
-							laps.add(lap);
 
 						}
-						activity.setLap(laps);
-						activities.add(activity);
+
+						activity.setLap(new ArrayList<>(laps));
+						laps.clear();
+						//laps = null;
 					}
+					activities.add(activity);
 				}
 
 			}
 		} catch (IOException | DirectoryIteratorException | SAXException ex) {
 			System.err.println(ex);
 		}
+		//tracks.clear();
 		return activities;
 	}
 }

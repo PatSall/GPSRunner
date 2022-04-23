@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 
-public class Lap extends Activity{
+public class Lap {
 
     private LocalDateTime startTime;
 
@@ -27,12 +27,10 @@ public class Lap extends Activity{
     private List<Track> track;
 
     public Lap() {
-        super();
+
     }
 
     public Lap(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod) {
-        super();
-
         this.startTime = startTime;
         this.totalTimeSeconds = totalTimeSeconds;
         this.distanceMeters = distanceMeters;
