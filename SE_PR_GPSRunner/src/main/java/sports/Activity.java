@@ -1,5 +1,6 @@
 package sports;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -9,6 +10,7 @@ public class Activity {
     private List<Lap> lap;
     private String activity;
     private String id;
+    private int lapCounter = 0;
 
     public Activity() {
 
@@ -42,6 +44,37 @@ public class Activity {
     public void setLap(List<Lap> laps) {
         this.lap = laps;
     }
+
+    public Lap averageLap(List<Lap> laps) {
+        LocalDateTime startTime = null;
+        Double totalTimeSeconds = 0.0;
+        Double distanceMeters = 0.0 ;
+        Double maximumSpeed = 0.0;
+        Integer calories = 0;
+        Integer averageHeartRateBpm = 0;
+        Integer maximumHeartRateBpm = 0;
+
+        for(int i = 0; i < laps.size(); i++) {
+            lapCounter++;
+            startTime = laps.get(0).getStartTime();
+            totalTimeSeconds += laps.get(i).getTotalTimeSeconds();
+            distanceMeters += laps.get(i).getDistanceMetersTracks();
+            if (maximumSpeed < laps.get(i).getMaximumSpeed()){
+                maximumSpeed = laps.get(i).getMaximumSpeed();
+            }
+            calories += laps.get(i).getCalories();
+            averageHeartRateBpm += laps.get(i).getAverageHeartRateBpm();
+            if (maximumHeartRateBpm < laps.get(i).getMaximumHeartRateBpm()) {
+                maximumHeartRateBpm = laps.get(i).getMaximumHeartRateBpm();
+            }
+        }
+
+
+        return new Lap(startTime, totalTimeSeconds, distanceMeters, maximumSpeed,
+                calories, averageHeartRateBpm/lapCounter, maximumHeartRateBpm );
+
+    }
+
 
     @Override
     public String toString () {

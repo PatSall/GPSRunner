@@ -42,7 +42,15 @@ public class Lap {
         this.triggerMethod = triggerMethod;
     }
 
-
+    public Lap(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm) {
+        this.startTime = startTime;
+        this.totalTimeSeconds = totalTimeSeconds;
+        this.distanceMeters = distanceMeters;
+        this.maximumSpeed = maximumSpeed;
+        this.calories = calories;
+        this.averageHeartRateBpm = averageHeartRateBpm;
+        this.maximumHeartRateBpm = maximumHeartRateBpm;
+    }
 
     public LocalDateTime getStartTime() {
         return startTime;
@@ -136,6 +144,8 @@ public class Lap {
     public void setTrack(List<Track> track) {
         this.track = track;
     }
+
+
 
     @Override
     public String toString () {
