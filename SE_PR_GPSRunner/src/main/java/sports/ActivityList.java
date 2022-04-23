@@ -225,19 +225,23 @@ public class ActivityList {
 								if (lElement.getElementsByTagName("DistanceMeters").item(i) != null) {
 									if (!lElement.getElementsByTagName("DistanceMeters").item(i).getTextContent()
 											.isEmpty()) {
-
+										int k = 0;
 										if (lElement
 											.getElementsByTagName("DistanceMeters").item(i).getParentNode().equals(lapNode)) {
 										lap.setDistanceMetersTracks(Double.parseDouble(lElement
 												.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
 										} else {
-											    int k = i;
+											    k = i;
 												while (!lElement
 														.getElementsByTagName("DistanceMeters").item(k).getParentNode().equals(lapNode)) {
 													k++;
 												}
-												lap.setDistanceMetersTracks(Double.parseDouble(lElement
-													.getElementsByTagName("DistanceMeters").item(k+i).getTextContent()));
+												if (lElement
+													.getElementsByTagName("DistanceMeters").item(k+i) != null)
+												{
+													lap.setDistanceMetersTracks(Double.parseDouble(lElement
+															.getElementsByTagName("DistanceMeters").item(k + i).getTextContent()));
+												}
 											}
 								}
 
@@ -316,9 +320,11 @@ public class ActivityList {
 										if (tElement.getElementsByTagName("DistanceMeters").item(j) != null) {
 											if (!tElement.getElementsByTagName("DistanceMeters").item(j).getTextContent()
 													.isEmpty()) {
-													track.setDistanceMetersTracks(Double.parseDouble(tElement
-															.getElementsByTagName("DistanceMeters").item(j+1).getTextContent()));
-
+													if (tElement
+															.getElementsByTagName("DistanceMeters").item(j+1) != null ) {
+														track.setDistanceMetersTracks(Double.parseDouble(tElement
+																.getElementsByTagName("DistanceMeters").item(j+1).getTextContent()));
+													}
 											}
 										}
 										if (tElement.getElementsByTagName("HeartRateBpm").item(j) != null) {
@@ -369,7 +375,6 @@ public class ActivityList {
 		} catch (IOException | DirectoryIteratorException | SAXException ex) {
 			System.err.println(ex);
 		}
-		//tracks.clear();
 		return activities;
 	}
 }
