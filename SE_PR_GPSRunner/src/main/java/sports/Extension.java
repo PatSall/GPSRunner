@@ -12,6 +12,7 @@ public class Extension {
         this.runCadence = runCadence;
     }
 
+
     public Double getSpeed() {
         return speed;
     }

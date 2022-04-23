@@ -25,13 +25,15 @@ public class ActivityList {
 		/*final List<Activity>*/ activities = parseActivitiesXML();
 
 		for (int j= 0; j < activities.size(); j++) {
+			System.out.println(activities.get(j).getActivity());
 			for (int i = 0; i < activities.get(j).getLap().size(); i++) {
-				//System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
+				System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
 				//System.out.println(activities.get(j).getLap().get(i).getStartTime());
 				//System.out.println(activities.get(j).getLap().get(i).getCalories());
 				//System.out.println("Track");
 				for (int k = 0; k < activities.get(j).getLap().get(i).getTrack().size(); k++) {
-					System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getHeartRateBpm());
+					System.out.println("tracks");
+					System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getDistanceMetersTracks());
 				}
 			}
 		}
@@ -223,10 +225,23 @@ public class ActivityList {
 								if (lElement.getElementsByTagName("DistanceMeters").item(i) != null) {
 									if (!lElement.getElementsByTagName("DistanceMeters").item(i).getTextContent()
 											.isEmpty()) {
+
+										if (lElement
+											.getElementsByTagName("DistanceMeters").item(i).getParentNode().equals(lapNode)) {
 										lap.setDistanceMetersTracks(Double.parseDouble(lElement
-											.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
-									}
+												.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
+										} else {
+											    int k = i;
+												while (!lElement
+														.getElementsByTagName("DistanceMeters").item(k).getParentNode().equals(lapNode)) {
+													k++;
+												}
+												lap.setDistanceMetersTracks(Double.parseDouble(lElement
+													.getElementsByTagName("DistanceMeters").item(k+i).getTextContent()));
+											}
 								}
+
+							}
 								if (lElement.getElementsByTagName("Calories").item(i) != null) {
 									if (!lElement.getElementsByTagName("Calories").item(i).getTextContent().isEmpty()) {
 										lap.setCalories(Integer.parseInt(
@@ -281,11 +296,15 @@ public class ActivityList {
 														.item(j).getTextContent().substring(0, 19)));
 											}
 										}
-										track.addPosition(new Position(
-										Double.parseDouble(tElement.getElementsByTagName("LatitudeDegrees")
-												.item(j).getTextContent()),
-										Double.parseDouble(tElement.getElementsByTagName("LongitudeDegrees")
-												.item(j).getTextContent())));
+										if (tElement.getElementsByTagName("LatitudeDegrees").item(j) != null && tElement.getElementsByTagName("LongitudeDegrees").item(j) != null) {
+											if (!tElement.getElementsByTagName("LatitudeDegrees").item(j).getTextContent().isEmpty() && !tElement.getElementsByTagName("LongitudeDegrees").item(j).getTextContent().isEmpty()) {
+												track.addPosition(new Position(
+														Double.parseDouble(tElement.getElementsByTagName("LatitudeDegrees")
+																.item(j).getTextContent()),
+														Double.parseDouble(tElement.getElementsByTagName("LongitudeDegrees")
+																.item(j).getTextContent())));
+											}
+										}
 
 										if (tElement.getElementsByTagName("AltitudeMeters").item(j) != null) {
 											if (!tElement.getElementsByTagName("AltitudeMeters").item(j).getTextContent()
@@ -297,8 +316,9 @@ public class ActivityList {
 										if (tElement.getElementsByTagName("DistanceMeters").item(j) != null) {
 											if (!tElement.getElementsByTagName("DistanceMeters").item(j).getTextContent()
 													.isEmpty()) {
-												track.setDistanceMetersTracks(Double.parseDouble(tElement
-														.getElementsByTagName("DistanceMeters").item(j).getTextContent()));
+													track.setDistanceMetersTracks(Double.parseDouble(tElement
+															.getElementsByTagName("DistanceMeters").item(j+1).getTextContent()));
+
 											}
 										}
 										if (tElement.getElementsByTagName("HeartRateBpm").item(j) != null) {
@@ -310,34 +330,37 @@ public class ActivityList {
 											}
 										}
 
-										track.addExtension(new Extension(
-												Double.parseDouble(tElement.getElementsByTagName("Speed")
-														.item(j).getTextContent()),
-												Integer.parseInt(tElement.getElementsByTagName("RunCadence")
-														.item(j).getTextContent())));
-										//
+										if (tElement.getElementsByTagName("Speed").item(j) != null) {
+											if (!tElement.getElementsByTagName("Speed").item(j).getTextContent()
+													.isEmpty()) {
+												if (tElement.getElementsByTagName("RunCadence").item(j) != null) {
+													track.addExtension(new Extension(
+															Double.parseDouble(tElement.getElementsByTagName("Speed")
+																	.item(j).getTextContent()),
+															Integer.parseInt(tElement.getElementsByTagName("RunCadence")
+																	.item(j).getTextContent())));
+												} else {
+													track.addExtension(new Extension(
+															Double.parseDouble(tElement.getElementsByTagName("Speed")
+																	.item(j).getTextContent()), 0));
+												}
+											}
+										}
 									}
-									System.out.println("track " + j + " "+ track.getHeartRateBpm());
+
 
 									tracks.add(track);
 
 								}
-								System.out.println("lap " + i + " "+ lap.getDistanceMetersTracks());
+
 								lap.setTrack(new ArrayList<>(tracks));
-								/*for (int l = 0; l< tracks.size(); l++) {
-									System.out.println("for " + tracks.get(l).getHeartRateBpm());
-								}*/
 								tracks.clear();
 								laps.add(lap);
-
-
 							}
 
 						}
-
 						activity.setLap(new ArrayList<>(laps));
 						laps.clear();
-						//laps = null;
 					}
 					activities.add(activity);
 				}
