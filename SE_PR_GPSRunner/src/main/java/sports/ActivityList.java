@@ -17,8 +17,8 @@ import java.util.List;
 
 public class ActivityList {
 	
-	public final List <Activity> activities;
-	public final List <TrackGPS> trackGPS;
+	private final List <Activity> activities;
+	private final List <TrackGPS> trackGPS;
 	
 	public ActivityList() {
 
@@ -237,14 +237,13 @@ public class ActivityList {
 													k++;
 												}
 												if (lElement
-													.getElementsByTagName("DistanceMeters").item(k+i) != null)
+													.getElementsByTagName("DistanceMeters").item(k) != null)
 												{
 													lap.setDistanceMetersTracks(Double.parseDouble(lElement
-															.getElementsByTagName("DistanceMeters").item(k + i).getTextContent()));
+															.getElementsByTagName("DistanceMeters").item(k).getTextContent()));
 												}
 											}
 								}
-
 							}
 								if (lElement.getElementsByTagName("Calories").item(i) != null) {
 									if (!lElement.getElementsByTagName("Calories").item(i).getTextContent().isEmpty()) {
@@ -376,5 +375,13 @@ public class ActivityList {
 			System.err.println(ex);
 		}
 		return activities;
+	}
+	
+	public List <Activity> getActivities(){
+		return this.activities;
+	}
+	
+	public List <TrackGPS> getTrackGPS(){
+		return this.trackGPS;
 	}
 }

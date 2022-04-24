@@ -16,7 +16,7 @@ public class Lap {
 
     private Integer calories;
 
-    private Integer averageHeartRateBpm;
+    private double averageHeartRateBpm;
 
     //private Integer maximumHeartRateBpm;
     private Integer maximumHeartRateBpm;
@@ -30,7 +30,7 @@ public class Lap {
 
     }
 
-    public Lap(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod) {
+    public Lap(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, double averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod) {
         this.startTime = startTime;
         this.totalTimeSeconds = totalTimeSeconds;
         this.distanceMeters = distanceMeters;
@@ -42,7 +42,7 @@ public class Lap {
         this.triggerMethod = triggerMethod;
     }
 
-    public Lap(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm) {
+    public Lap(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, double averageHeartRateBpm, Integer maximumHeartRateBpm) {
         this.startTime = startTime;
         this.totalTimeSeconds = totalTimeSeconds;
         this.distanceMeters = distanceMeters;
@@ -77,7 +77,7 @@ public class Lap {
         return calories;
     }
 
-    public Integer getAverageHeartRateBpm() {
+    public double getAverageHeartRateBpm() {
         return averageHeartRateBpm;
     }
 

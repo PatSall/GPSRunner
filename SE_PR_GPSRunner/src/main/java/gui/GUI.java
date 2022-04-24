@@ -49,7 +49,8 @@ public class GUI extends JFrame {
 	List<TrackGPS> trackGPS;
 	
 	Filter[] sportsFilter = new Filter[6];
-	Filter[] distanceFilter = new Filter[7];
+	Filter[] distanceFilter = new Filter[10];
+	Filter[] graphFilter = new Filter[3];
 	
 	JScrollPane upperPanel;
 	JTable table;
@@ -59,18 +60,41 @@ public class GUI extends JFrame {
 	ChartPanel chartPanel;
 	Collection<Activity> activities;
 	
-	String[] columnNames = new String[]{"name","activity", "date","distance","time","speed","bpm"};
-
-	public void setActivities(Collection<Activity> activities) {
+	JCheckBoxMenuItem distance;
+	JCheckBoxMenuItem bpm;
+	JCheckBoxMenuItem speed;
+	DefaultCategoryDataset cd;
+	
+	String[] columnNames = new String[]{"name","activity","date","distance","time","speed","bpm"};
+	
+	public void updateChart(Collection<Activity> activities) {
 		this.activities = activities;
-		DefaultCategoryDataset cd = new DefaultCategoryDataset();
-
-		//mit Streams activities transformieren
-		cd.addValue(3.5,"stefan", "distance");
-		cd.addValue(5,"Jan", "distance");
-
-		JFreeChart chart = ChartFactory.createBarChart("Distance Overview",
-				null, "km", cd, PlotOrientation.VERTICAL, true, true,
+		cd.clear();
+		
+		
+		String xAxe =  "";
+		String yAxe = "";
+		String graphName = "";
+		for(int i = 0; i < graphFilter.length; i++) {
+			if(graphFilter[i].getState()) {
+				graphName = graphFilter[i].getName();
+				if(graphFilter[i].getName().equals("distance")) {
+					yAxe = "Meter";
+				} else if(graphFilter[i].getName().equals("bpm")) {
+					yAxe = "Beats per Minute";
+				} else if(graphFilter[i].getName().equals("speed")) {
+					yAxe = "Miles per Hour";
+				}
+			}
+		}
+		for (int i = 0; i < activityList.size(); i++) {
+			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+				cd.addValue(activityList.get(i).showInGraph(graphFilter),activityList.get(i).getId(), xAxe);
+			}
+		}
+		
+		JFreeChart chart = ChartFactory.createBarChart(graphName,
+				null, yAxe, cd, PlotOrientation.VERTICAL, true, true,
 				false);
 		chartPanel.setChart(chart);
 	}
@@ -93,8 +117,9 @@ public class GUI extends JFrame {
 		lowerPanel = new JPanel();
 		sidePanel = new JPanel();
 		
+		cd = new DefaultCategoryDataset();
 		chartPanel= new ChartPanel(null);
-		chartPanel.setPreferredSize(new Dimension(300,300));
+		chartPanel.setPreferredSize(new Dimension(650, 400));
 		lowerPanel.add(chartPanel);
 		
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, lowerPanel);
@@ -118,7 +143,7 @@ public class GUI extends JFrame {
 		menu.add(file);
 		menu.add(tracks);
 		menu.add(segments);
-		//menu.add(graph);
+		menu.add(graph);
 		//menu.add(view);
 		//menu.add(years);
 		//menu.add(columns);
@@ -132,7 +157,7 @@ public class GUI extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test");
 			    chooser.showOpenDialog(null);
-			} 
+			}
 		});
 		
 		//Tracks
@@ -158,21 +183,27 @@ public class GUI extends JFrame {
 		hiking.addActionListener(action());
 		
 		//Segments
-		JCheckBoxMenuItem tenM = new JCheckBoxMenuItem("10m", true);
-		JCheckBoxMenuItem twentyM = new JCheckBoxMenuItem("20m", true);
-		JCheckBoxMenuItem fiftyM = new JCheckBoxMenuItem("50m", true);
-		JCheckBoxMenuItem hundredM = new JCheckBoxMenuItem("100m", true);
-		JCheckBoxMenuItem quarterKm = new JCheckBoxMenuItem("250m",true);
-		JCheckBoxMenuItem halfKm = new JCheckBoxMenuItem("500m", true);
-		JCheckBoxMenuItem oneKm = new JCheckBoxMenuItem("1000m", true);
+		JCheckBoxMenuItem tenM = new JCheckBoxMenuItem("< 10m", true);
+		JCheckBoxMenuItem twentyM = new JCheckBoxMenuItem("< 20m", true);
+		JCheckBoxMenuItem fiftyM = new JCheckBoxMenuItem("< 50m", true);
+		JCheckBoxMenuItem hundredM = new JCheckBoxMenuItem("< 100m", true);
+		JCheckBoxMenuItem quarterKm = new JCheckBoxMenuItem("< 250m",true);
+		JCheckBoxMenuItem halfKm = new JCheckBoxMenuItem("< 500m", true);
+		JCheckBoxMenuItem oneKm = new JCheckBoxMenuItem("< 1000m", true);
+		JCheckBoxMenuItem twoHalfKm = new JCheckBoxMenuItem("< 2500m", true);
+		JCheckBoxMenuItem fiveKm = new JCheckBoxMenuItem("< 5000m", true);
+		JCheckBoxMenuItem moreThan = new JCheckBoxMenuItem("> 5000m", true);
 		
-		distanceFilter[0] = new Filter(tenM.getLabel(), tenM.getState(), tenM);
-		distanceFilter[1] = new Filter(twentyM.getLabel(), twentyM.getState(), twentyM);
-		distanceFilter[2] = new Filter(fiftyM.getLabel(), fiftyM.getState(), fiftyM);
-		distanceFilter[3] = new Filter(hundredM.getLabel(), hundredM.getState(), hundredM);
-		distanceFilter[4] = new Filter(quarterKm.getLabel(), quarterKm.getState(), quarterKm);
-		distanceFilter[5] = new Filter(halfKm.getLabel(), halfKm.getState(), halfKm);
-		distanceFilter[6] = new Filter(oneKm.getLabel(), oneKm.getState(), oneKm);
+		distanceFilter[0] = new Filter(tenM.getLabel(), tenM.getState(), tenM, 10);
+		distanceFilter[1] = new Filter(twentyM.getLabel(), twentyM.getState(), twentyM, 20);
+		distanceFilter[2] = new Filter(fiftyM.getLabel(), fiftyM.getState(), fiftyM, 50);
+		distanceFilter[3] = new Filter(hundredM.getLabel(), hundredM.getState(), hundredM, 100);
+		distanceFilter[4] = new Filter(quarterKm.getLabel(), quarterKm.getState(), quarterKm, 250);
+		distanceFilter[5] = new Filter(halfKm.getLabel(), halfKm.getState(), halfKm, 500);
+		distanceFilter[6] = new Filter(oneKm.getLabel(), oneKm.getState(), oneKm, 1000);
+		distanceFilter[7] = new Filter(twoHalfKm.getLabel(), twoHalfKm.getState(), twoHalfKm, 2500);
+		distanceFilter[8] = new Filter(fiveKm.getLabel(), fiveKm.getState(), fiveKm, 5000);
+		distanceFilter[9] = new Filter(moreThan.getLabel(), moreThan.getState(), moreThan, Integer.MAX_VALUE);
 		
 		tenM.addActionListener(action());
 		twentyM.addActionListener(action());
@@ -181,6 +212,23 @@ public class GUI extends JFrame {
 		quarterKm.addActionListener(action());
 		halfKm.addActionListener(action());
 		oneKm.addActionListener(action());
+		twoHalfKm.addActionListener(action());
+		fiveKm.addActionListener(action());
+		moreThan.addActionListener(action());
+		
+		//Graph
+
+		distance = new JCheckBoxMenuItem("distance", true);
+		bpm = new JCheckBoxMenuItem("bpm");
+		speed = new JCheckBoxMenuItem("speed");
+		
+		distance.addActionListener(action());
+		bpm.addActionListener(action());
+		speed.addActionListener(action());
+		
+		graphFilter[0] = new Filter(distance.getLabel(), distance.getState(), distance);
+		graphFilter[1] = new Filter(bpm.getLabel(), bpm.getState(), bpm);
+		graphFilter[2] = new Filter(speed.getLabel(), speed.getState(), speed);
 
 		//add to menu-elems
 		file.add(neo);
@@ -198,39 +246,42 @@ public class GUI extends JFrame {
 		segments.add(quarterKm);
 		segments.add(halfKm);
 		segments.add(oneKm);
+		segments.add(twoHalfKm);
+		segments.add(fiveKm);
+		segments.add(moreThan);
+		graph.add(distance);
+		graph.add(bpm);
+		graph.add(speed);
 		
 		//add to submenu-elems
 		open.add(tcx);
 	}
 	
 	public void refreshGui() {
-
 		model.setDataVector(table(), columnNames);
 		model.fireTableChanged(null);
-		
+		this.updateChart(activityList);
 	}
 	
-	
 	public Object[][] table() {
-		
-		Object[][] data = new Object[activityList.size()][7];
-	
+		int counter = 0;
+		int countEntries = 0;
 		for (int i = 0; i < activityList.size(); i++ ) {
-			for(int j = 0; j < sportsFilter.length; j++) {
-				if(sportsFilter[0].getState() || (sportsFilter[j].getName().equals(activityList.get(i).getActivity()) && sportsFilter[j].getState())) {
-					for(int k = 6; k >= 0; k--) {
-						if(distanceFilter[k].getState() && getDistance(k) >= activityList.get(i).getLap().get(0).getDistanceMetersTracks()) {
-							data[i][0] = activityList.get(i).getId();
-							data[i][1] = activityList.get(i).getActivity();
-							data[i][2] = activityList.get(i).getLap().get(0).getStartTime();			
-							data[i][3] = activityList.get(i).getLap().get(0).getDistanceMetersTracks();
-							data[i][4] = activityList.get(i).getLap().get(0).getTotalTimeSeconds();
-							data[i][5] = activityList.get(i).getLap().get(0).getMaximumSpeed();
-							data[i][6] = activityList.get(i).getLap().get(0).getMaximumHeartRateBpm();
-							break;
-						}
-					}
-				}
+			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+				countEntries++;
+			}
+		}
+		Object[][] data = new Object[countEntries][7];
+		for (int i = 0; i < activityList.size(); i++ ) {
+			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+				data[counter][0] = activityList.get(i).getId();
+				data[counter][1] = activityList.get(i).getActivity();
+				data[counter][2] = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime();			
+				data[counter][3] = Math.round(activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks()*100)/100.0;
+				data[counter][4] = activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds();
+				data[counter][5] = Math.round(activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*100)/100.0;
+				data[counter][6] = activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
+				counter++;
 			}
 		}
 		return data;
@@ -279,6 +330,33 @@ public class GUI extends JFrame {
 					distanceFilter[5].setState(!distanceFilter[5].state);
 				} else if(distanceFilter[6].button == e.getSource()) {
 					distanceFilter[6].setState(!distanceFilter[6].state);
+				} else if(distanceFilter[7].button == e.getSource()) {
+					distanceFilter[7].setState(!distanceFilter[7].state);
+				} else if(distanceFilter[8].button == e.getSource()) {
+					distanceFilter[8].setState(!distanceFilter[8].state);
+				} else if(distanceFilter[9].button == e.getSource()) {
+					distanceFilter[9].setState(!distanceFilter[9].state);
+				} else if(graphFilter[0].button == e.getSource()) {
+					graphFilter[0].setState(true);
+					graphFilter[1].setState(false);
+					graphFilter[2].setState(false);
+					distance.setState(true);
+					bpm.setState(false);
+					speed.setState(false);
+				} else if(graphFilter[1].button == e.getSource()) {
+					graphFilter[0].setState(false);
+					graphFilter[1].setState(true);
+					graphFilter[2].setState(false);
+					bpm.setState(true);
+					distance.setState(false);
+					speed.setState(false);
+				} else if(graphFilter[2].button == e.getSource()) {
+					graphFilter[0].setState(false);
+					graphFilter[1].setState(false);
+					graphFilter[2].setState(true);
+					distance.setState(false);
+					bpm.setState(false);
+					speed.setState(true);
 				}
 				for(int i = 0; i < sportsFilter.length; i++) {
 					System.out.println(sportsFilter[i].name+ " | "+sportsFilter[i].state);
@@ -290,42 +368,31 @@ public class GUI extends JFrame {
 				System.out.println();
 				refreshGui();
 			}
-			
 		};
-	}
-	
-	public int getDistance(int index) {
-		if(index == 6) {
-			return 1000;
-		} else if (index == 5) {
-			return 500;
-		}else if (index == 4) {
-			return 250;
-		}else if (index == 3) {
-			return 100;
-		}else if (index == 2) {
-			return 50;
-		}else if (index == 1) {
-			return 20;
-		}else if (index == 0) {
-			return 10;
-		}
-		return 0;
 	}
 	
 	public class Filter{
 		private String name;
 		private boolean state;
 		private JCheckBoxMenuItem button;
+		private int number;
 
 		public Filter(String name, boolean state, JCheckBoxMenuItem button) {
+			this(name, state, button, 0);
+		}
+		public Filter(String name, boolean state, JCheckBoxMenuItem button, int number) {
 			this.name = name;
 			this.state = state;
 			this.button = button;
+			this.number = number;
 		}
 
 		public boolean getState() {
 			return this.state;
+		}
+		
+		public int getNumber() {
+			return this.number;
 		}
 
 		public String getName() {
