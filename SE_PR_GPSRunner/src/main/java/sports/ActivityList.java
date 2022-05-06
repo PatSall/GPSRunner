@@ -20,11 +20,13 @@ public class ActivityList {
 	
 	private final List <Activity> activities;
 	private final List <TrackGPS> trackGPS;
+	public static String homePath = System.getProperty("user.home");
 	
 	public ActivityList() {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		/*final List<Activity>*/ activities = parseActivitiesXML();
 		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
+		System.out.println(homePath);
 		
 		for (int j= 0; j < activities.size(); j++) {
 			//System.out.println(activities.get(j).getActivity());
@@ -65,10 +67,12 @@ public class ActivityList {
 			e.printStackTrace();
 		}
 		Document document = null;
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
+		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(homePath + File.separator + "Testdaten"))) {
 			for (Path file : stream) {
 				//System.out.println(file.getFileName());
-				document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
+				//document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
+				document = builder.parse(homePath + File.separator + "Testdaten" + File.separator+ file.getFileName());
 				document.getDocumentElement().normalize();
 				nTrackList = document.getElementsByTagName("trk");
 				nSegmentList = document.getElementsByTagName("trkpt");
@@ -163,7 +167,8 @@ public class ActivityList {
 			e.printStackTrace();
 		}
 		Document document = null;
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
+		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(homePath + File.separator + "Testdaten"))) {
 			for (Path file : stream) {
 				activity = null;
 				lap = null;
@@ -172,7 +177,7 @@ public class ActivityList {
 				lapList = null;
 				trackList = null;
 
-				document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
+				document = builder.parse(homePath + File.separator + "Testdaten" + File.separator+ file.getFileName());
 				document.getDocumentElement().normalize();
 
 				nList = document.getElementsByTagName("Activity");
