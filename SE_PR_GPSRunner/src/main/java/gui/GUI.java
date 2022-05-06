@@ -71,7 +71,6 @@ public class GUI extends JFrame {
 		this.activities = activities;
 		cd.clear();
 		
-		
 		String xAxe =  "";
 		String yAxe = "";
 		String graphName = "";
@@ -217,7 +216,6 @@ public class GUI extends JFrame {
 		moreThan.addActionListener(action());
 		
 		//Graph
-
 		distance = new JCheckBoxMenuItem("distance", true);
 		bpm = new JCheckBoxMenuItem("bpm");
 		speed = new JCheckBoxMenuItem("speed");

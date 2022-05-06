@@ -9,6 +9,7 @@ import javax.xml.parsers.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.file.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -21,19 +22,20 @@ public class ActivityList {
 	private final List <TrackGPS> trackGPS;
 	
 	public ActivityList() {
-
+		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		/*final List<Activity>*/ activities = parseActivitiesXML();
-
+		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
+		
 		for (int j= 0; j < activities.size(); j++) {
-			System.out.println(activities.get(j).getActivity());
+			//System.out.println(activities.get(j).getActivity());
 			for (int i = 0; i < activities.get(j).getLap().size(); i++) {
-				System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
+				//System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
 				//System.out.println(activities.get(j).getLap().get(i).getStartTime());
 				//System.out.println(activities.get(j).getLap().get(i).getCalories());
 				//System.out.println("Track");
 				for (int k = 0; k < activities.get(j).getLap().get(i).getTrack().size(); k++) {
-					System.out.println("tracks");
-					System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getDistanceMetersTracks());
+					//System.out.println("tracks");
+					//System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getDistanceMetersTracks());
 				}
 			}
 		}
@@ -46,7 +48,6 @@ public class ActivityList {
 			//System.out.println(t.toString());
 			//System.out.println(t.getName());
 		}
-
 	}
 
 	private static List<TrackGPS> parseTracksGPS() {
@@ -64,16 +65,14 @@ public class ActivityList {
 			e.printStackTrace();
 		}
 		Document document = null;
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths
-				.get("C:\\temp\\Files\\"))) {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 			for (Path file : stream) {
 				//System.out.println(file.getFileName());
-				document = builder.parse(
-						"C:\\temp\\Files\\"
-								+ file.getFileName());
+				document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
 				document.getDocumentElement().normalize();
 				nTrackList = document.getElementsByTagName("trk");
 				nSegmentList = document.getElementsByTagName("trkpt");
+				
 				for (int temp = 0; temp < nTrackList.getLength(); temp++) {
 					Node node = nTrackList.item(temp);
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -153,6 +152,7 @@ public class ActivityList {
 		NodeList nList = null;
 		NodeList lapList = null;
 		NodeList trackList = null;
+		int listLength = 0;
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = null;
@@ -163,8 +163,7 @@ public class ActivityList {
 			e.printStackTrace();
 		}
 		Document document = null;
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths
-				.get("C:\\temp\\Files\\"))) {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 			for (Path file : stream) {
 				activity = null;
 				lap = null;
@@ -173,13 +172,13 @@ public class ActivityList {
 				lapList = null;
 				trackList = null;
 
-				document = builder.parse(
-						"C:\\temp\\Files\\"
-								+ file.getFileName());
+				document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
 				document.getDocumentElement().normalize();
 
 				nList = document.getElementsByTagName("Activity");
-				for (int temp = 0; temp < nList.getLength(); temp++) {
+				
+				listLength = nList.getLength();
+				for (int temp = 0; temp < listLength; temp++) {
 					Node node = nList.item(temp);
 
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -290,64 +289,66 @@ public class ActivityList {
 									if (trackNode.getNodeType() == Node.ELEMENT_NODE) {
 										//Element tElement = (Element) node;
 										Element tElement = (Element) lapNode;
-
+								
 										// Create new Track Object
-										track = new Track();
-										if (tElement.getElementsByTagName("Time").item(j) != null) {
-											if (!tElement.getElementsByTagName("Time").item(j).getTextContent().isEmpty()) {
-												track.setTime(LocalDateTime.parse(tElement.getElementsByTagName("Time")
-														.item(j).getTextContent().substring(0, 19)));
+										track = new Track();		
+										
+										Element timeElement = (Element) tElement.getElementsByTagName("Time").item(j);									
+										if (timeElement != null) {
+											if (!timeElement.getTextContent().isEmpty()) {
+												track.setTime(LocalDateTime.parse(timeElement.getTextContent().substring(0, 19)));
 											}
 										}
-										if (tElement.getElementsByTagName("LatitudeDegrees").item(j) != null && tElement.getElementsByTagName("LongitudeDegrees").item(j) != null) {
-											if (!tElement.getElementsByTagName("LatitudeDegrees").item(j).getTextContent().isEmpty() && !tElement.getElementsByTagName("LongitudeDegrees").item(j).getTextContent().isEmpty()) {
+										
+										
+										Element latitudeDegreesElement = (Element) tElement.getElementsByTagName("LatitudeDegrees").item(j);
+										Element longitudeDegreesElement = (Element) tElement.getElementsByTagName("LongitudeDegrees").item(j);										
+										if (latitudeDegreesElement != null && longitudeDegreesElement != null) {
+											if (!latitudeDegreesElement.getTextContent().isEmpty() && !longitudeDegreesElement.getTextContent().isEmpty()) {
 												track.addPosition(new Position(
-														Double.parseDouble(tElement.getElementsByTagName("LatitudeDegrees")
-																.item(j).getTextContent()),
-														Double.parseDouble(tElement.getElementsByTagName("LongitudeDegrees")
-																.item(j).getTextContent())));
+														Double.parseDouble(latitudeDegreesElement.getTextContent()),
+														Double.parseDouble(longitudeDegreesElement.getTextContent())));
 											}
 										}
-
-										if (tElement.getElementsByTagName("AltitudeMeters").item(j) != null) {
-											if (!tElement.getElementsByTagName("AltitudeMeters").item(j).getTextContent()
+										
+										Element altitudeMetersElement = (Element) tElement.getElementsByTagName("AltitudeMeters").item(j);										
+										if (altitudeMetersElement != null) {
+											if (!altitudeMetersElement.getTextContent()
 													.isEmpty()) {
-												track.setAltitudeMeters(Double.parseDouble(tElement
-														.getElementsByTagName("AltitudeMeters").item(j).getTextContent()));
+												track.setAltitudeMeters(Double.parseDouble(altitudeMetersElement.getTextContent()));
 											}
 										}
-										if (tElement.getElementsByTagName("DistanceMeters").item(j) != null) {
-											if (!tElement.getElementsByTagName("DistanceMeters").item(j).getTextContent()
+										
+										Element distanceMetersElement = (Element) tElement.getElementsByTagName("DistanceMeters").item(j+1);
+										if (distanceMetersElement != null) {
+											if (distanceMetersElement.getTextContent()
 													.isEmpty()) {
-													if (tElement
-															.getElementsByTagName("DistanceMeters").item(j+1) != null ) {
-														track.setDistanceMetersTracks(Double.parseDouble(tElement
-																.getElementsByTagName("DistanceMeters").item(j+1).getTextContent()));
+													if (distanceMetersElement != null ) { 
+														track.setDistanceMetersTracks(Double.parseDouble(distanceMetersElement.getTextContent()));
 													}
 											}
 										}
-										if (tElement.getElementsByTagName("HeartRateBpm").item(j) != null) {
-											if (!tElement.getElementsByTagName("HeartRateBpm").item(j).getTextContent()
-													.isEmpty()) {
+										
+										Element heartRateBpmElement = (Element) tElement.getElementsByTagName("HeartRateBpm").item(j);
+										if (heartRateBpmElement != null) {
+											if (!heartRateBpmElement.getTextContent().isEmpty()) {
 												track.setHeartRateBpm(
-														Integer.parseInt(tElement.getElementsByTagName("HeartRateBpm")
-																.item(j).getTextContent().trim()));
+														Integer.parseInt(heartRateBpmElement.getTextContent().trim()));
 											}
 										}
 
-										if (tElement.getElementsByTagName("Speed").item(j) != null) {
-											if (!tElement.getElementsByTagName("Speed").item(j).getTextContent()
-													.isEmpty()) {
-												if (tElement.getElementsByTagName("RunCadence").item(j) != null) {
+										Element speedElement = (Element) tElement.getElementsByTagName("Speed").item(j);
+										Element runCadenceElement = (Element) tElement.getElementsByTagName("RunCadence").item(j);
+										
+										if (speedElement != null) {
+											if (!speedElement.getTextContent().isEmpty()) {
+												if (runCadenceElement != null) {
 													track.addExtension(new Extension(
-															Double.parseDouble(tElement.getElementsByTagName("Speed")
-																	.item(j).getTextContent()),
-															Integer.parseInt(tElement.getElementsByTagName("RunCadence")
-																	.item(j).getTextContent())));
+															Double.parseDouble(speedElement.getTextContent()),
+															Integer.parseInt(runCadenceElement.getTextContent())));
 												} else {
 													track.addExtension(new Extension(
-															Double.parseDouble(tElement.getElementsByTagName("Speed")
-																	.item(j).getTextContent()), 0));
+															Double.parseDouble(speedElement.getTextContent()), 0));
 												}
 											}
 										}
