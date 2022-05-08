@@ -1,16 +1,23 @@
 package sports;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TrackSegment extends TrackGPS {
+public class TrackSegment  {
 
     private Double trackPointLat;
     private Double trackPointLon;
-    private Double elem;
-    private LocalDateTime time;
+    private List<TrackPoint> trackPoint;
 
     public TrackSegment() {
-        super();
+        this.trackPoint = new ArrayList<>();
+    }
+
+    public TrackSegment(Double trackPointLat, Double trackPointLon) {
+        this.trackPointLat = trackPointLat;
+        this.trackPointLon = trackPointLon;
+        this.trackPoint = new ArrayList<>();
     }
 
     public Double getTrackPointLat() {
@@ -29,29 +36,24 @@ public class TrackSegment extends TrackGPS {
         this.trackPointLon = trackPointLon;
     }
 
-    public Double getElem() {
-        return elem;
+    public List<TrackPoint> getTrackPoint() {
+        return trackPoint;
     }
 
-    public void setElem(Double elem) {
-        this.elem = elem;
+    public void setTrackPoint(List<TrackPoint> trackPoint) {
+        this.trackPoint = trackPoint;
     }
 
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
+    public void addTrackPoint(TrackPoint trackPoint) {
+        this.trackPoint.add(trackPoint);
     }
 
     @Override
     public String toString() {
-        return  "TrackSegment{" +
+        return "TrackSegment{" +
                 "trackPointLat=" + trackPointLat +
                 ", trackPointLon=" + trackPointLon +
-                ", elem=" + elem +
-                ", time=" + time +
+                ", trackPoint=" + trackPoint +
                 '}';
     }
 }

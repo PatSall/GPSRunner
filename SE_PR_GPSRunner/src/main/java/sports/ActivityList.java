@@ -21,31 +21,28 @@ public class ActivityList {
 	private final List <Activity> activities;
 	private final List <TrackGPS> trackGPS;
 	public static String homePath = System.getProperty("user.home");
-	
+
 	public ActivityList() {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		/*final List<Activity>*/ activities = parseActivitiesXML();
-		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
+		//System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
 		System.out.println(homePath);
-		
+
 		for (int j= 0; j < activities.size(); j++) {
 			//System.out.println(activities.get(j).getActivity());
 			for (int i = 0; i < activities.get(j).getLap().size(); i++) {
 				//System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
 				//System.out.println(activities.get(j).getLap().get(i).getStartTime());
 				//System.out.println(activities.get(j).getLap().get(i).getCalories());
-				//System.out.println("Track");
 				for (int k = 0; k < activities.get(j).getLap().get(i).getTrack().size(); k++) {
-					//System.out.println("tracks");
 					//System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getDistanceMetersTracks());
 				}
 			}
 		}
-		System.out.println("Ende");
-		//}
 
 		trackGPS = parseTracksGPS();
 		for (TrackGPS t : trackGPS) {
+			System.out.println(trackGPS.toString());
 			//System.out.println();
 			//System.out.println(t.toString());
 			//System.out.println(t.getName());
@@ -72,6 +69,9 @@ public class ActivityList {
 			for (Path file : stream) {
 				//System.out.println(file.getFileName());
 				//document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
+				/*if (!file.getFileName().toString().endsWith(".gpx")) {
+					break;
+				}*/
 				document = builder.parse(homePath + File.separator + "Testdaten" + File.separator+ file.getFileName());
 				document.getDocumentElement().normalize();
 				nTrackList = document.getElementsByTagName("trk");
@@ -84,23 +84,27 @@ public class ActivityList {
 						// Create new Activity Object
 						trackGPS = new TrackGPS();
 						trackGPS.setName(eElement.getElementsByTagName("name").item(temp).getTextContent());
-						// trackGPS.setDate((timeFormat.parse(
-						// eElement.getElementsByTagName("desc").item(temp).getTextContent())));
-						/*
-						 * System.out.println(
-						 * (eElement.getElementsByTagName("desc").item(temp).getTextContent())); Date
-						 * date = displayFormat.parse("11:30 PM"); System.out.println(date);
-						 */
+
+						nSegmentList = ((Element) node).getElementsByTagName("trkpt");
 						for (int i = 0; i < nSegmentList.getLength(); i++) {
 							Node trackSegmentNode = nSegmentList.item(i);
 							if (trackSegmentNode.getNodeType() == Node.ELEMENT_NODE) {
 								Element lElement = (Element) node;
-								// Create new Lap Object
 								trackSegment = new TrackSegment();
 								if (lElement.getElementsByTagName("ele").item(i) != null) {
-									if (!lElement.getElementsByTagName("ele").item(i).getTextContent().isEmpty()) {
-										trackSegment.setElem(Double.parseDouble(
-												lElement.getElementsByTagName("ele").item(i).getTextContent()));
+									if (!lElement.getElementsByTagName("ele").item(i).getTextContent()
+											.isEmpty()) {
+										if (lElement.getElementsByTagName("ele").item(i) != null && lElement.getElementsByTagName("time").item(i) != null) {
+											trackSegment.addTrackPoint(new TrackPoint(
+													Double.parseDouble(lElement.getElementsByTagName("ele")
+															.item(i).getTextContent()),
+											LocalDateTime.parse(lElement.getElementsByTagName("time")
+												.item(i).getTextContent().substring(0, 19))));
+										} else {
+											trackSegment.addTrackPoint(new TrackPoint(
+													Double.parseDouble(lElement.getElementsByTagName("ele")
+															.item(i).getTextContent()), null));
+										}
 									}
 								}
 								// System.out.println(lElement.getElementsByTagName("trkpt").item(i).getAttributes().getNamedItem("lon").getTextContent());
@@ -123,17 +127,11 @@ public class ActivityList {
 														.getAttributes().getNamedItem("lat").getTextContent()));
 									}
 								}
-								if (lElement.getElementsByTagName("time").item(i) != null) {
-									if (!lElement.getElementsByTagName("time").item(i).getTextContent().isEmpty()) {
-										trackSegment.setTime(LocalDateTime.parse(lElement.getElementsByTagName("time")
-												.item(i).getTextContent().substring(0, 19)));
-										;
-									}
-								}
 							}
 							trackSegments.add(trackSegment);
 						}
-						trackGPS.setTrackSegments(trackSegments);
+						trackGPS.setTrackSegments(new ArrayList<>(trackSegments));
+						trackSegments.clear();
 						trackGPSs.add(trackGPS);
 					}
 				}
@@ -176,7 +174,9 @@ public class ActivityList {
 				nList = null;
 				lapList = null;
 				trackList = null;
-
+				/*if (!file.getFileName().toString().endsWith(".tcx")) {
+					break;
+				}*/
 				document = builder.parse(homePath + File.separator + "Testdaten" + File.separator+ file.getFileName());
 				document.getDocumentElement().normalize();
 
@@ -358,24 +358,18 @@ public class ActivityList {
 											}
 										}
 									}
-
-
 									tracks.add(track);
-
 								}
-
 								lap.setTrack(new ArrayList<>(tracks));
 								tracks.clear();
 								laps.add(lap);
 							}
-
 						}
 						activity.setLap(new ArrayList<>(laps));
 						laps.clear();
 					}
 					activities.add(activity);
 				}
-
 			}
 		} catch (IOException | DirectoryIteratorException | SAXException ex) {
 			System.err.println(ex);
