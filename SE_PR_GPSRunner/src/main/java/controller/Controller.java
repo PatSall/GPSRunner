@@ -23,4 +23,8 @@ public class Controller {
 	public GUI getView() {
 		return view;
 	}
+	
+	public void setPath(String filepath) {
+		this.activities.setFilepath(filepath);
+	}
 }

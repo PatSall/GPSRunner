@@ -22,10 +22,20 @@ public class ActivityList {
 	private final List <TrackGPS> trackGPS;
 	public static String homePath = System.getProperty("user.home");
 
+	public String filepath = Paths.get(homePath + File.separator + "Testdaten").toString();	
+	
+	public void setFilepath(String filepath) {
+		this.filepath = filepath;
+		//TODO neu einlesen
+	}
+	
 	public ActivityList() {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
-		/*final List<Activity>*/ activities = parseActivitiesXML();
-		//System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
+		/*final List<Activity>*/ 
+		
+		activities = parseActivitiesXML();
+		
+		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
 		System.out.println(homePath);
 
 		for (int j= 0; j < activities.size(); j++) {
@@ -49,30 +59,48 @@ public class ActivityList {
 		}
 	}
 
-	private static List<TrackGPS> parseTracksGPS() {
+	private List<TrackGPS> parseTracksGPS() {
 		List<TrackGPS> trackGPSs = new ArrayList<>();
-		List<TrackSegment> trackSegments = new ArrayList<>();
-		TrackGPS trackGPS = null;
-		TrackSegment trackSegment = null;
-		NodeList nTrackList = null;
-		NodeList nSegmentList = null;
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = null;
-		try {
-			builder = factory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		Document document = null;
+		
+		
 		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(homePath + File.separator + "Testdaten"))) {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			//for (Path file : stream) {
+			List<String> filenames = new ArrayList<String>(); 
 			for (Path file : stream) {
+				filenames.add(file.getFileName().toString());
+			}
+			
+			//for (Path file : stream) {
+			filenames.parallelStream().forEach(file -> {
+
+				
+				Document document = null;
+				List<TrackSegment> trackSegments = new ArrayList<>();
+				TrackGPS trackGPS = null;
+				TrackSegment trackSegment = null;
+				NodeList nTrackList = null;
+				NodeList nSegmentList = null;
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder builder = null;
+				
+				try {
+					builder = factory.newDocumentBuilder();
+				} catch (ParserConfigurationException e) {
+					e.printStackTrace();
+				}
+				
 				//System.out.println(file.getFileName());
 				//document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
 				/*if (!file.getFileName().toString().endsWith(".gpx")) {
 					break;
 				}*/
-				document = builder.parse(homePath + File.separator + "Testdaten" + File.separator+ file.getFileName());
+				try {
+					document = builder.parse(filepath + File.separator+ file);
+				} catch (SAXException | IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				document.getDocumentElement().normalize();
 				nTrackList = document.getElementsByTagName("trk");
 				nSegmentList = document.getElementsByTagName("trkpt");
@@ -136,39 +164,54 @@ public class ActivityList {
 					}
 				}
 
-			}
-		} catch (IOException | DirectoryIteratorException | SAXException ex) {
+			//}
+			 });
+		} catch (IOException | DirectoryIteratorException ex) {
 			System.err.println(ex);
 		}
 
 		return trackGPSs;
 	}
 
-	private static List<Activity> parseActivitiesXML() {
+	private List<Activity> parseActivitiesXML() {
 		List<Activity> activities = new ArrayList<>();
-		List<Lap> laps = new ArrayList<>();
-		List<Track> tracks = new ArrayList<>();
-		Activity activity = null;
-		Lap lap = null;
-		Track track = null;
-		NodeList nList = null;
-		NodeList lapList = null;
-		NodeList trackList = null;
-		int listLength = 0;
 
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder builder = null;
-
-		try {
-			builder = factory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		}
-		Document document = null;
+		
 		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
-		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(homePath + File.separator + "Testdaten"))) {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			//for (Path file : stream) {
+			List<String> filenames = new ArrayList<String>(); 
 			for (Path file : stream) {
-				activity = null;
+				filenames.add(file.getFileName().toString());
+			}
+			
+			//for (Path file : stream) {
+			filenames.parallelStream().forEach(file -> {
+
+				 Document document = null;	
+				 List<Lap> laps = new ArrayList<>();
+					List<Track> tracks = new ArrayList<>();
+					Activity activity = null;
+					Lap lap = null;
+					Track track = null;
+					NodeList nList = null;
+					NodeList lapList = null;
+					NodeList trackList = null;
+					int listLength = 0;
+
+					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder builder = null;
+
+					try {
+						builder = factory.newDocumentBuilder();
+					} catch (ParserConfigurationException e) {
+						e.printStackTrace();
+					}
+				 
+				 
+				 
+				 
+				 activity = null;
 				lap = null;
 				track = null;
 				nList = null;
@@ -177,7 +220,15 @@ public class ActivityList {
 				/*if (!file.getFileName().toString().endsWith(".tcx")) {
 					break;
 				}*/
-				document = builder.parse(homePath + File.separator + "Testdaten" + File.separator+ file.getFileName());
+				try {
+					document = builder.parse(filepath + File.separator+ file);
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				document.getDocumentElement().normalize();
 
 				nList = document.getElementsByTagName("Activity");
@@ -370,8 +421,9 @@ public class ActivityList {
 					}
 					activities.add(activity);
 				}
-			}
-		} catch (IOException | DirectoryIteratorException | SAXException ex) {
+			//}
+			 });
+		} catch (IOException | DirectoryIteratorException ex) {
 			System.err.println(ex);
 		}
 		return activities;

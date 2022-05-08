@@ -11,6 +11,8 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.DefaultXYDataset;
 import org.jfree.data.xy.XYDataset;
+
+import controller.Controller;
 import sports.Activity;
 import sports.TrackGPS;
 
@@ -56,7 +58,7 @@ public class GUI extends JFrame {
 	JTable table;
 	DefaultTableModel model;
 	JPanel lowerPanel;
-	JPanel sidePanel;
+	JPanel lowerDetailPanel;
 	ChartPanel chartPanel;
 	Collection<Activity> activities;
 	
@@ -64,6 +66,8 @@ public class GUI extends JFrame {
 	JCheckBoxMenuItem bpm;
 	JCheckBoxMenuItem speed;
 	DefaultCategoryDataset cd;
+	
+	Controller parent = null;
 	
 	String[] columnNames = new String[]{"name","activity","date","distance","time","speed","bpm"};
 	
@@ -97,9 +101,15 @@ public class GUI extends JFrame {
 				false);
 		chartPanel.setChart(chart);
 	}
+	
+	public void setController(Controller parent) {
+		this.parent = parent;
+	}
+	
+	
 
 	public GUI() {
-	
+		
 		setTitle("GPSRunner");
 		setSize(500,500);
 		//setSize(new Dimension());
@@ -114,7 +124,7 @@ public class GUI extends JFrame {
 		table.setFillsViewportHeight(true);
 		upperPanel = new JScrollPane(table);
 		lowerPanel = new JPanel();
-		sidePanel = new JPanel();
+		lowerDetailPanel = new JPanel();
 		
 		cd = new DefaultCategoryDataset();
 		chartPanel= new ChartPanel(null);
@@ -122,9 +132,8 @@ public class GUI extends JFrame {
 		lowerPanel.add(chartPanel);
 		
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, lowerPanel);
-		JSplitPane sp2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sp, sidePanel);
 		
-		this.add(sp2, BorderLayout.CENTER);
+		this.add(sp, BorderLayout.CENTER);
 		
 		//menu elements
 		JMenuBar menu = new JMenuBar();
@@ -137,7 +146,7 @@ public class GUI extends JFrame {
 		JMenu columns = new JMenu("Columns");
 
 		//submenu(s) elements
-		JMenu open = new JMenu("Open...");
+		JMenu open = new JMenu("Directory...");
 		
 		menu.add(file);
 		menu.add(tracks);
@@ -150,12 +159,17 @@ public class GUI extends JFrame {
 		setJMenuBar(menu);
 		
 		//File
-		JMenuItem neo = new JMenuItem("New");
-		JMenuItem tcx = new JMenuItem(".tcx");
+		
+		JMenuItem tcx = new JMenuItem("change directory");
 		tcx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test");
-			    chooser.showOpenDialog(null);
+			    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				chooser.showOpenDialog(null);
+				if (chooser.getSelectedFile() != null) {
+				    System.out.println(chooser.getSelectedFile().getPath());
+				    parent.setPath(chooser.getSelectedFile().getPath());
+			 }
 			}
 		});
 		
@@ -229,7 +243,6 @@ public class GUI extends JFrame {
 		graphFilter[2] = new Filter(speed.getLabel(), speed.getState(), speed);
 
 		//add to menu-elems
-		file.add(neo);
 		file.add(open);
 		tracks.add(all);
 		tracks.add(running);
@@ -356,14 +369,14 @@ public class GUI extends JFrame {
 					bpm.setState(false);
 					speed.setState(true);
 				}
-				for(int i = 0; i < sportsFilter.length; i++) {
-					System.out.println(sportsFilter[i].name+ " | "+sportsFilter[i].state);
-				}
-				
-				for(int i = 0; i < distanceFilter.length; i++) {
-					System.out.println(distanceFilter[i].name+ " | "+distanceFilter[i].state);
-				}
-				System.out.println();
+//				for(int i = 0; i < sportsFilter.length; i++) {
+//					System.out.println(sportsFilter[i].name+ " | "+sportsFilter[i].state);
+//				}
+//				
+//				for(int i = 0; i < distanceFilter.length; i++) {
+//					System.out.println(distanceFilter[i].name+ " | "+distanceFilter[i].state);
+//				}
+//				System.out.println();
 				refreshGui();
 			}
 		};
@@ -405,4 +418,6 @@ public class GUI extends JFrame {
 			this.state = state;
 		}
 	}
+	
+	
 }
