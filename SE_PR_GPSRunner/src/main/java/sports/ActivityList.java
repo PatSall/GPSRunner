@@ -2,6 +2,8 @@ package sports;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+
+import controller.Controller;
 import gui.*;
 import sports.*;
 
@@ -15,18 +17,24 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class ActivityList {
 	
-	private final List <Activity> activities;
+	private List <Activity> activities;
 	private final List <TrackGPS> trackGPS;
-	public static String homePath = System.getProperty("user.home");
+	//public static String homePath = System.getProperty("user.home");
+	private Controller parent;
 
-	public String filepath = Paths.get(homePath + File.separator + "Testdaten").toString();	
+	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();	
 	
+	//TODO
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
-		//TODO neu einlesen
+//		this.parseActivitiesXML();
+//		parent.setActivities();
+	}
+	
+	public void setController(Controller parent) {
+		this.parent = parent;
 	}
 	
 	public ActivityList() {
@@ -36,7 +44,7 @@ public class ActivityList {
 		activities = parseActivitiesXML();
 		
 		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
-		System.out.println(homePath);
+		//System.out.println(homePath);
 
 		for (int j= 0; j < activities.size(); j++) {
 			//System.out.println(activities.get(j).getActivity());
@@ -52,7 +60,7 @@ public class ActivityList {
 
 		trackGPS = parseTracksGPS();
 		for (TrackGPS t : trackGPS) {
-			//System.out.println(trackGPS.toString());
+			System.out.println(trackGPS.toString());
 			//System.out.println();
 			//System.out.println(t.toString());
 			//System.out.println(t.getName());
@@ -61,7 +69,6 @@ public class ActivityList {
 
 	private List<TrackGPS> parseTracksGPS() {
 		List<TrackGPS> trackGPSs = new ArrayList<>();
-		
 		
 		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
@@ -435,5 +442,9 @@ public class ActivityList {
 	
 	public List <TrackGPS> getTrackGPS(){
 		return this.trackGPS;
+	}
+	
+	public void setActivities(List<Activity> activities) {
+		this.activities = activities;
 	}
 }

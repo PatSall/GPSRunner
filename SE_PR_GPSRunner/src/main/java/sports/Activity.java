@@ -69,6 +69,7 @@ public class Activity {
             calories += laps.get(i).getCalories();
 //            if(laps.get(i).getAverageHeartRateBpm() != null) {
             	averageHeartRateBpm += laps.get(i).getAverageHeartRateBpm();
+            	System.out.println(lapCounter);
 //            }
             if (laps.get(i).getMaximumHeartRateBpm() != null && maximumHeartRateBpm < laps.get(i).getMaximumHeartRateBpm()) {
                 maximumHeartRateBpm = laps.get(i).getMaximumHeartRateBpm();
