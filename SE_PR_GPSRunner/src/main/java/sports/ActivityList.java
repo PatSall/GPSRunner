@@ -52,7 +52,7 @@ public class ActivityList {
 
 		trackGPS = parseTracksGPS();
 		for (TrackGPS t : trackGPS) {
-			System.out.println(trackGPS.toString());
+			//System.out.println(trackGPS.toString());
 			//System.out.println();
 			//System.out.println(t.toString());
 			//System.out.println(t.getName());
