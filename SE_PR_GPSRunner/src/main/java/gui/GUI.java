@@ -19,6 +19,8 @@ import sports.TrackGPS;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JCheckBoxMenuItem;
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.Popup;
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.DefaultTableModel;
 //import javax.swing.plaf.synth.ColorType;
 
@@ -49,6 +53,7 @@ public class GUI extends JFrame {
 	
 	List<Activity> activityList;
 	List<TrackGPS> trackGPS;
+	Object[][] actualData;
 	
 	Filter[] sportsFilter = new Filter[6];
 	Filter[] distanceFilter = new Filter[10];
@@ -106,8 +111,6 @@ public class GUI extends JFrame {
 		this.parent = parent;
 	}
 	
-	
-
 	public GUI() {
 		
 		setTitle("GPSRunner");
@@ -117,6 +120,8 @@ public class GUI extends JFrame {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		setLayout(new BorderLayout());
+		//Vielleicht Umstieg auf...
+		//setLayout(new CardLayout());
 
 		model = new DefaultTableModel(new Object[0][7], columnNames);
 		
@@ -125,6 +130,8 @@ public class GUI extends JFrame {
 		upperPanel = new JScrollPane(table);
 		lowerPanel = new JPanel();
 		lowerDetailPanel = new JPanel();
+		
+		table.addMouseListener(click());
 		
 		cd = new DefaultCategoryDataset();
 		chartPanel= new ChartPanel(null);
@@ -268,6 +275,42 @@ public class GUI extends JFrame {
 		open.add(tcx);
 	}
 	
+	public MouseListener click() {
+		return new MouseListener() {
+			@Override
+			public void mousePressed(MouseEvent me) {
+			    JTable table =(JTable) me.getSource();
+			    Point p = me.getPoint();
+			    int row = table.rowAtPoint(p);
+			    System.out.println(row);
+			    getEvent((String) actualData[row][0]);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+			}
+		};
+	}
+	
 	public void refreshGui() {
 		model.setDataVector(table(), columnNames);
 		model.fireTableChanged(null);
@@ -295,6 +338,7 @@ public class GUI extends JFrame {
 				counter++;
 			}
 		}
+		actualData = data;
 		return data;
 	}
 	
@@ -382,6 +426,21 @@ public class GUI extends JFrame {
 		};
 	}
 	
+	//TODO
+	public void getEvent(String name) {
+		for(Activity a : activityList) {
+			if(name.equals(a.getId())) {
+				//return Trackpoints
+				System.out.println(name);
+			}
+		}
+	}
+	
+	public void setActivities(List<Activity> activityList) {
+		this.activityList = activityList; 
+		refreshGui();
+	}
+	
 	public class Filter{
 		private String name;
 		private boolean state;
@@ -418,6 +477,4 @@ public class GUI extends JFrame {
 			this.state = state;
 		}
 	}
-	
-	
 }

@@ -27,4 +27,9 @@ public class Controller {
 	public void setPath(String filepath) {
 		this.activities.setFilepath(filepath);
 	}
+	
+	public void setActivities() {
+		this.activities.getActivities();
+		this.view.setActivities(activities.getActivities());;
+	}
 }
