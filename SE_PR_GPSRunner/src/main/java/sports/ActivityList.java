@@ -2,13 +2,12 @@ package sports;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import controller.Controller;
-import gui.*;
-import sports.*;
 
 import javax.xml.parsers.*;
-import java.awt.*;
 import java.io.*;
 import java.nio.file.*;
 import java.sql.Timestamp;
@@ -20,7 +19,7 @@ import java.util.List;
 public class ActivityList {
 	
 	private List <Activity> activities;
-	private final List <TrackGPS> trackGPS;
+	private List <TrackGPS> trackGPS;
 	//public static String homePath = System.getProperty("user.home");
 	private Controller parent;
 
@@ -41,35 +40,35 @@ public class ActivityList {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		/*final List<Activity>*/ 
 		
-		activities = parseActivitiesXML();
+		//activities = parseTCX();
+		activities = parseSaxTCX();
 		
 		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
 		//System.out.println(homePath);
 
-		for (int j= 0; j < activities.size(); j++) {
-			//System.out.println(activities.get(j).getActivity());
+		/*for (int j= 0; j < activities.size(); j++) {
+			System.out.println(activities.get(j).getId());
 			for (int i = 0; i < activities.get(j).getLap().size(); i++) {
 				//System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
 				//System.out.println(activities.get(j).getLap().get(i).getStartTime());
 				//System.out.println(activities.get(j).getLap().get(i).getCalories());
 				for (int k = 0; k < activities.get(j).getLap().get(i).getTrack().size(); k++) {
-					//System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getDistanceMetersTracks());
+					System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getTime());
 				}
 			}
-		}
+		}*/
 
-		trackGPS = parseTracksGPS();
-		for (TrackGPS t : trackGPS) {
+		trackGPS = parseGPX();
+		//for (TrackGPS t : trackGPS) {
 			//System.out.println(trackGPS.toString());
 			//System.out.println();
 			//System.out.println(t.toString());
 			//System.out.println(t.getName());
-		}
+		//}
 	}
 
-	private List<TrackGPS> parseTracksGPS() {
+	private List<TrackGPS> parseGPX() {
 		List<TrackGPS> trackGPSs = new ArrayList<>();
-		
 		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			//for (Path file : stream) {
@@ -180,10 +179,9 @@ public class ActivityList {
 		return trackGPSs;
 	}
 
-	private List<Activity> parseActivitiesXML() {
+	private List<Activity> parseTCX() {
 		List<Activity> activities = new ArrayList<>();
 
-		
 		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			//for (Path file : stream) {
@@ -191,7 +189,6 @@ public class ActivityList {
 			for (Path file : stream) {
 				filenames.add(file.getFileName().toString());
 			}
-			
 			//for (Path file : stream) {
 			filenames.parallelStream().forEach(file -> {
 
@@ -435,14 +432,40 @@ public class ActivityList {
 		}
 		return activities;
 	}
-	
-	public List <Activity> getActivities(){
+
+
+	public List<Activity> parseSaxTCX () {
+
+		List<Activity> activities = new ArrayList<>();
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = null;
+		Activity activity = null;
+
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			saxParser = factory.newSAXParser();
+			for (Path file : stream) {
+				if (file.getFileName().toString().endsWith(".tcx")) {
+					MapActivityObjectHandlerSax handlerSax = new MapActivityObjectHandlerSax();
+					saxParser.parse(file.toString(), handlerSax);
+					activity = handlerSax.getActivityResult();
+					activities.add(activity);
+				}
+			}
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		} catch (SAXException | IOException e) {
+			throw new RuntimeException(e);
+		}
+		return activities;
+	}
+	public List<Activity> getActivities () {
 		return this.activities;
 	}
-	
-	public List <TrackGPS> getTrackGPS(){
+
+	public List<TrackGPS> getTrackGPS () {
 		return this.trackGPS;
 	}
+
 	
 	public void setActivities(List<Activity> activities) {
 		this.activities = activities;
