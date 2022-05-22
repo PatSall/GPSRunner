@@ -470,13 +470,16 @@ public class GUI extends JFrame {
 						if(track.getHeartRateBpm() != null)
 							actualDetail[position][3] = track.getHeartRateBpm();
 						
-						// SUSI | Extension != null aber Instanzvariablen == null
+
 						if(track.getExtension() != null) {
-							System.out.println(track.getExtension());
-//							actualDetail[position][4] = Math.round(track.getExtension().getSpeed()*100)/100.0;
-//							actualDetail[position][5] = track.getExtension().getRunCadence();
+							if(track.getExtension().getSpeed() != null) {
+								actualDetail[position][4] = Math.round(track.getExtension().getSpeed() * 100) / 100.0;
+							}
+							if(track.getExtension().getRunCadence() != null) {
+								actualDetail[position][5] = track.getExtension().getRunCadence();
+							}
 						}
-						// SUSI | Position == null
+
 						System.out.println(track.getPosition());
 						if(track.getPosition() != null) {
 							actualDetail[position][6] = track.getPosition().getLongitudeDegrees();

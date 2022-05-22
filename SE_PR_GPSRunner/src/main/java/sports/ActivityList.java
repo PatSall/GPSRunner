@@ -40,8 +40,8 @@ public class ActivityList {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		/*final List<Activity>*/ 
 		
-		activities = parseTCX();
-//		activities = parseSaxTCX();
+//		activities = parseTCX();
+		activities = parseSaxTCX();
 		
 		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
 		//System.out.println(homePath);
@@ -456,6 +456,10 @@ public class ActivityList {
 		} catch (SAXException | IOException e) {
 			throw new RuntimeException(e);
 		}
+		//Parser in einen Task starten , aktivitylist in einen task einlest , liste aktuallisiert
+		//gui Message achtung neue liste arbiete mit dieser - methode in main , parentObjekt , Parser , pro File
+		// oder gui starten und dann einlesen
+		// zusäzliches Parse und liste zusammenbaut
 		return activities;
 	}
 	public List<Activity> getActivities () {

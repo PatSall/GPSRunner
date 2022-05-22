@@ -169,11 +169,11 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
             return;
         }
         if (qName.equalsIgnoreCase("LatitudeDegrees")) {
-            currentPosition.setLatitudeDegrees(Double.parseDouble(currentValue.toString()));
+            currentTrack.getPosition().setLatitudeDegrees(Double.parseDouble(currentValue.toString()));
             return;
         }
         if (qName.equalsIgnoreCase("LongitudeDegrees")) {
-            currentPosition.setLongitudeDegrees(Double.parseDouble(currentValue.toString()));
+            currentTrack.getPosition().setLongitudeDegrees(Double.parseDouble(currentValue.toString()));
             return;
         }
         if (qName.equalsIgnoreCase("AltitudeMeters")) {
@@ -195,24 +195,24 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
         }
 
         if (qName.equalsIgnoreCase("Speed")) {
-            currentExtension.setSpeed(Double.parseDouble(currentValue.toString()));
+            currentTrack.getExtension().setSpeed(Double.parseDouble(currentValue.toString()));
             return;
         }
         if (qName.equalsIgnoreCase("RunCadence")) {
-            currentExtension.setRunCadence(Integer.parseInt(currentValue.toString()));
+            currentTrack.getExtension().setRunCadence(Integer.parseInt(currentValue.toString()));
             return;
         }
 
-//        if (qName.equalsIgnoreCase("Track")) {
-//            currentTrack.setPosition(positions);
-//            currentTrack.setExtension(extensions);
-//            tracks.add(currentTrack);
-//        }
+      /*if (qName.equalsIgnoreCase("Track")) {
+            currentTrack.setPosition(positions);
+            currentTrack.setExtension(extensions);
+            tracks.add(currentTrack);
+        }
 
-//        if (qName.equalsIgnoreCase("Lap")) {
-//            currentLap.setTrack(tracks);
-//            laps.add(currentLap);
-//        }
+        if (qName.equalsIgnoreCase("Lap")) {
+            currentLap.setTrack(tracks);
+            laps.add(currentLap);
+        }*/
 
         if (qName.equalsIgnoreCase("Activity")) {
             currentActivity.setLap(laps);
