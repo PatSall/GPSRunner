@@ -40,8 +40,8 @@ public class ActivityList {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		/*final List<Activity>*/ 
 		
-		//activities = parseTCX();
-		activities = parseSaxTCX();
+		activities = parseTCX();
+//		activities = parseSaxTCX();
 		
 		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
 		//System.out.println(homePath);
@@ -365,7 +365,7 @@ public class ActivityList {
 										Element longitudeDegreesElement = (Element) tElement.getElementsByTagName("LongitudeDegrees").item(j);										
 										if (latitudeDegreesElement != null && longitudeDegreesElement != null) {
 											if (!latitudeDegreesElement.getTextContent().isEmpty() && !longitudeDegreesElement.getTextContent().isEmpty()) {
-												track.addPosition(new Position(
+												track.setPosition(new Position(
 														Double.parseDouble(latitudeDegreesElement.getTextContent()),
 														Double.parseDouble(longitudeDegreesElement.getTextContent())));
 											}
@@ -403,11 +403,11 @@ public class ActivityList {
 										if (speedElement != null) {
 											if (!speedElement.getTextContent().isEmpty()) {
 												if (runCadenceElement != null) {
-													track.addExtension(new Extension(
+													track.setExtension(new Extension(
 															Double.parseDouble(speedElement.getTextContent()),
 															Integer.parseInt(runCadenceElement.getTextContent())));
 												} else {
-													track.addExtension(new Extension(
+													track.setExtension(new Extension(
 															Double.parseDouble(speedElement.getTextContent()), 0));
 												}
 											}

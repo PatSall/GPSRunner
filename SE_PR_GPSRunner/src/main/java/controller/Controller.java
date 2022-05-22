@@ -14,6 +14,8 @@ public class Controller {
 		
 		view.setActivityList(activities.getActivities());
 		view.setTrackGPS(activities.getTrackGPS());
+		
+		
 	}
 
 	public ActivityList getActivities() {
@@ -30,6 +32,6 @@ public class Controller {
 	
 	public void setActivities() {
 		this.activities.getActivities();
-		this.view.setActivities(activities.getActivities());;
+		this.view.setActivities(activities.getActivities());
 	}
 }
