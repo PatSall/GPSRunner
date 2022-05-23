@@ -40,7 +40,7 @@ public class ActivityList {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		/*final List<Activity>*/ 
 		
-		//activities = parseTCX();
+//		activities = parseTCX();
 		activities = parseSaxTCX();
 		
 		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
@@ -365,7 +365,7 @@ public class ActivityList {
 										Element longitudeDegreesElement = (Element) tElement.getElementsByTagName("LongitudeDegrees").item(j);										
 										if (latitudeDegreesElement != null && longitudeDegreesElement != null) {
 											if (!latitudeDegreesElement.getTextContent().isEmpty() && !longitudeDegreesElement.getTextContent().isEmpty()) {
-												track.addPosition(new Position(
+												track.setPosition(new Position(
 														Double.parseDouble(latitudeDegreesElement.getTextContent()),
 														Double.parseDouble(longitudeDegreesElement.getTextContent())));
 											}
@@ -403,11 +403,11 @@ public class ActivityList {
 										if (speedElement != null) {
 											if (!speedElement.getTextContent().isEmpty()) {
 												if (runCadenceElement != null) {
-													track.addExtension(new Extension(
+													track.setExtension(new Extension(
 															Double.parseDouble(speedElement.getTextContent()),
 															Integer.parseInt(runCadenceElement.getTextContent())));
 												} else {
-													track.addExtension(new Extension(
+													track.setExtension(new Extension(
 															Double.parseDouble(speedElement.getTextContent()), 0));
 												}
 											}
@@ -456,6 +456,10 @@ public class ActivityList {
 		} catch (SAXException | IOException e) {
 			throw new RuntimeException(e);
 		}
+		//Parser in einen Task starten , aktivitylist in einen task einlest , liste aktuallisiert
+		//gui Message achtung neue liste arbiete mit dieser - methode in main , parentObjekt , Parser , pro File
+		// oder gui starten und dann einlesen
+		// zusäzliches Parse und liste zusammenbaut
 		return activities;
 	}
 	public List<Activity> getActivities () {

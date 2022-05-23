@@ -10,13 +10,13 @@ public class Track {
     private  Double altitudeMeters;
     private  Double distanceMetersTracks;
     private  Integer heartRateBpm;
-    private List<Position> position;
-    private List<Extension> extension;
+    private Position position;
+    private Extension extension;
 
 
     public Track() {
-        this.position = new ArrayList<>();
-        this.extension = new ArrayList<>();
+        this.position = new Position();
+        this.extension = new Extension();
     }
 
     public Track(LocalDateTime time, Double latitudeDegrees, Double longitudeDegrees, Double altitudeMeters, Double distanceMeters, Integer heartRateBpm, Double speed, Integer runCadence) {
@@ -25,8 +25,8 @@ public class Track {
         this.altitudeMeters = altitudeMeters;
         this.distanceMetersTracks = distanceMeters;
         this.heartRateBpm = heartRateBpm;
-        this.position = new ArrayList<>();
-        this.extension = new ArrayList<>();
+        this.position = new Position();
+        this.extension = new Extension();
     }
 
     public Track(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod, Timestamp time, Double latitudeDegrees, Double latitudeDegrees1, Double altitudeMeters, Double distanceMeters1, Integer heartRateBpm, Double speed, Integer runCadence) {
@@ -36,8 +36,8 @@ public class Track {
         this.altitudeMeters = altitudeMeters;
         this.distanceMetersTracks = distanceMeters1;
         this.heartRateBpm = heartRateBpm;
-        this.position = new ArrayList<>();
-        this.extension = new ArrayList<>();
+        this.position = new Position();
+        this.extension = new Extension();
 
     }
 
@@ -77,29 +77,29 @@ public class Track {
     }
 
 
-    public List<Position> getPosition() {
+    public Position getPosition() {
         return position;
     }
 
-    public void setPosition(List<Position> position) {
+    public void setPosition(Position position) {
         this.position = position;
     }
 
-    public void addPosition(Position trackpoint) {
-        this.position.add(trackpoint);
-    }
+//    public void addPosition(Position trackpoint) {
+//        this.position.add(trackpoint);
+//    }
 
-    public List<Extension> getExtension() {
+    public Extension getExtension() {
         return extension;
     }
 
-    public void setExtension(List<Extension> extension) {
+    public void setExtension(Extension extension) {
         this.extension = extension;
     }
 
-    public void addExtension(Extension trackpoint) {
-        this.extension.add(trackpoint);
-    }
+//    public void addExtension(Extension trackpoint) {
+//        this.extension.add(trackpoint);
+//    }
 
     @Override
     public String toString() {

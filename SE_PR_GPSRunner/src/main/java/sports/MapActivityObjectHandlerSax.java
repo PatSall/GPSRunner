@@ -21,10 +21,10 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
     List<Track> tracks;
     Track currentTrack;
 
-    List<Position> positions;
+    Position positions;
     Position currentPosition;
 
-    List<Extension> extensions;
+    Extension extensions;
     Extension currentExtension;
 
     boolean lapDistanceMeters;
@@ -90,15 +90,15 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
             currentTrack = new Track();
             tracks.add(currentTrack);
             currentLap.setTrack(tracks);
-            positions = new ArrayList<>();
-            extensions = new ArrayList<>();
+            positions = new Position();
+            extensions = new Extension();
             return;
         }
 
 
         if (qName.equalsIgnoreCase("Position")) {
             currentPosition = new Position();
-            positions.add(currentPosition);
+//            positions.add(currentPosition);
             currentTrack.setPosition(positions);
             return;
         }
@@ -107,7 +107,7 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
 
         if (qName.equalsIgnoreCase("Extensions")) {
             currentExtension = new Extension();
-            extensions.add(currentExtension);
+//            extensions.add(currentExtension);
             currentTrack.setExtension(extensions);
         }
 
@@ -169,11 +169,11 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
             return;
         }
         if (qName.equalsIgnoreCase("LatitudeDegrees")) {
-            currentPosition.setLatitudeDegrees(Double.parseDouble(currentValue.toString()));
+            currentTrack.getPosition().setLatitudeDegrees(Double.parseDouble(currentValue.toString()));
             return;
         }
         if (qName.equalsIgnoreCase("LongitudeDegrees")) {
-            currentPosition.setLongitudeDegrees(Double.parseDouble(currentValue.toString()));
+            currentTrack.getPosition().setLongitudeDegrees(Double.parseDouble(currentValue.toString()));
             return;
         }
         if (qName.equalsIgnoreCase("AltitudeMeters")) {
@@ -195,11 +195,11 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
         }
 
         if (qName.equalsIgnoreCase("Speed")) {
-            currentExtension.setSpeed(Double.parseDouble(currentValue.toString()));
+            currentTrack.getExtension().setSpeed(Double.parseDouble(currentValue.toString()));
             return;
         }
         if (qName.equalsIgnoreCase("RunCadence")) {
-            currentExtension.setRunCadence(Integer.parseInt(currentValue.toString()));
+            currentTrack.getExtension().setRunCadence(Integer.parseInt(currentValue.toString()));
             return;
         }
 

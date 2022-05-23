@@ -93,7 +93,7 @@ public class Activity {
     	} else if (graphFilter[1].getState()) { //max bpm
     		return (double) this.averageLap(this.getLap()).getMaximumHeartRateBpm();
     	} else if(graphFilter[2].getState()) { //speed
-    		return this.averageLap(this.getLap()).getMaximumSpeed();
+    		return this.averageLap(this.getLap()).getMaximumSpeed()*60;
     	}
     	return 0.0;
     }

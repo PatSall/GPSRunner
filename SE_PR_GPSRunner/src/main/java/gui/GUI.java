@@ -7,13 +7,13 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.DefaultXYDataset;
-import org.jfree.data.xy.XYDataset;
 
 import controller.Controller;
 import sports.Activity;
+import sports.Extension;
+import sports.Lap;
+import sports.Track;
 import sports.TrackGPS;
 
 import java.awt.*;
@@ -23,9 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JCheckBoxMenuItem;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 //import java.io.File;
@@ -41,9 +39,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.Popup;
-import javax.swing.event.MouseInputAdapter;
 import javax.swing.table.DefaultTableModel;
 //import javax.swing.plaf.synth.ColorType;
 
@@ -54,16 +51,21 @@ public class GUI extends JFrame {
 	List<Activity> activityList;
 	List<TrackGPS> trackGPS;
 	Object[][] actualData;
+	Object[][] actualDetail;
 	
 	Filter[] sportsFilter = new Filter[6];
 	Filter[] distanceFilter = new Filter[10];
 	Filter[] graphFilter = new Filter[3];
 	
+	JTabbedPane tabbedPanel;
 	JScrollPane upperPanel;
 	JTable table;
 	DefaultTableModel model;
 	JPanel lowerPanel;
-	JPanel lowerDetailPanel;
+	JScrollPane lowerDetailPanel;
+	JPanel lowerMapPanel;
+	JTable detailTable;
+	DefaultTableModel detailModel;
 	ChartPanel chartPanel;
 	Collection<Activity> activities;
 	
@@ -74,9 +76,11 @@ public class GUI extends JFrame {
 	
 	Controller parent = null;
 	
-	String[] columnNames = new String[]{"name","activity","date","distance","time","speed","bpm"};
+	String[] columnNames = new String[]{"name","activity","date","distance in meter","time","meters per minute","bpm"};
+	String[] detailColumnNames = new String[] {"distancemeter tracks","altitude meters","time","bpm","meters per second","Cadence","longitude", "latitude"};
 	
-	public void updateChart(Collection<Activity> activities) {
+	//Standardisierte Einheiten!
+	public void updateChart(Collection<Activity> activities/*, Collection<TrackGPS> trackGPS*/) {
 		this.activities = activities;
 		cd.clear();
 		
@@ -91,7 +95,7 @@ public class GUI extends JFrame {
 				} else if(graphFilter[i].getName().equals("bpm")) {
 					yAxe = "Beats per Minute";
 				} else if(graphFilter[i].getName().equals("speed")) {
-					yAxe = "Miles per Hour";
+					yAxe = "Meters per Minute";
 				}
 			}
 		}
@@ -111,6 +115,7 @@ public class GUI extends JFrame {
 		this.parent = parent;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public GUI() {
 		
 		setTitle("GPSRunner");
@@ -124,12 +129,17 @@ public class GUI extends JFrame {
 		//setLayout(new CardLayout());
 
 		model = new DefaultTableModel(new Object[0][7], columnNames);
+		detailModel = new DefaultTableModel(new Object[0][8], detailColumnNames);
 		
 		table = new JTable(model);
 		table.setFillsViewportHeight(true);
+		detailTable = new JTable(detailModel);
+		detailTable.setFillsViewportHeight(true);
 		upperPanel = new JScrollPane(table);
 		lowerPanel = new JPanel();
-		lowerDetailPanel = new JPanel();
+		lowerDetailPanel = new JScrollPane(detailTable);
+		lowerMapPanel = new JPanel();
+		tabbedPanel = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.WRAP_TAB_LAYOUT);
 		
 		table.addMouseListener(click());
 		
@@ -137,8 +147,12 @@ public class GUI extends JFrame {
 		chartPanel= new ChartPanel(null);
 		chartPanel.setPreferredSize(new Dimension(650, 400));
 		lowerPanel.add(chartPanel);
+		tabbedPanel.addTab("Charts", lowerPanel);
+		tabbedPanel.addTab("Details", lowerDetailPanel);
+		tabbedPanel.addTab("Map", lowerMapPanel);
 		
-		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, lowerPanel);
+		
+		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, tabbedPanel);
 		
 		this.add(sp, BorderLayout.CENTER);
 		
@@ -166,7 +180,6 @@ public class GUI extends JFrame {
 		setJMenuBar(menu);
 		
 		//File
-		
 		JMenuItem tcx = new JMenuItem("change directory");
 		tcx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -248,6 +261,7 @@ public class GUI extends JFrame {
 		graphFilter[0] = new Filter(distance.getLabel(), distance.getState(), distance);
 		graphFilter[1] = new Filter(bpm.getLabel(), bpm.getState(), bpm);
 		graphFilter[2] = new Filter(speed.getLabel(), speed.getState(), speed);
+//		graphFilter
 
 		//add to menu-elems
 		file.add(open);
@@ -283,31 +297,23 @@ public class GUI extends JFrame {
 			    Point p = me.getPoint();
 			    int row = table.rowAtPoint(p);
 			    System.out.println(row);
-			    getEvent((String) actualData[row][0]);
+			    if(row != -1) {
+			    	getEvent((String) actualData[row][0]);
+			    	refreshDetails();
+			    }
 			}
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseClicked(MouseEvent e) {}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseReleased(MouseEvent e) {}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
+			public void mouseEntered(MouseEvent e) {}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-			}
+			public void mouseExited(MouseEvent e) {}
 		};
 	}
 	
@@ -315,6 +321,10 @@ public class GUI extends JFrame {
 		model.setDataVector(table(), columnNames);
 		model.fireTableChanged(null);
 		this.updateChart(activityList);
+	}
+	
+	public void refreshDetails() {
+		detailModel.setDataVector(actualDetail, detailColumnNames);
 	}
 	
 	public Object[][] table() {
@@ -332,8 +342,14 @@ public class GUI extends JFrame {
 				data[counter][1] = activityList.get(i).getActivity();
 				data[counter][2] = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime();			
 				data[counter][3] = Math.round(activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks()*100)/100.0;
-				data[counter][4] = activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds();
-				data[counter][5] = Math.round(activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*100)/100.0;
+				String minutes = "";
+				if(((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600)%1*60) < 10) {
+					minutes = "0"+ (int)((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600)%1*60);
+				} else {
+					minutes += (int)((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600)%1*60);
+				}
+				data[counter][4] = (int)(activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600) + ":"+ minutes;
+				data[counter][5] = Math.round((activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60)*100)/100.0;
 				data[counter][6] = activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
 				counter++;
 			}
@@ -358,7 +374,6 @@ public class GUI extends JFrame {
 		return new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
 				if(sportsFilter[0].button == e.getSource()) {
 					sportsFilter[0].setState(!sportsFilter[0].state);
 				} else if(sportsFilter[1].button == e.getSource()) {
@@ -413,14 +428,6 @@ public class GUI extends JFrame {
 					bpm.setState(false);
 					speed.setState(true);
 				}
-//				for(int i = 0; i < sportsFilter.length; i++) {
-//					System.out.println(sportsFilter[i].name+ " | "+sportsFilter[i].state);
-//				}
-//				
-//				for(int i = 0; i < distanceFilter.length; i++) {
-//					System.out.println(distanceFilter[i].name+ " | "+distanceFilter[i].state);
-//				}
-//				System.out.println();
 				refreshGui();
 			}
 		};
@@ -430,8 +437,57 @@ public class GUI extends JFrame {
 	public void getEvent(String name) {
 		for(Activity a : activityList) {
 			if(name.equals(a.getId())) {
-				//return Trackpoints
-				System.out.println(name);
+				List<Lap> list = a.getLap();
+				int counter = 0;
+				for(Lap l : list) {
+					counter += l.getTrack().size();
+//					for(Track t : l.getTrack()) {
+//						counter += t.getExtension().size();
+//						counter += t.getPosition().size();
+//					}
+				}
+				System.out.println(counter);
+				actualDetail = new Object[counter][8];
+				int position = 0;
+				for(Lap l : list) {
+					List<Track> temp = l.getTrack();
+					for(Track track : temp) {
+						
+						actualDetail[position][0] = null;
+						actualDetail[position][1] = null;
+						actualDetail[position][2] = null;
+						actualDetail[position][3] = null;
+						actualDetail[position][4] = null;
+						actualDetail[position][5] = null;
+						actualDetail[position][6] = null;
+						actualDetail[position][7] = null;
+						if(track.getDistanceMetersTracks() != null)
+							actualDetail[position][0] = Math.round(track.getDistanceMetersTracks()*100)/100.0;
+						if(track.getAltitudeMeters() != null)
+							actualDetail[position][1] = track.getAltitudeMeters();
+						if(track.getTime() != null)
+							actualDetail[position][2] = track.getTime();
+						if(track.getHeartRateBpm() != null)
+							actualDetail[position][3] = track.getHeartRateBpm();
+						
+
+						if(track.getExtension() != null) {
+							if(track.getExtension().getSpeed() != null) {
+								actualDetail[position][4] = Math.round(track.getExtension().getSpeed() * 100) / 100.0;
+							}
+							if(track.getExtension().getRunCadence() != null) {
+								actualDetail[position][5] = track.getExtension().getRunCadence();
+							}
+						}
+
+						System.out.println(track.getPosition());
+						if(track.getPosition() != null) {
+							actualDetail[position][6] = track.getPosition().getLongitudeDegrees();
+							actualDetail[position][7] = track.getPosition().getLatitudeDegrees();	
+						}
+						position++;
+					}
+				}
 			}
 		}
 	}
