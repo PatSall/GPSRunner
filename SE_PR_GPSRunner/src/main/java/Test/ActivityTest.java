@@ -7,6 +7,7 @@ import sports.Lap;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -61,20 +62,9 @@ class ActivityTest {
                 )
         );
         assertFalse(activity.showInGui(sportsFilter, distanceFilter));
+        assertFalse(activity.showInGui(distanceFilter, sportsFilter));
     }
 
-    /*
-    @Test //showInGraph
-    void graphTrue(){
-
-        var graphFilter = Arrays.asList(
-                new  GUI.Filter("run", true, ) //JCheckBoxMenuItem fehlt
-        );
-
-        var graph1 = new Activity();
-        assertEquals(graph1.showInGraph(graphFilter));
-    }
-*/
     @Test //averageLap
     void lap(){
 
@@ -89,7 +79,21 @@ class ActivityTest {
 
         assertEquals(lapList.get(0).getStartTime(), averageLap.getStartTime());
         assertEquals(lapList.stream().mapToDouble(Lap::getTotalTimeSeconds).sum(), averageLap.getTotalTimeSeconds());
+        assertEquals(lapList.stream().mapToDouble(Lap::getDistanceMetersTracks).sum(), averageLap.getDistanceMetersTracks());
+        assertEquals(lapList.stream().mapToDouble(Lap::getMaximumSpeed).max().getAsDouble(), averageLap.getMaximumSpeed());
+        assertEquals(lapList.stream().mapToInt(Lap::getCalories).sum(), averageLap.getCalories());
+        assertEquals(lapList.stream().mapToDouble(Lap::getAverageHeartRateBpm).average().getAsDouble()*100/100, averageLap.getAverageHeartRateBpm());
+        assertEquals(lapList.stream().mapToInt(Lap::getMaximumHeartRateBpm).max().getAsInt(), averageLap.getMaximumHeartRateBpm());
+
+
+        // Kontrolle der Testfälle:
         assertEquals(2151.76, averageLap.getTotalTimeSeconds());
+        assertEquals(15846.1, averageLap.getDistanceMetersTracks());
+        assertEquals(13.4, averageLap.getMaximumSpeed());
+        assertEquals(1433, averageLap.getCalories());
+        assertEquals(166.7, averageLap.getAverageHeartRateBpm());
+        assertEquals(182, averageLap.getMaximumHeartRateBpm());
+
 
 
     }
