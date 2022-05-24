@@ -11,7 +11,6 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import controller.Controller;
 import sports.Activity;
-import sports.Extension;
 import sports.Lap;
 import sports.Track;
 import sports.TrackGPS;
@@ -101,7 +100,7 @@ public class GUI extends JFrame {
 		}
 		for (int i = 0; i < activityList.size(); i++) {
 			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
-				cd.addValue(activityList.get(i).showInGraph(graphFilter),activityList.get(i).getId(), xAxe);
+				cd.addValue(activityList.get(i).showInGraph(graphFilter), activityList.get(i).getId(), xAxe);
 			}
 		}
 		
@@ -340,7 +339,7 @@ public class GUI extends JFrame {
 			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
 				data[counter][0] = activityList.get(i).getId();
 				data[counter][1] = activityList.get(i).getActivity();
-				data[counter][2] = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime();			
+				data[counter][2] = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime();
 				data[counter][3] = Math.round(activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks()*100)/100.0;
 				String minutes = "";
 				if(((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600)%1*60) < 10) {
@@ -493,7 +492,7 @@ public class GUI extends JFrame {
 	}
 	
 	public void setActivities(List<Activity> activityList) {
-		this.activityList = activityList; 
+		this.activityList = activityList;
 		refreshGui();
 	}
 	
