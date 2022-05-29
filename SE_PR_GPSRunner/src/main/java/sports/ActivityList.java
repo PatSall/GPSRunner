@@ -11,17 +11,19 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ActivityList {
-	
-	private List <Activity> activities;
-	private List <TrackGPS> trackGPS;
+
+	private List<Activity> activities;
+	private List<TrackGPS> trackGPS;
 	//public static String homePath = System.getProperty("user.home");
 	private Controller parent;
+	private ArrayList<FileTCX> tcxFiles;
 
-	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();	
-	
+	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();
+
 	public String getFilepath() {
 		return filepath;
 	}
@@ -34,19 +36,21 @@ public class ActivityList {
 //		this.parseActivitiesXML();
 //		parent.setActivities();
 	}
-	
+
 	public void setController(Controller parent) {
 		this.parent = parent;
 	}
-	
+
 	public ActivityList() {
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
-		/*final List<Activity>*/ 
-		
-//		activities = parseTCX();
+		/*final List<Activity>*/
+
+		//activities = parseTCX();
+		tcxFiles = parseSaxTCXTimeStamp();
 		activities = parseSaxTCX();
-		
-		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
+		//tcxFiles = parseDOMTCXTimeStamp();
+
+		System.out.println(new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime());
 		//System.out.println(homePath);
 
 		/*for (int j= 0; j < activities.size(); j++) {
@@ -63,10 +67,10 @@ public class ActivityList {
 
 		trackGPS = parseGPX();
 		//for (TrackGPS t : trackGPS) {
-			//System.out.println(trackGPS.toString());
-			//System.out.println();
-			//System.out.println(t.toString());
-			//System.out.println(t.getName());
+		//System.out.println(trackGPS.toString());
+		//System.out.println();
+		//System.out.println(t.toString());
+		//System.out.println(t.getName());
 		//}
 	}
 
@@ -75,15 +79,13 @@ public class ActivityList {
 		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			//for (Path file : stream) {
-			List<String> filenames = new ArrayList<String>(); 
+			List<String> filenames = new ArrayList<String>();
 			for (Path file : stream) {
 				filenames.add(file.getFileName().toString());
 			}
-			
+
 			//for (Path file : stream) {
 			filenames.parallelStream().forEach(file -> {
-
-				
 				Document document = null;
 				List<TrackSegment> trackSegments = new ArrayList<>();
 				TrackGPS trackGPS = null;
@@ -92,20 +94,15 @@ public class ActivityList {
 				NodeList nSegmentList = null;
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder builder = null;
-				
+
 				try {
 					builder = factory.newDocumentBuilder();
 				} catch (ParserConfigurationException e) {
 					e.printStackTrace();
 				}
-				
-				//System.out.println(file.getFileName());
-				//document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
-				/*if (!file.getFileName().toString().endsWith(".gpx")) {
-					break;
-				}*/
+
 				try {
-					document = builder.parse(filepath + File.separator+ file);
+					document = builder.parse(filepath + File.separator + file);
 				} catch (SAXException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -113,7 +110,7 @@ public class ActivityList {
 				document.getDocumentElement().normalize();
 				nTrackList = document.getElementsByTagName("trk");
 				nSegmentList = document.getElementsByTagName("trkpt");
-				
+
 				for (int temp = 0; temp < nTrackList.getLength(); temp++) {
 					Node node = nTrackList.item(temp);
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -135,8 +132,8 @@ public class ActivityList {
 											trackSegment.addTrackPoint(new TrackPoint(
 													Double.parseDouble(lElement.getElementsByTagName("ele")
 															.item(i).getTextContent()),
-											LocalDateTime.parse(lElement.getElementsByTagName("time")
-												.item(i).getTextContent().substring(0, 19))));
+													LocalDateTime.parse(lElement.getElementsByTagName("time")
+															.item(i).getTextContent().substring(0, 19))));
 										} else {
 											trackSegment.addTrackPoint(new TrackPoint(
 													Double.parseDouble(lElement.getElementsByTagName("ele")
@@ -144,8 +141,6 @@ public class ActivityList {
 										}
 									}
 								}
-								// System.out.println(lElement.getElementsByTagName("trkpt").item(i).getAttributes().getNamedItem("lon").getTextContent());
-
 								if (lElement.getElementsByTagName("trkpt").item(i).getAttributes()
 										.getNamedItem("lon") != null) {
 									if (!lElement.getElementsByTagName("trkpt").item(i).getAttributes()
@@ -172,13 +167,10 @@ public class ActivityList {
 						trackGPSs.add(trackGPS);
 					}
 				}
-
-			//}
-			 });
+			});
 		} catch (IOException | DirectoryIteratorException ex) {
 			System.err.println(ex);
 		}
-
 		return trackGPSs;
 	}
 
@@ -188,37 +180,35 @@ public class ActivityList {
 		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			//for (Path file : stream) {
-			List<String> filenames = new ArrayList<String>(); 
+			List<String> filenames = new ArrayList<String>();
 			for (Path file : stream) {
 				filenames.add(file.getFileName().toString());
 			}
 			//for (Path file : stream) {
 			filenames.parallelStream().forEach(file -> {
 
-				 Document document = null;	
-				 List<Lap> laps = new ArrayList<>();
-					List<Track> tracks = new ArrayList<>();
-					Activity activity = null;
-					Lap lap = null;
-					Track track = null;
-					NodeList nList = null;
-					NodeList lapList = null;
-					NodeList trackList = null;
-					int listLength = 0;
+				Document document = null;
+				List<Lap> laps = new ArrayList<>();
+				List<Track> tracks = new ArrayList<>();
+				Activity activity = null;
+				Lap lap = null;
+				Track track = null;
+				NodeList nList = null;
+				NodeList lapList = null;
+				NodeList trackList = null;
+				int listLength = 0;
 
-					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder builder = null;
+				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder builder = null;
 
-					try {
-						builder = factory.newDocumentBuilder();
-					} catch (ParserConfigurationException e) {
-						e.printStackTrace();
-					}
-				 
-				 
-				 
-				 
-				 activity = null;
+				try {
+					builder = factory.newDocumentBuilder();
+				} catch (ParserConfigurationException e) {
+					e.printStackTrace();
+				}
+
+
+				activity = null;
 				lap = null;
 				track = null;
 				nList = null;
@@ -228,7 +218,7 @@ public class ActivityList {
 					break;
 				}*/
 				try {
-					document = builder.parse(filepath + File.separator+ file);
+					document = builder.parse(filepath + File.separator + file);
 				} catch (SAXException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -239,7 +229,7 @@ public class ActivityList {
 				document.getDocumentElement().normalize();
 
 				nList = document.getElementsByTagName("Activity");
-				
+
 				listLength = nList.getLength();
 				for (int temp = 0; temp < listLength; temp++) {
 					Node node = nList.item(temp);
@@ -254,6 +244,7 @@ public class ActivityList {
 						lapList = ((Element) node).getElementsByTagName("Lap");
 
 						for (int i = 0; i < lapList.getLength(); i++) {
+						//	for (int i = 0; i < 1; i++) {
 							Node lapNode = lapList.item(i);
 
 							if (lapNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -289,24 +280,23 @@ public class ActivityList {
 											.isEmpty()) {
 										int k = 0;
 										if (lElement
-											.getElementsByTagName("DistanceMeters").item(i).getParentNode().equals(lapNode)) {
-										lap.setDistanceMetersTracks(Double.parseDouble(lElement
-												.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
+												.getElementsByTagName("DistanceMeters").item(i).getParentNode().equals(lapNode)) {
+											lap.setDistanceMetersTracks(Double.parseDouble(lElement
+													.getElementsByTagName("DistanceMeters").item(i).getTextContent()));
 										} else {
-											    k = i;
-												while (!lElement
-														.getElementsByTagName("DistanceMeters").item(k).getParentNode().equals(lapNode)) {
-													k++;
-												}
-												if (lElement
-													.getElementsByTagName("DistanceMeters").item(k) != null)
-												{
-													lap.setDistanceMetersTracks(Double.parseDouble(lElement
-															.getElementsByTagName("DistanceMeters").item(k).getTextContent()));
-												}
+											k = i;
+											while (!lElement
+													.getElementsByTagName("DistanceMeters").item(k).getParentNode().equals(lapNode)) {
+												k++;
 											}
+											if (lElement
+													.getElementsByTagName("DistanceMeters").item(k) != null) {
+												lap.setDistanceMetersTracks(Double.parseDouble(lElement
+														.getElementsByTagName("DistanceMeters").item(k).getTextContent()));
+											}
+										}
+									}
 								}
-							}
 								if (lElement.getElementsByTagName("Calories").item(i) != null) {
 									if (!lElement.getElementsByTagName("Calories").item(i).getTextContent().isEmpty()) {
 										lap.setCalories(Integer.parseInt(
@@ -352,20 +342,20 @@ public class ActivityList {
 									if (trackNode.getNodeType() == Node.ELEMENT_NODE) {
 										//Element tElement = (Element) node;
 										Element tElement = (Element) lapNode;
-								
+
 										// Create new Track Object
-										track = new Track();		
-										
-										Element timeElement = (Element) tElement.getElementsByTagName("Time").item(j);									
+										track = new Track();
+
+										Element timeElement = (Element) tElement.getElementsByTagName("Time").item(j);
 										if (timeElement != null) {
 											if (!timeElement.getTextContent().isEmpty()) {
 												track.setTime(LocalDateTime.parse(timeElement.getTextContent().substring(0, 19)));
 											}
 										}
-										
-										
+
+
 										Element latitudeDegreesElement = (Element) tElement.getElementsByTagName("LatitudeDegrees").item(j);
-										Element longitudeDegreesElement = (Element) tElement.getElementsByTagName("LongitudeDegrees").item(j);										
+										Element longitudeDegreesElement = (Element) tElement.getElementsByTagName("LongitudeDegrees").item(j);
 										if (latitudeDegreesElement != null && longitudeDegreesElement != null) {
 											if (!latitudeDegreesElement.getTextContent().isEmpty() && !longitudeDegreesElement.getTextContent().isEmpty()) {
 												track.setPosition(new Position(
@@ -373,25 +363,25 @@ public class ActivityList {
 														Double.parseDouble(longitudeDegreesElement.getTextContent())));
 											}
 										}
-										
-										Element altitudeMetersElement = (Element) tElement.getElementsByTagName("AltitudeMeters").item(j);										
+
+										Element altitudeMetersElement = (Element) tElement.getElementsByTagName("AltitudeMeters").item(j);
 										if (altitudeMetersElement != null) {
 											if (!altitudeMetersElement.getTextContent()
 													.isEmpty()) {
 												track.setAltitudeMeters(Double.parseDouble(altitudeMetersElement.getTextContent()));
 											}
 										}
-										
-										Element distanceMetersElement = (Element) tElement.getElementsByTagName("DistanceMeters").item(j+1);
+
+										Element distanceMetersElement = (Element) tElement.getElementsByTagName("DistanceMeters").item(j + 1);
 										if (distanceMetersElement != null) {
 											if (distanceMetersElement.getTextContent()
 													.isEmpty()) {
-													if (distanceMetersElement != null ) { 
-														track.setDistanceMetersTracks(Double.parseDouble(distanceMetersElement.getTextContent()));
-													}
+												if (distanceMetersElement != null) {
+													track.setDistanceMetersTracks(Double.parseDouble(distanceMetersElement.getTextContent()));
+												}
 											}
 										}
-										
+
 										Element heartRateBpmElement = (Element) tElement.getElementsByTagName("HeartRateBpm").item(j);
 										if (heartRateBpmElement != null) {
 											if (!heartRateBpmElement.getTextContent().isEmpty()) {
@@ -402,7 +392,7 @@ public class ActivityList {
 
 										Element speedElement = (Element) tElement.getElementsByTagName("Speed").item(j);
 										Element runCadenceElement = (Element) tElement.getElementsByTagName("RunCadence").item(j);
-										
+
 										if (speedElement != null) {
 											if (!speedElement.getTextContent().isEmpty()) {
 												if (runCadenceElement != null) {
@@ -428,8 +418,8 @@ public class ActivityList {
 					}
 					activities.add(activity);
 				}
-			//}
-			 });
+				//}
+			});
 		} catch (IOException | DirectoryIteratorException ex) {
 			System.err.println(ex);
 		}
@@ -437,7 +427,7 @@ public class ActivityList {
 	}
 
 
-	public List<Activity> parseSaxTCX () {
+	public List<Activity> parseSaxTCX() {
 
 		List<Activity> activities = new ArrayList<>();
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -446,13 +436,19 @@ public class ActivityList {
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			saxParser = factory.newSAXParser();
-			for (Path file : stream) {
+			Path file = null;
+			for (int i= 0; i< tcxFiles.size(); i++ ) {
+				file = tcxFiles.get(i).getFile();
+				//for (Path file : stream) {
+
 				if (file.getFileName().toString().endsWith(".tcx")) {
 					MapActivityObjectHandlerSax handlerSax = new MapActivityObjectHandlerSax();
 					saxParser.parse(file.toString(), handlerSax);
 					activity = handlerSax.getActivityResult();
 					activities.add(activity);
 				}
+
+				//}
 			}
 		} catch (ParserConfigurationException e) {
 			throw new RuntimeException(e);
@@ -465,6 +461,102 @@ public class ActivityList {
 		// zusäzliches Parse und liste zusammenbaut
 		return activities;
 	}
+
+
+	public ArrayList<FileTCX> parseSaxTCXTimeStamp() {
+		ArrayList<FileTCX> tcxFiles = new ArrayList<>();
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = null;
+		FileTCX tcxFile = null;
+
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			saxParser = factory.newSAXParser();
+			for (Path file : stream) {
+				if (file.getFileName().toString().endsWith(".tcx")) {
+					MapActivityObjectHandlerSaxTimestamp handlerSaxTCX = new MapActivityObjectHandlerSaxTimestamp();
+					saxParser.parse(file.toString(), handlerSaxTCX);
+					tcxFile = handlerSaxTCX.getFileResult();
+					tcxFile.setFileName(file.getFileName().toString());
+					tcxFile.setFile(file);
+					tcxFiles.add(tcxFile);
+				}
+			}
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		} catch (SAXException | IOException e) {
+			throw new RuntimeException(e);
+		}
+		Collections.sort(tcxFiles,(o1, o2) -> o2.getStartTime().compareTo(o1.getStartTime()));
+		return tcxFiles;
+	}
+
+	public ArrayList<FileTCX> parseDOMTCXTimeStamp() {
+		Document document = null;
+		ArrayList<FileTCX> tcxFiles = new ArrayList<>();
+		FileTCX tcxFile = null;
+
+		DocumentBuilder builder = null;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			NodeList nFileList = null;
+			for (Path file : stream) {
+				document.getDocumentElement().normalize();
+				factory = DocumentBuilderFactory.newInstance();
+				nFileList = document.getElementsByTagName("Lap");
+				builder = null;
+				try {
+					builder = factory.newDocumentBuilder();
+				} catch (ParserConfigurationException e) {
+					e.printStackTrace();
+				}
+
+				tcxFile = null;
+				try {
+					document = builder.parse(filepath + File.separator + file);
+				} catch (SAXException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				document.getDocumentElement().normalize();
+				NodeList fileList = null;
+
+
+
+				Node fileNode = fileList.item(0);
+				if (file.getFileName().toString().endsWith(".tcx")) {
+						tcxFile = new FileTCX();
+						//Element tElement = (Element) node;
+						Element tElement = (Element) fileNode;
+						if (fileNode.getNodeType() == Node.ELEMENT_NODE) {
+							Element lElement = (Element) fileList;
+							if (lElement.getElementsByTagName("Lap").item(0).getAttributes()
+									.getNamedItem("StartTime") != null) {
+								if (lElement.getElementsByTagName("Lap").item(0).getAttributes()
+										.getNamedItem("StartTime").getTextContent().isEmpty()) {
+									tcxFile.setStartTime(LocalDateTime
+											.parse(lElement.getElementsByTagName("Lap").item(0).getAttributes()
+													.getNamedItem("StartTime").getTextContent().substring(0, 19)));
+								}
+							}
+						}
+				}
+				tcxFile.setFileName(file.getFileName().toString());
+				tcxFiles.add(tcxFile);
+			}
+
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		Collections.sort(tcxFiles,(o1, o2) -> o2.getStartTime().compareTo(o1.getStartTime()));
+		return tcxFiles;
+	}
+
+
 	public List<Activity> getActivities () {
 		return this.activities;
 	}
