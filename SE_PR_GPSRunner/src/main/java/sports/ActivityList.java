@@ -22,9 +22,15 @@ public class ActivityList {
 
 	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();	
 	
+	public String getFilepath() {
+		return filepath;
+	}
+
 	//TODO
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
+		this.setActivities(parseSaxTCX());
+		parent.setActivities();
 //		this.parseActivitiesXML();
 //		parent.setActivities();
 	}

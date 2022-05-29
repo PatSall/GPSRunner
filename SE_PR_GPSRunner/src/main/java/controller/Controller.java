@@ -12,10 +12,10 @@ public class Controller {
 		this.activities = activities;
 		this.view = view;
 		
+		activities.setController(this);
 		view.setActivityList(activities.getActivities());
 		view.setTrackGPS(activities.getTrackGPS());
-		
-		
+		view.setController(this);
 	}
 
 	public ActivityList getActivities() {
@@ -25,13 +25,11 @@ public class Controller {
 	public GUI getView() {
 		return view;
 	}
-	
 	public void setPath(String filepath) {
 		this.activities.setFilepath(filepath);
 	}
 	
 	public void setActivities() {
-		this.activities.getActivities();
 		this.view.setActivities(activities.getActivities());
 	}
 }

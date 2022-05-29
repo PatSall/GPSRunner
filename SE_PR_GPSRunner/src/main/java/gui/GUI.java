@@ -104,9 +104,7 @@ public class GUI extends JFrame {
 			}
 		}
 		
-		JFreeChart chart = ChartFactory.createBarChart(graphName,
-				null, yAxe, cd, PlotOrientation.VERTICAL, true, true,
-				false);
+		JFreeChart chart = ChartFactory.createBarChart(graphName, null, yAxe, cd, PlotOrientation.VERTICAL, true, true, false);
 		chartPanel.setChart(chart);
 	}
 	
@@ -119,13 +117,10 @@ public class GUI extends JFrame {
 		
 		setTitle("GPSRunner");
 		setSize(500,500);
-		//setSize(new Dimension());
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		setLayout(new BorderLayout());
-		//Vielleicht Umstieg auf...
-		//setLayout(new CardLayout());
 
 		model = new DefaultTableModel(new Object[0][7], columnNames);
 		detailModel = new DefaultTableModel(new Object[0][8], detailColumnNames);
@@ -135,7 +130,7 @@ public class GUI extends JFrame {
 		detailTable = new JTable(detailModel);
 		detailTable.setFillsViewportHeight(true);
 		upperPanel = new JScrollPane(table);
-		lowerPanel = new JPanel();
+		
 		lowerDetailPanel = new JScrollPane(detailTable);
 		lowerMapPanel = new JPanel();
 		tabbedPanel = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.WRAP_TAB_LAYOUT);
@@ -144,15 +139,13 @@ public class GUI extends JFrame {
 		
 		cd = new DefaultCategoryDataset();
 		chartPanel= new ChartPanel(null);
-		chartPanel.setPreferredSize(new Dimension(650, 400));
-		lowerPanel.add(chartPanel);
+		chartPanel.setSize(new Dimension(tabbedPanel.getWidth(), tabbedPanel.getHeight()));
+		lowerPanel = chartPanel;
 		tabbedPanel.addTab("Charts", lowerPanel);
 		tabbedPanel.addTab("Details", lowerDetailPanel);
 		tabbedPanel.addTab("Map", lowerMapPanel);
 		
-		
-		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upperPanel, tabbedPanel);
-		
+		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT,upperPanel, tabbedPanel);
 		this.add(sp, BorderLayout.CENTER);
 		
 		//menu elements
@@ -182,11 +175,12 @@ public class GUI extends JFrame {
 		JMenuItem tcx = new JMenuItem("change directory");
 		tcx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser("C:\\Users\\patri\\OneDrive\\Uni\\WINF\\4. Semester\\Software Engineering\\Testfiles\\Test");
+				JFileChooser chooser = new JFileChooser(parent.getActivities().getFilepath());
 			    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.showOpenDialog(null);
 				if (chooser.getSelectedFile() != null) {
 				    System.out.println(chooser.getSelectedFile().getPath());
+				    String temp = chooser.getSelectedFile().getPath();
 				    parent.setPath(chooser.getSelectedFile().getPath());
 			 }
 			}
@@ -440,10 +434,6 @@ public class GUI extends JFrame {
 				int counter = 0;
 				for(Lap l : list) {
 					counter += l.getTrack().size();
-//					for(Track t : l.getTrack()) {
-//						counter += t.getExtension().size();
-//						counter += t.getPosition().size();
-//					}
 				}
 				System.out.println(counter);
 				actualDetail = new Object[counter][8];
