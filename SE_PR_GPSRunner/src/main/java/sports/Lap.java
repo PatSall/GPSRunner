@@ -20,6 +20,7 @@ public class Lap {
 
     //private Integer maximumHeartRateBpm;
     private Integer maximumHeartRateBpm;
+
     private String intensity;
 
     private String triggerMethod;

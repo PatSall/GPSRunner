@@ -1,6 +1,7 @@
 package Test;
 
 import gui.GUI;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import sports.Activity;
 import sports.Lap;
@@ -43,6 +44,8 @@ class ActivityTest {
         assertTrue(activity.showInGui(sportsFilter, distanceFilter));
 
     }
+    @Before //showInGui
+
 
     @Test //showInGui
     void testShowInGuiFalse(){
