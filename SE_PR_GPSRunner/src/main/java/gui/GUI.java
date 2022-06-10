@@ -3,11 +3,22 @@ package gui;
 //import java.awt.EventQueue;
 //import java.awt.*;
 //import java.awt.Color;
+import org.jdesktop.swingx.JXMapKit;
+import org.jdesktop.swingx.JXMapViewer;
+import org.jdesktop.swingx.mapviewer.DefaultWaypoint;
+import org.jdesktop.swingx.mapviewer.GeoPosition;
+import org.jdesktop.swingx.mapviewer.Waypoint;
+import org.jdesktop.swingx.mapviewer.WaypointPainter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+
+import java.awt.*;
+import java.util.HashSet;
+import java.util.Set;
+
 
 import controller.Controller;
 import sports.Activity;
@@ -15,14 +26,14 @@ import sports.Lap;
 import sports.Track;
 import sports.TrackGPS;
 
-import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.*;
 
-import javax.swing.JCheckBoxMenuItem;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 
 //import java.io.File;
@@ -30,20 +41,12 @@ import java.util.List;
 //import java.net.MalformedURLException;
 //import java.net.URISyntaxException;
 //import java.net.URL;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-//import javax.swing.plaf.synth.ColorType;
 
-//import org.w3c.dom.css.RGBColor;
+import javax.swing.table.DefaultTableModel;
+
+
+
+
 
 public class GUI extends JFrame {
 	
@@ -62,12 +65,17 @@ public class GUI extends JFrame {
 	DefaultTableModel model;
 	JPanel lowerPanel;
 	JScrollPane lowerDetailPanel;
+
 	JPanel lowerMapPanel;
+
+	//JXMapKit mapModel;
+	Map mapModel;
 	JTable detailTable;
 	DefaultTableModel detailModel;
 	ChartPanel chartPanel;
 	Collection<Activity> activities;
-	
+
+
 	JCheckBoxMenuItem distance;
 	JCheckBoxMenuItem bpm;
 	JCheckBoxMenuItem speed;
@@ -132,7 +140,21 @@ public class GUI extends JFrame {
 		upperPanel = new JScrollPane(table);
 		
 		lowerDetailPanel = new JScrollPane(detailTable);
+
 		lowerMapPanel = new JPanel();
+		mapModel = new Map() ;
+		//mapModel.map.add(lowerMapPanel);
+		//lowerMapPanel = mapModel;
+		//lowerMapPanel.add(mapModel);
+		//lowerMapPanel = new Map();
+		//lowerMapPanel.setBounds(0, 0, 100, 10000);
+		//mapModel.add(lowerMapPanel);
+
+		//lowerMapPanel.add(mapModel);
+
+
+
+
 		tabbedPanel = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.WRAP_TAB_LAYOUT);
 		
 		table.addMouseListener(click());
@@ -144,7 +166,9 @@ public class GUI extends JFrame {
 		tabbedPanel.addTab("Charts", lowerPanel);
 		tabbedPanel.addTab("Details", lowerDetailPanel);
 		tabbedPanel.addTab("Map", lowerMapPanel);
-		
+
+
+
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT,upperPanel, tabbedPanel);
 		this.add(sp, BorderLayout.CENTER);
 		
@@ -170,7 +194,7 @@ public class GUI extends JFrame {
 		//menu.add(columns);
 		
 		setJMenuBar(menu);
-		
+
 		//File
 		JMenuItem tcx = new JMenuItem("change directory");
 		tcx.addActionListener(new ActionListener() {
@@ -291,8 +315,9 @@ public class GUI extends JFrame {
 			    int row = table.rowAtPoint(p);
 			    System.out.println(row);
 			    if(row != -1) {
-			    	getEvent((String) actualData[row][0]);
-			    	refreshDetails();
+					getEvent((String) actualData[row][0]);
+					refreshDetails();
+					refreshMap(getEventMap((String) actualData[row][0]));
 			    }
 			}
 
@@ -318,6 +343,13 @@ public class GUI extends JFrame {
 	
 	public void refreshDetails() {
 		detailModel.setDataVector(actualDetail, detailColumnNames);
+	}
+	public void refreshMap(Set<Waypoint> waypoints) {
+		mapModel.map.removeAll();
+		mapModel.removeAll();
+		lowerMapPanel.removeAll();
+		mapModel.map.add(new Map(waypoints));
+		mapModel.map.repaint();
 	}
 	
 	public Object[][] table() {
@@ -480,17 +512,37 @@ public class GUI extends JFrame {
 			}
 		}
 	}
-	
+
+	public Set<Waypoint> getEventMap(String name) {
+		Set<Waypoint> waypoints = new HashSet<>();
+		for(Activity a : activityList) {
+			if(name.equals(a.getId())) {
+				List<Lap> list = a.getLap();
+				Waypoint waypoint;
+				for(Lap l : list) {
+					List<Track> temp = l.getTrack();
+					for(Track track : temp) {
+						if (track.getPosition().getLatitudeDegrees() != null) {
+							waypoint = (new DefaultWaypoint(new GeoPosition(track.getPosition().getLatitudeDegrees(), track.getPosition().getLongitudeDegrees())));
+							waypoints.add(waypoint);
+						}
+					}
+				}
+			}
+		}
+		return waypoints;
+	}
+
 	public void setActivities(List<Activity> activityList) {
 		this.activityList = activityList;
 		refreshGui();
 	}
 	
 	public class Filter{
-		private String name;
-		private boolean state;
-		private JCheckBoxMenuItem button;
-		private int number;
+		private final String name;
+		private  boolean state;
+		private final JCheckBoxMenuItem button;
+		private final int number;
 
 		public Filter(String name, boolean state, JCheckBoxMenuItem button) {
 			this(name, state, button, 0);
@@ -521,5 +573,46 @@ public class GUI extends JFrame {
 		public void setState(boolean state) {
 			this.state = state;
 		}
+	}
+
+	public class Map extends
+			JXMapViewer {
+
+		private  final JXMapKit map;
+
+		public Map () {
+			this.map = new JXMapKit();
+			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
+			map.setZoom(15);
+			map.setDataProviderCreditShown(true);
+			map.setAddressLocationShown(true);
+			lowerMapPanel.setLayout(new BorderLayout());
+			lowerMapPanel.add(map, BorderLayout.CENTER);
+			//map.removeAll();
+
+
+
+			this.setVisible(true);
+		}
+
+		public Map (Set<Waypoint> waypoints) {
+			super();
+			this.map = new JXMapKit();
+			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
+			this.map.setCenterPosition(waypoints.iterator().next().getPosition());
+			WaypointPainter<Waypoint> painter = new WaypointPainter();
+			painter.setWaypoints(waypoints);
+			map.setAddressLocationShown(true);
+			lowerMapPanel.setLayout(new BorderLayout());
+			lowerMapPanel.add(map, BorderLayout.CENTER);
+			map.getMainMap().setOverlayPainter(painter);
+			map.setZoom(20);
+			this.setVisible(true);
+
+			map.validate();
+			map.repaint();
+
+		}
+		
 	}
 }

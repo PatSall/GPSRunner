@@ -1,6 +1,6 @@
 package sports;
 
-import java.util.List;
+
 
 public class Position {
     private  Double latitudeDegrees;

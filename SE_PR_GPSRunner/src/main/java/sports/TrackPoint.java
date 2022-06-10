@@ -1,21 +1,19 @@
 package sports;
 
 import java.time.LocalDateTime;
-import java.util.List;
+
 
 public class TrackPoint {
 
+
+    private Double trackPointLat;
+    private Double trackPointLon;
     private Double elem;
     private LocalDateTime time;
 
 
     public TrackPoint () {
 
-    }
-
-    public TrackPoint(Double elem, LocalDateTime time) {
-        this.elem = elem;
-        this.time = time;
     }
 
     public TrackPoint(Double elem) {
@@ -39,11 +37,28 @@ public class TrackPoint {
         this.time = time;
     }
 
+    public Double getTrackPointLat() {
+        return trackPointLat;
+    }
+
+    public void setTrackPointLat(Double trackPointLat) {
+        this.trackPointLat = trackPointLat;
+    }
+
+    public Double getTrackPointLon() {
+        return trackPointLon;
+    }
+
+    public void setTrackPointLon(Double trackPointLon) {
+        this.trackPointLon = trackPointLon;
+    }
 
     @Override
     public String toString() {
         return "TrackPoint{" +
-                "elem=" + elem +
+                "trackPointLat=" + trackPointLat +
+                ", trackPointLon=" + trackPointLon +
+                ", elem=" + elem +
                 ", time=" + time +
                 '}';
     }

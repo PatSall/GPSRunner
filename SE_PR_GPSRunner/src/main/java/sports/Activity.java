@@ -8,7 +8,6 @@ import gui.GUI.Filter;
 
 public class Activity {
 
-    private static final long serialVersionUID = 1L;
     private List<Lap> lap;
     private String activity;
     private String id;
@@ -55,7 +54,6 @@ public class Activity {
         Integer calories = 0;
         double averageHeartRateBpm = 0;
         Integer maximumHeartRateBpm = 0;
-
         for(int i = 0; i < laps.size(); i++) {
             lapCounter++;
             startTime = laps.get(0).getStartTime();

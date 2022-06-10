@@ -1,6 +1,5 @@
 package Main;
 
-import java.awt.EventQueue;
 
 import controller.Controller;
 import sports.ActivityList;
@@ -15,14 +14,7 @@ public class GPSRunnerMain {
 		controller.getView().setVisible(true);
 		controller.getView().updateChart(controller.getActivities().getActivities());
 		controller.getView().refreshGui();
-		
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				GUI g = new GUI();
-//				g.setVisible(true);
-//				g.setActivities(activities);
-//
-//			}
-//		});
+		controller.getActivities().readFiles();
+
 	}
 }

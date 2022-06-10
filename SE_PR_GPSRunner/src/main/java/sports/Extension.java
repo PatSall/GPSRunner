@@ -5,7 +5,7 @@ public class Extension {
     private  Double speed;
     private  Integer runCadence;
 
-    public Extension () {};
+    public Extension () {}
 
     public Extension(Double speed, Integer runCadence) {
         this.speed = speed;

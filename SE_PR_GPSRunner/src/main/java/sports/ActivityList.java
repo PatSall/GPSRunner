@@ -4,24 +4,25 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import controller.Controller;
 
+import java.util.*;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.nio.file.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class ActivityList {
-	
-	private List <Activity> activities;
-	private List <TrackGPS> trackGPS;
-	//public static String homePath = System.getProperty("user.home");
-	private Controller parent;
 
-	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();	
-	
+	private static final int firstFiles = 10;
+	private List<Activity> activities;
+
+	private final List<TrackGPS> trackGPS;
+
+	Controller parent;
+	private final ArrayList<FileTCX> tcxFiles;
+	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();
+
 	public String getFilepath() {
 		return filepath;
 	}
@@ -29,67 +30,65 @@ public class ActivityList {
 	//TODO
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
-		this.setActivities(parseSaxTCX());
-		parent.setActivities();
+//		this.setActivities(parseSaxTCX());
+//		parent.setActivities();  MUSS NICHT MEHR GEMACHT WERDEN; WIRD ÜBER TIMER
 //		this.parseActivitiesXML();
 //		parent.setActivities();
 	}
-	
+
 	public void setController(Controller parent) {
 		this.parent = parent;
 	}
-	
-	public ActivityList() {
-		Timestamp temp = new Timestamp(System.currentTimeMillis());
-		/*final List<Activity>*/ 
-		
-//		activities = parseTCX();
-		activities = parseSaxTCX();
-		
-		System.out.println(new Timestamp(System.currentTimeMillis()).getTime()-temp.getTime());
-		//System.out.println(homePath);
 
-		/*for (int j= 0; j < activities.size(); j++) {
-			System.out.println(activities.get(j).getId());
-			for (int i = 0; i < activities.get(j).getLap().size(); i++) {
-				//System.out.println(activities.get(j).getLap().get(i).getDistanceMetersTracks());
-				//System.out.println(activities.get(j).getLap().get(i).getStartTime());
-				//System.out.println(activities.get(j).getLap().get(i).getCalories());
-				for (int k = 0; k < activities.get(j).getLap().get(i).getTrack().size(); k++) {
-					System.out.println(activities.get(j).getLap().get(i).getTrack().get(k).getTime());
-				}
-			}
-		}*/
-
-		trackGPS = parseGPX();
-		//for (TrackGPS t : trackGPS) {
-			//System.out.println(trackGPS.toString());
-			//System.out.println();
-			//System.out.println(t.toString());
-			//System.out.println(t.getName());
-		//}
+	public void readFiles() {
+		parseSaxTCX();
 	}
 
-	private List<TrackGPS> parseGPX() {
+	public void addActivity(Activity activity) {
+		activities.add(activity);
+		activities.sort((o1, o2) -> o2.getLap().get(0).getStartTime().compareTo(o1.getLap().get(0).getStartTime()));
+	}
+
+
+	public ActivityList() {
+
+
+
+		System.out.println("parse tcxFiles - für TimeStamps");
+		Timestamp temp = new Timestamp(System.currentTimeMillis());
+		tcxFiles = parseSaxTCXTimeStamp();
+		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
+
+
+		System.out.println("parse die ersten tcxFiles");
+		temp = new Timestamp(System.currentTimeMillis());
+		activities = this.parseSaxFirstTCX();
+		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
+
+		//System.out.println(homePath);
+
+		System.out.println("parse GPX Files");
+		temp = new Timestamp(System.currentTimeMillis());
+		//trackGPS = parseGPX();
+		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
+
+		trackGPS = parseSaxGPX();
+	}
+
+	/*private List<TrackGPS> parseGPX() {
 		List<TrackGPS> trackGPSs = new ArrayList<>();
-		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
-			//for (Path file : stream) {
-			List<String> filenames = new ArrayList<String>(); 
+			List<String> filenames = new ArrayList<>();
 			for (Path file : stream) {
 				filenames.add(file.getFileName().toString());
 			}
-			
-			//for (Path file : stream) {
 			filenames.parallelStream().forEach(file -> {
-
-				
 				Document document = null;
 				List<TrackSegment> trackSegments = new ArrayList<>();
-				TrackGPS trackGPS = null;
+				TrackGPS trackGPS;
 				TrackSegment trackSegment = null;
-				NodeList nTrackList = null;
-				NodeList nSegmentList = null;
+				NodeList nTrackList;
+				NodeList nSegmentList;
 				DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder builder = null;
 				
@@ -98,22 +97,17 @@ public class ActivityList {
 				} catch (ParserConfigurationException e) {
 					e.printStackTrace();
 				}
-				
-				//System.out.println(file.getFileName());
-				//document = builder.parse("C:\\temp\\Files\\"+ file.getFileName());
-				/*if (!file.getFileName().toString().endsWith(".gpx")) {
-					break;
-				}*/
+
 				try {
-					document = builder.parse(filepath + File.separator+ file);
+					assert builder != null;
+					document = builder.parse(filepath + File.separator + file);
+
 				} catch (SAXException | IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				assert document != null;
 				document.getDocumentElement().normalize();
 				nTrackList = document.getElementsByTagName("trk");
-				nSegmentList = document.getElementsByTagName("trkpt");
-				
 				for (int temp = 0; temp < nTrackList.getLength(); temp++) {
 					Node node = nTrackList.item(temp);
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -144,7 +138,6 @@ public class ActivityList {
 										}
 									}
 								}
-								// System.out.println(lElement.getElementsByTagName("trkpt").item(i).getAttributes().getNamedItem("lon").getTextContent());
 
 								if (lElement.getElementsByTagName("trkpt").item(i).getAttributes()
 										.getNamedItem("lon") != null) {
@@ -173,38 +166,35 @@ public class ActivityList {
 					}
 				}
 
-			//}
 			 });
 		} catch (IOException | DirectoryIteratorException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 
 		return trackGPSs;
-	}
+	}*/
 
-	private List<Activity> parseTCX() {
+	public List<Activity> parseDomTCX() {
 		List<Activity> activities = new ArrayList<>();
 
-		//try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("C:\\temp\\Files\\"))) {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
-			//for (Path file : stream) {
-			List<String> filenames = new ArrayList<String>(); 
+			List<String> filenames = new ArrayList<>();
 			for (Path file : stream) {
 				filenames.add(file.getFileName().toString());
 			}
-			//for (Path file : stream) {
+
 			filenames.parallelStream().forEach(file -> {
 
 				 Document document = null;	
 				 List<Lap> laps = new ArrayList<>();
 					List<Track> tracks = new ArrayList<>();
-					Activity activity = null;
-					Lap lap = null;
-					Track track = null;
-					NodeList nList = null;
-					NodeList lapList = null;
-					NodeList trackList = null;
-					int listLength = 0;
+					Activity activity;
+					Lap lap;
+					Track track;
+					NodeList nList;
+					NodeList lapList;
+					NodeList trackList;
+					int listLength;
 
 					DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder builder = null;
@@ -214,28 +204,17 @@ public class ActivityList {
 					} catch (ParserConfigurationException e) {
 						e.printStackTrace();
 					}
-				 
-				 
-				 
-				 
-				 activity = null;
-				lap = null;
+				activity = null;
 				track = null;
-				nList = null;
-				lapList = null;
-				trackList = null;
-				/*if (!file.getFileName().toString().endsWith(".tcx")) {
-					break;
-				}*/
+
 				try {
+					assert builder != null;
 					document = builder.parse(filepath + File.separator+ file);
-				} catch (SAXException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (SAXException | IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				assert document != null;
 				document.getDocumentElement().normalize();
 
 				nList = document.getElementsByTagName("Activity");
@@ -287,7 +266,7 @@ public class ActivityList {
 								if (lElement.getElementsByTagName("DistanceMeters").item(i) != null) {
 									if (!lElement.getElementsByTagName("DistanceMeters").item(i).getTextContent()
 											.isEmpty()) {
-										int k = 0;
+										int k;
 										if (lElement
 											.getElementsByTagName("DistanceMeters").item(i).getParentNode().equals(lapNode)) {
 										lap.setDistanceMetersTracks(Double.parseDouble(lElement
@@ -386,9 +365,7 @@ public class ActivityList {
 										if (distanceMetersElement != null) {
 											if (distanceMetersElement.getTextContent()
 													.isEmpty()) {
-													if (distanceMetersElement != null ) { 
-														track.setDistanceMetersTracks(Double.parseDouble(distanceMetersElement.getTextContent()));
-													}
+												track.setDistanceMetersTracks(Double.parseDouble(distanceMetersElement.getTextContent()));
 											}
 										}
 										
@@ -428,42 +405,111 @@ public class ActivityList {
 					}
 					activities.add(activity);
 				}
-			//}
 			 });
 		} catch (IOException | DirectoryIteratorException ex) {
-			System.err.println(ex);
+			ex.printStackTrace();
 		}
 		return activities;
 	}
 
 
-	public List<Activity> parseSaxTCX () {
+	public void parseSaxTCX() {
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			Path file;
+			for (int i = firstFiles; i < tcxFiles.size(); i++) {
+				file = tcxFiles.get(i).getFile();
+				if (file.getFileName().toString().endsWith(".tcx")) {
+					new ReadActivityThread(this, file).start();
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-		List<Activity> activities = new ArrayList<>();
+
+	public ArrayList<FileTCX> parseSaxTCXTimeStamp() {
+		ArrayList<FileTCX> tcxFiles = new ArrayList<>();
 		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser saxParser = null;
-		Activity activity = null;
+		SAXParser saxParser;
+		FileTCX tcxFile;
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			saxParser = factory.newSAXParser();
 			for (Path file : stream) {
 				if (file.getFileName().toString().endsWith(".tcx")) {
-					MapActivityObjectHandlerSax handlerSax = new MapActivityObjectHandlerSax();
-					saxParser.parse(file.toString(), handlerSax);
-					activity = handlerSax.getActivityResult();
-					activities.add(activity);
+					MapActivityObjectHandlerSaxTimestamp handlerSaxTCX = new MapActivityObjectHandlerSaxTimestamp();
+					saxParser.parse(file.toString(), handlerSaxTCX);
+					tcxFile = handlerSaxTCX.getFileResult();
+					tcxFile.setFileName(file.getFileName().toString());
+					tcxFile.setFile(file);
+					tcxFiles.add(tcxFile);
 				}
 			}
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		} catch (SAXException | IOException e) {
+		} catch (ParserConfigurationException |SAXException | IOException e) {
 			throw new RuntimeException(e);
 		}
-		//Parser in einen Task starten , aktivitylist in einen task einlest , liste aktuallisiert
-		//gui Message achtung neue liste arbiete mit dieser - methode in main , parentObjekt , Parser , pro File
-		// oder gui starten und dann einlesen
-		// zusäzliches Parse und liste zusammenbaut
+		tcxFiles.sort((o1, o2) -> o2.getStartTime().compareTo(o1.getStartTime()));
+		return tcxFiles;
+	}
+
+	public List<Activity> parseSaxFirstTCX() {
+		activities = new ArrayList<>();
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			Path file;
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = null;
+			for (int i= 0; i< firstFiles; i++ ) {
+				if(tcxFiles.size()-1 >= i) {
+					file = tcxFiles.get(i).getFile();
+					if (file.getFileName().toString().endsWith(".tcx")) {
+						//new readActivityThread(this,file).start();
+
+						try {
+							saxParser = factory.newSAXParser();
+						} catch (ParserConfigurationException | SAXException e) {
+							e.printStackTrace();
+						}
+						MapActivityObjectHandlerSax handlerSax = new MapActivityObjectHandlerSax();
+						try {
+							saxParser.parse(file.toString(), handlerSax);
+						} catch (SAXException | IOException | NullPointerException e) {
+							e.printStackTrace();
+						}
+						activities.add(handlerSax.getActivityResult());
+
+					}
+
+				}
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		return activities;
+	}
+
+	public List<TrackGPS> parseSaxGPX () {
+
+		List<TrackGPS> trackGPSs = new ArrayList<>();
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser;
+		TrackGPS track;
+
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
+			saxParser = factory.newSAXParser();
+			for (Path file : stream) {
+				if (file.getFileName().toString().endsWith(".gpx")) {
+					MapTrackGPXObjectHandlerSax handlerSax = new MapTrackGPXObjectHandlerSax();
+					saxParser.parse(file.toString(), handlerSax);
+					track = handlerSax.getTrackGPSResult();
+					trackGPSs.add(track);
+				}
+			}
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		}
+
+		return trackGPSs;
 	}
 	public List<Activity> getActivities () {
 		return this.activities;

@@ -12,12 +12,6 @@ public class TrackGPS {
 
     public TrackGPS() {}
 
-    public TrackGPS(String name, Date date, List<TrackSegment> trackSegments) {
-        this.name = name;
-        this.date = date;
-        this.trackSegments = trackSegments;
-    }
-
     public String getName() {
         return name;
     }

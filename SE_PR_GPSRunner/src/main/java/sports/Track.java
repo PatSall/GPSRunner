@@ -1,8 +1,8 @@
 package sports;
 
-import java.sql.Timestamp;
+
 import java.time.LocalDateTime;
-import java.util.*;
+
 
 public class Track {
     private LocalDateTime time;
@@ -17,28 +17,6 @@ public class Track {
     public Track() {
         this.position = new Position();
         this.extension = new Extension();
-    }
-
-    public Track(LocalDateTime time, Double latitudeDegrees, Double longitudeDegrees, Double altitudeMeters, Double distanceMeters, Integer heartRateBpm, Double speed, Integer runCadence) {
-        this.time = time;
-
-        this.altitudeMeters = altitudeMeters;
-        this.distanceMetersTracks = distanceMeters;
-        this.heartRateBpm = heartRateBpm;
-        this.position = new Position();
-        this.extension = new Extension();
-    }
-
-    public Track(LocalDateTime startTime, Double totalTimeSeconds, Double distanceMeters, Double maximumSpeed, Integer calories, Integer averageHeartRateBpm, Integer maximumHeartRateBpm, String intensity, String triggerMethod, Timestamp time, Double latitudeDegrees, Double latitudeDegrees1, Double altitudeMeters, Double distanceMeters1, Integer heartRateBpm, Double speed, Integer runCadence) {
-        //super(startTime, totalTimeSeconds, distanceMeters, maximumSpeed, calories, averageHeartRateBpm, maximumHeartRateBpm, intensity, triggerMethod);
-
-
-        this.altitudeMeters = altitudeMeters;
-        this.distanceMetersTracks = distanceMeters1;
-        this.heartRateBpm = heartRateBpm;
-        this.position = new Position();
-        this.extension = new Extension();
-
     }
 
     public LocalDateTime getTime() {
@@ -85,9 +63,6 @@ public class Track {
         this.position = position;
     }
 
-//    public void addPosition(Position trackpoint) {
-//        this.position.add(trackpoint);
-//    }
 
     public Extension getExtension() {
         return extension;
@@ -97,9 +72,6 @@ public class Track {
         this.extension = extension;
     }
 
-//    public void addExtension(Extension trackpoint) {
-//        this.extension.add(trackpoint);
-//    }
 
     @Override
     public String toString() {

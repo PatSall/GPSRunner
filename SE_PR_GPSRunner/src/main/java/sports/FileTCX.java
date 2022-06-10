@@ -11,15 +11,6 @@ public class FileTCX {
 
     }
 
-    public FileTCX(String fileName, LocalDateTime startTime) {
-        this.fileName = fileName;
-        this.startTime = startTime;
-    }
-
-    public FileTCX(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
     public String getFileName() {
         return fileName;
     }
