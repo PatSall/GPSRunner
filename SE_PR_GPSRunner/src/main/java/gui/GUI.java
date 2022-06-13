@@ -1,8 +1,5 @@
 package gui;
 
-//import java.awt.EventQueue;
-//import java.awt.*;
-//import java.awt.Color;
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapViewer;
 import org.jdesktop.swingx.mapviewer.DefaultWaypoint;
@@ -35,13 +32,6 @@ import javax.swing.*;
 
 import java.util.*;
 import java.util.List;
-
-//import java.io.File;
-//import java.io.IOException;
-//import java.net.MalformedURLException;
-//import java.net.URISyntaxException;
-//import java.net.URL;
-
 import javax.swing.table.DefaultTableModel;
 
 

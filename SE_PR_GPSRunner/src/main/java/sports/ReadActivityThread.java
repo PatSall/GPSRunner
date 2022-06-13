@@ -24,8 +24,6 @@ public class ReadActivityThread extends Thread {
     }
 
     public void run() {
-
-
         try {
             saxParser = factory.newSAXParser();
             MapActivityObjectHandlerSax handlerSax = new MapActivityObjectHandlerSax();
