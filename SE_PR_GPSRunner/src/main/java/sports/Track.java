@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 
 
 public class Track {
-    private LocalDateTime time;
 
+    private LocalDateTime time;
     private  Double altitudeMeters;
     private  Double distanceMetersTracks;
     private  Integer heartRateBpm;
