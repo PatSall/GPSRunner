@@ -8,7 +8,7 @@ import gui.GUI;
 public class GPSRunnerMain {
 
 	public static void main(String[] args) {
-		
+		// Variable merken und aufrufe überflüssig
 		Controller controller = new Controller(new ActivityList(), new GUI());
 		controller.getView().setController(controller);
 		controller.getView().setVisible(true);

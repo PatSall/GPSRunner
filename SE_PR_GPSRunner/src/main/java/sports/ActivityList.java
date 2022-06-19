@@ -312,6 +312,8 @@ public class ActivityList {
 	public void parseSaxTCX() {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			Path file;
+			// Thread abändern 2 Threads
+			// Parser und Thread trennen
 			for (int i = firstFiles; i < tcxFiles.size(); i++) {
 				file = tcxFiles.get(i).getFile();
 				if (file.getFileName().toString().endsWith(".tcx")) {

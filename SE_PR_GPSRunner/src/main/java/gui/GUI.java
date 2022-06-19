@@ -2,10 +2,7 @@ package gui;
 
 import org.jdesktop.swingx.JXMapKit;
 import org.jdesktop.swingx.JXMapViewer;
-import org.jdesktop.swingx.mapviewer.DefaultWaypoint;
-import org.jdesktop.swingx.mapviewer.GeoPosition;
-import org.jdesktop.swingx.mapviewer.Waypoint;
-import org.jdesktop.swingx.mapviewer.WaypointPainter;
+import org.jdesktop.swingx.mapviewer.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -13,6 +10,9 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.awt.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,7 +58,6 @@ public class GUI extends JFrame {
 
 	JPanel lowerMapPanel;
 
-	//JXMapKit mapModel;
 	Map mapModel;
 	JTable detailTable;
 	DefaultTableModel detailModel;
@@ -73,7 +72,7 @@ public class GUI extends JFrame {
 	
 	Controller parent = null;
 	
-	String[] columnNames = new String[]{"name","activity","date","distance in meter","time","meters per minute","bpm"};
+	String[] columnNames = new String[]{"name","activity","date","distance (m)","time","pace","bpm"};
 	String[] detailColumnNames = new String[] {"distancemeter tracks","altitude meters","time","bpm","meters per second","Cadence","longitude", "latitude"};
 	
 	//Standardisierte Einheiten!
@@ -133,18 +132,6 @@ public class GUI extends JFrame {
 
 		lowerMapPanel = new JPanel();
 		mapModel = new Map() ;
-		//mapModel.map.add(lowerMapPanel);
-		//lowerMapPanel = mapModel;
-		//lowerMapPanel.add(mapModel);
-		//lowerMapPanel = new Map();
-		//lowerMapPanel.setBounds(0, 0, 100, 10000);
-		//mapModel.add(lowerMapPanel);
-
-		//lowerMapPanel.add(mapModel);
-
-
-
-
 		tabbedPanel = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.WRAP_TAB_LAYOUT);
 		
 		table.addMouseListener(click());
@@ -334,7 +321,7 @@ public class GUI extends JFrame {
 	public void refreshDetails() {
 		detailModel.setDataVector(actualDetail, detailColumnNames);
 	}
-	public void refreshMap(Set<Waypoint> waypoints) {
+	public void refreshMap(ArrayList<Waypoint> waypoints) {
 		mapModel.map.removeAll();
 		mapModel.removeAll();
 		lowerMapPanel.removeAll();
@@ -503,8 +490,9 @@ public class GUI extends JFrame {
 		}
 	}
 
-	public Set<Waypoint> getEventMap(String name) {
-		Set<Waypoint> waypoints = new HashSet<>();
+	public ArrayList<Waypoint> getEventMap(String name) {
+		//Set<Waypoint> waypoints = new HashSet<>();
+		ArrayList<Waypoint> waypoints = new ArrayList<>();
 		for(Activity a : activityList) {
 			if(name.equals(a.getId())) {
 				List<Lap> list = a.getLap();
@@ -570,39 +558,94 @@ public class GUI extends JFrame {
 
 		private  final JXMapKit map;
 
+
+		private ArrayList<Waypoint> waypoints;
+
 		public Map () {
 			this.map = new JXMapKit();
 			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
-			map.setZoom(15);
+			//map.setZoom(20);
 			map.setDataProviderCreditShown(true);
 			map.setAddressLocationShown(true);
 			lowerMapPanel.setLayout(new BorderLayout());
 			lowerMapPanel.add(map, BorderLayout.CENTER);
 			//map.removeAll();
-
-
-
 			this.setVisible(true);
 		}
 
-		public Map (Set<Waypoint> waypoints) {
-			super();
+
+
+		public Map (ArrayList<Waypoint> waypoints) {
+			//super();
+			this.waypoints = waypoints;
+			Set<Waypoint> waypointsFirst = new HashSet<>();
 			this.map = new JXMapKit();
 			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
-			this.map.setCenterPosition(waypoints.iterator().next().getPosition());
+			this.map.setCenterPosition(waypoints.get(0).getPosition());
 			WaypointPainter<Waypoint> painter = new WaypointPainter();
-			painter.setWaypoints(waypoints);
+
+			waypointsFirst.add(waypoints.get(0));
+			waypointsFirst.add(waypoints.get(waypoints.size()-1));
+			painter.setWaypoints(waypointsFirst);
+			painter.setRenderer(new WaypointRenderer<Waypoint>() {
+				@Override
+				public void paintWaypoint(Graphics2D g, JXMapViewer jxMapViewer, Waypoint waypoint) {
+					g = (Graphics2D) g.create();
+					g.setColor(Color.BLUE);
+
+
+					double lastX = 0.0;
+					double lastY = 0.0;
+
+					boolean first = true;
+					//Point2D pt = null;
+					for (Waypoint gp : waypoints)
+					{
+						// convert geo-coordinate to world bitmap pixel
+
+						Point2D pt = mapModel.getTileFactory().geoToPixel(gp.getPosition(),
+								mapModel.map.getMiniMap().getZoom());
+
+						//System.out.println("Point2D " + pt.getX() +  "  Y" + pt.getY() );
+						//pt = new Point((int) gp.getPosition().getLatitude(), (int) gp.getPosition().getLongitude());
+						if (first)
+						{
+							first = false;
+						}
+						else
+						{
+							//g.drawLine(lastX, lastY, (int) pt.getX(), (int) pt.getY());
+							g.setStroke(new BasicStroke(5));
+							g.draw(new Line2D.Double(lastX, lastY, pt.getX(), pt.getY()));
+							//paintComponent(g);
+							g.dispose();
+						}
+						//System.out.println("test");
+						//g.drawLine(545,350,550,357);
+						lastX = pt.getX();
+						lastY = pt.getY();
+
+						System.out.println("lastY " + lastY);
+						System.out.println("lastX " + lastX);
+					}
+
+					//g.setStroke(new BasicStroke(5));
+
+				}
+			});
+
+			// addMapPolygon
 			map.setAddressLocationShown(true);
 			lowerMapPanel.setLayout(new BorderLayout());
 			lowerMapPanel.add(map, BorderLayout.CENTER);
 			map.getMainMap().setOverlayPainter(painter);
-			map.setZoom(20);
+
+			//map.setZoom(20);
 			this.setVisible(true);
 
 			map.validate();
 			map.repaint();
 
 		}
-		
 	}
 }

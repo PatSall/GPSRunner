@@ -37,6 +37,7 @@ class TrackSegmentTest {
 
         trackSegment.addTrackPoint(trackPoint);
 
-       // assertEquals(trackPoint, trackSegment.getTrackPoint());
+       // assertNotEquals(trackSegment.getTrackPoint(), trackSegment.getTrackPoint());
+       //assertEquals(trackPoint, trackSegment.getTrackPoint());
     }
 }
