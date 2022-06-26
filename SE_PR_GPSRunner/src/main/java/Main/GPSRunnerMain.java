@@ -14,7 +14,9 @@ public class GPSRunnerMain {
 		controller.getView().setVisible(true);
 		controller.getView().updateChart(controller.getActivities().getActivities());
 		controller.getView().refreshGui();
+		// Controller ist noc nciht ferrig mit refresh GUI
 		controller.getActivities().readFiles();
+
 
 	}
 }

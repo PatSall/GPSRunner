@@ -1,8 +1,5 @@
 package gui;
 
-import org.jdesktop.swingx.JXMapKit;
-import org.jdesktop.swingx.JXMapViewer;
-import org.jdesktop.swingx.mapviewer.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -10,14 +7,19 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import java.awt.*;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
 import java.util.HashSet;
 import java.util.Set;
 
 
+
 import controller.Controller;
+import org.jxmapviewer.JXMapKit;
+import org.jxmapviewer.JXMapViewer;
+import org.jxmapviewer.painter.Painter;
+import org.jxmapviewer.viewer.DefaultWaypoint;
+import org.jxmapviewer.viewer.GeoPosition;
+import org.jxmapviewer.viewer.Waypoint;
+import org.jxmapviewer.viewer.WaypointPainter;
 import sports.Activity;
 import sports.Lap;
 import sports.Track;
@@ -33,22 +35,32 @@ import javax.swing.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
+import org.jxmapviewer.painter.*;
 
+import org.jdesktop.swingx.mapviewer.*;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.time.Month;
 
+import sports.TrackPoint;
+import sports.TrackSegment;
 
 
 public class GUI extends JFrame {
-	
+
 	List<Activity> activityList;
 	List<TrackGPS> trackGPS;
 	Object[][] actualData;
 	Object[][] actualDetail;
-	
+
+	JCheckBoxMenuItem undefined;
 	Filter[] sportsFilter = new Filter[6];
 	Filter[] distanceFilter = new Filter[10];
 	Filter[] graphFilter = new Filter[3];
-	
+	Filter[] viewFilter = new Filter[3];
+
 	JTabbedPane tabbedPanel;
 	JScrollPane upperPanel;
 	JTable table;
@@ -64,22 +76,27 @@ public class GUI extends JFrame {
 	ChartPanel chartPanel;
 	Collection<Activity> activities;
 
-
 	JCheckBoxMenuItem distance;
 	JCheckBoxMenuItem bpm;
 	JCheckBoxMenuItem speed;
 	DefaultCategoryDataset cd;
-	
+
+	JCheckBoxMenuItem day;
+	JCheckBoxMenuItem month;
+	JCheckBoxMenuItem year;
+
 	Controller parent = null;
-	
+
 	String[] columnNames = new String[]{"name","activity","date","distance (m)","time","pace","bpm"};
 	String[] detailColumnNames = new String[] {"distancemeter tracks","altitude meters","time","bpm","meters per second","Cadence","longitude", "latitude"};
-	
-	//Standardisierte Einheiten!
-	public void updateChart(Collection<Activity> activities/*, Collection<TrackGPS> trackGPS*/) {
+
+	String[][] aggrListNames;
+	double[][] aggrList;
+
+	public void updateChart(Collection<Activity> activities) {
 		this.activities = activities;
 		cd.clear();
-		
+
 		String xAxe =  "";
 		String yAxe = "";
 		String graphName = "";
@@ -95,47 +112,65 @@ public class GUI extends JFrame {
 				}
 			}
 		}
-		for (int i = 0; i < activityList.size(); i++) {
-			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
-				cd.addValue(activityList.get(i).showInGraph(graphFilter), activityList.get(i).getId(), xAxe);
+		String temp = "";
+		for(int i = 0; i < viewFilter.length; i++) {
+			if(viewFilter[i].getState()) {
+				temp = viewFilter[i].getName();
 			}
 		}
-		
+		if(temp.equals("")) {
+			for (int i = 0; i < activityList.size(); i++) {
+				if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+					cd.addValue(activityList.get(i).showInGraph(graphFilter), activityList.get(i).getId(), xAxe);
+				}
+			}
+		} else {
+			aggrList(temp);
+			for(int i = 0; i < aggrList.length; i++) {
+				for(int j = 0; j < aggrList[i].length; j++) {
+					if(aggrListNames[i][j] != null) {
+						cd.addValue(aggrList[i][j], aggrListNames[i][j], xAxe);
+					}
+				}
+			}
+		}
+
+
 		JFreeChart chart = ChartFactory.createBarChart(graphName, null, yAxe, cd, PlotOrientation.VERTICAL, true, true, false);
 		chartPanel.setChart(chart);
 	}
-	
+
 	public void setController(Controller parent) {
 		this.parent = parent;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public GUI() {
-		
+
 		setTitle("GPSRunner");
 		setSize(500,500);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+
 		setLayout(new BorderLayout());
 
 		model = new DefaultTableModel(new Object[0][7], columnNames);
 		detailModel = new DefaultTableModel(new Object[0][8], detailColumnNames);
-		
+
 		table = new JTable(model);
 		table.setFillsViewportHeight(true);
 		detailTable = new JTable(detailModel);
 		detailTable.setFillsViewportHeight(true);
 		upperPanel = new JScrollPane(table);
-		
+
 		lowerDetailPanel = new JScrollPane(detailTable);
 
 		lowerMapPanel = new JPanel();
 		mapModel = new Map() ;
 		tabbedPanel = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.WRAP_TAB_LAYOUT);
-		
+
 		table.addMouseListener(click());
-		
+
 		cd = new DefaultCategoryDataset();
 		chartPanel= new ChartPanel(null);
 		chartPanel.setSize(new Dimension(tabbedPanel.getWidth(), tabbedPanel.getHeight()));
@@ -145,10 +180,9 @@ public class GUI extends JFrame {
 		tabbedPanel.addTab("Map", lowerMapPanel);
 
 
-
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT,upperPanel, tabbedPanel);
 		this.add(sp, BorderLayout.CENTER);
-		
+
 		//menu elements
 		JMenuBar menu = new JMenuBar();
 		JMenu file = new JMenu("File");
@@ -156,20 +190,17 @@ public class GUI extends JFrame {
 		JMenu segments = new JMenu("Segments");
 		JMenu graph = new JMenu("Graph");
 		JMenu view = new JMenu("View");
-		JMenu years = new JMenu("Years");
-		JMenu columns = new JMenu("Columns");
+
 
 		//submenu(s) elements
 		JMenu open = new JMenu("Directory...");
-		
+
 		menu.add(file);
 		menu.add(tracks);
 		menu.add(segments);
 		menu.add(graph);
-		//menu.add(view);
-		//menu.add(years);
-		//menu.add(columns);
-		
+		menu.add(view);
+
 		setJMenuBar(menu);
 
 		//File
@@ -177,17 +208,18 @@ public class GUI extends JFrame {
 		tcx.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser(parent.getActivities().getFilepath());
-			    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.showOpenDialog(null);
 				if (chooser.getSelectedFile() != null) {
-				    System.out.println(chooser.getSelectedFile().getPath());
-				    String temp = chooser.getSelectedFile().getPath();
-				    parent.setPath(chooser.getSelectedFile().getPath());
-			 }
+					System.out.println(chooser.getSelectedFile().getPath());
+					String temp = chooser.getSelectedFile().getPath();
+					parent.setPath(chooser.getSelectedFile().getPath());
+				}
 			}
 		});
-		
+
 		//Tracks
+		undefined = new JCheckBoxMenuItem("(undefined)", false);
 		JCheckBoxMenuItem all = new JCheckBoxMenuItem("All", true);
 		JCheckBoxMenuItem running = new JCheckBoxMenuItem("Running");
 		JCheckBoxMenuItem skiing = new JCheckBoxMenuItem("Skiing");
@@ -202,13 +234,27 @@ public class GUI extends JFrame {
 		sportsFilter[4] = new Filter(flying.getLabel(), flying.getState(), flying);
 		sportsFilter[5] = new Filter(hiking.getLabel(), hiking.getState(), hiking);
 
+		undefined.addActionListener(action());
 		all.addActionListener(action());
 		running.addActionListener(action());
 		skiing.addActionListener(action());
 		diving.addActionListener(action());
 		flying.addActionListener(action());
 		hiking.addActionListener(action());
-		
+
+		//view
+		day = new JCheckBoxMenuItem("day", false);
+		month = new JCheckBoxMenuItem("month", false);
+		year = new JCheckBoxMenuItem("year", false);
+
+		day.addActionListener(action());
+		month.addActionListener(action());
+		year.addActionListener(action());
+
+		viewFilter[0] = new Filter(day.getLabel(),day.getState(),day);
+		viewFilter[1] = new Filter(month.getLabel(),month.getState(),month);
+		viewFilter[2] = new Filter(year.getLabel(),year.getState(),year);
+
 		//Segments
 		JCheckBoxMenuItem tenM = new JCheckBoxMenuItem("< 10m", true);
 		JCheckBoxMenuItem twentyM = new JCheckBoxMenuItem("< 20m", true);
@@ -220,7 +266,7 @@ public class GUI extends JFrame {
 		JCheckBoxMenuItem twoHalfKm = new JCheckBoxMenuItem("< 2500m", true);
 		JCheckBoxMenuItem fiveKm = new JCheckBoxMenuItem("< 5000m", true);
 		JCheckBoxMenuItem moreThan = new JCheckBoxMenuItem("> 5000m", true);
-		
+
 		distanceFilter[0] = new Filter(tenM.getLabel(), tenM.getState(), tenM, 10);
 		distanceFilter[1] = new Filter(twentyM.getLabel(), twentyM.getState(), twentyM, 20);
 		distanceFilter[2] = new Filter(fiftyM.getLabel(), fiftyM.getState(), fiftyM, 50);
@@ -231,7 +277,7 @@ public class GUI extends JFrame {
 		distanceFilter[7] = new Filter(twoHalfKm.getLabel(), twoHalfKm.getState(), twoHalfKm, 2500);
 		distanceFilter[8] = new Filter(fiveKm.getLabel(), fiveKm.getState(), fiveKm, 5000);
 		distanceFilter[9] = new Filter(moreThan.getLabel(), moreThan.getState(), moreThan, Integer.MAX_VALUE);
-		
+
 		tenM.addActionListener(action());
 		twentyM.addActionListener(action());
 		fiftyM.addActionListener(action());
@@ -242,16 +288,16 @@ public class GUI extends JFrame {
 		twoHalfKm.addActionListener(action());
 		fiveKm.addActionListener(action());
 		moreThan.addActionListener(action());
-		
+
 		//Graph
 		distance = new JCheckBoxMenuItem("distance", true);
 		bpm = new JCheckBoxMenuItem("bpm");
 		speed = new JCheckBoxMenuItem("speed");
-		
+
 		distance.addActionListener(action());
 		bpm.addActionListener(action());
 		speed.addActionListener(action());
-		
+
 		graphFilter[0] = new Filter(distance.getLabel(), distance.getState(), distance);
 		graphFilter[1] = new Filter(bpm.getLabel(), bpm.getState(), bpm);
 		graphFilter[2] = new Filter(speed.getLabel(), speed.getState(), speed);
@@ -259,6 +305,7 @@ public class GUI extends JFrame {
 
 		//add to menu-elems
 		file.add(open);
+		tracks.add(undefined);
 		tracks.add(all);
 		tracks.add(running);
 		tracks.add(skiing);
@@ -278,24 +325,27 @@ public class GUI extends JFrame {
 		graph.add(distance);
 		graph.add(bpm);
 		graph.add(speed);
-		
+		view.add(day);
+		view.add(month);
+		view.add(year);
+
 		//add to submenu-elems
 		open.add(tcx);
 	}
-	
+
 	public MouseListener click() {
 		return new MouseListener() {
 			@Override
 			public void mousePressed(MouseEvent me) {
-			    JTable table =(JTable) me.getSource();
-			    Point p = me.getPoint();
-			    int row = table.rowAtPoint(p);
-			    System.out.println(row);
-			    if(row != -1) {
+				JTable table =(JTable) me.getSource();
+				Point p = me.getPoint();
+				int row = table.rowAtPoint(p);
+				System.out.println(row);
+				if(row != -1) {
 					getEvent((String) actualData[row][0]);
 					refreshDetails();
 					refreshMap(getEventMap((String) actualData[row][0]));
-			    }
+				}
 			}
 
 			@Override
@@ -311,33 +361,52 @@ public class GUI extends JFrame {
 			public void mouseExited(MouseEvent e) {}
 		};
 	}
-	
+
 	public void refreshGui() {
 		model.setDataVector(table(), columnNames);
 		model.fireTableChanged(null);
 		this.updateChart(activityList);
 	}
-	
+
 	public void refreshDetails() {
 		detailModel.setDataVector(actualDetail, detailColumnNames);
 	}
 	public void refreshMap(ArrayList<Waypoint> waypoints) {
-		mapModel.map.removeAll();
-		mapModel.removeAll();
+		mapModel.map.getMainMap().removeAll();
 		lowerMapPanel.removeAll();
-		mapModel.map.add(new Map(waypoints));
+
+		mapModel.map.getMainMap().add(new Map(waypoints));
 		mapModel.map.repaint();
 	}
-	
+
 	public Object[][] table() {
 		int counter = 0;
 		int countEntries = 0;
+
+
 		for (int i = 0; i < activityList.size(); i++ ) {
 			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
 				countEntries++;
 			}
 		}
+		if(undefined.getState()) {
+			for(int i = 0; i < trackGPS.size(); i++) {
+				countEntries++;
+			}
+		}
 		Object[][] data = new Object[countEntries][7];
+		if(undefined.getState()) {
+			for(int i = 0; i < trackGPS.size(); i++) {
+				data[counter][0] = trackGPS.get(i).getName();
+				data[counter][1] = "(undefined)";
+				data[counter][2] = "";
+				data[counter][3] = "";
+				data[counter][4] = "";
+				data[counter][5] = "";
+				data[counter][6] ="";
+				counter++;
+			}
+		}
 		for (int i = 0; i < activityList.size(); i++ ) {
 			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
 				data[counter][0] = activityList.get(i).getId();
@@ -356,22 +425,20 @@ public class GUI extends JFrame {
 				counter++;
 			}
 		}
+
+
 		actualData = data;
 		return data;
 	}
-	
+
 	public void setActivityList(List<Activity> activityList) {
 		this.activityList = activityList;
 	}
-	
+
 	public void setTrackGPS(List<TrackGPS> trackGPS) {
 		this.trackGPS = trackGPS;
 	}
-	
-	public void createPanels() {
-		
-	}
-	
+
 	public ActionListener action() {
 		return new ActionListener() {
 			@Override
@@ -429,13 +496,33 @@ public class GUI extends JFrame {
 					distance.setState(false);
 					bpm.setState(false);
 					speed.setState(true);
+				} else if(viewFilter[0].button == e.getSource()) {
+					viewFilter[0].setState(!viewFilter[0].getState());
+					day.setState(viewFilter[0].getState());
+					viewFilter[1].setState(false);
+					month.setState(false);
+					viewFilter[2].setState(false);
+					year.setState(false);
+				} else if(viewFilter[1].button == e.getSource()) {
+					viewFilter[0].setState(false);
+					day.setState(false);
+					viewFilter[1].setState(!viewFilter[1].getState());
+					month.setState(viewFilter[1].getState());
+					viewFilter[2].setState(false);
+					year.setState(false);
+				} else if(viewFilter[2].button == e.getSource()) {
+					viewFilter[0].setState(false);
+					day.setState(false);
+					viewFilter[1].setState(false);
+					month.setState(false);
+					viewFilter[2].setState(!viewFilter[2].getState());
+					year.setState(viewFilter[2].getState());
 				}
 				refreshGui();
 			}
 		};
 	}
-	
-	//TODO
+
 	public void getEvent(String name) {
 		for(Activity a : activityList) {
 			if(name.equals(a.getId())) {
@@ -450,7 +537,7 @@ public class GUI extends JFrame {
 				for(Lap l : list) {
 					List<Track> temp = l.getTrack();
 					for(Track track : temp) {
-						
+
 						actualDetail[position][0] = null;
 						actualDetail[position][1] = null;
 						actualDetail[position][2] = null;
@@ -467,7 +554,7 @@ public class GUI extends JFrame {
 							actualDetail[position][2] = track.getTime();
 						if(track.getHeartRateBpm() != null)
 							actualDetail[position][3] = track.getHeartRateBpm();
-						
+
 
 						if(track.getExtension() != null) {
 							if(track.getExtension().getSpeed() != null) {
@@ -481,7 +568,44 @@ public class GUI extends JFrame {
 						System.out.println(track.getPosition());
 						if(track.getPosition() != null) {
 							actualDetail[position][6] = track.getPosition().getLongitudeDegrees();
-							actualDetail[position][7] = track.getPosition().getLatitudeDegrees();	
+							actualDetail[position][7] = track.getPosition().getLatitudeDegrees();
+						}
+						position++;
+					}
+				}
+			}
+		}
+
+		for(TrackGPS a : trackGPS) {
+			if(name.equals(a.getName())) {
+				List<TrackSegment> list = a.getTrackSegments();
+				int counter = 0;
+				for(TrackSegment t : list) {
+					for(TrackPoint tp : t.getTrackPoint()) {
+						counter++;
+					}
+				}
+				System.out.println(counter);
+				actualDetail = new Object[counter][8];
+				int position = 0;
+				for(TrackSegment t : list) {
+					List<TrackPoint> temp = t.getTrackPoint();
+					for(TrackPoint track : temp) {
+
+						actualDetail[position][0] = null;
+						actualDetail[position][1] = null;
+						actualDetail[position][2] = null;
+						actualDetail[position][3] = null;
+						actualDetail[position][4] = null;
+						actualDetail[position][5] = null;
+						actualDetail[position][6] = null;
+						actualDetail[position][7] = null;
+
+						if(track.getTrackPointLon() != null) {
+							actualDetail[position][6] = track.getTrackPointLon();
+						}
+						if(track.getTrackPointLat() != null) {
+							actualDetail[position][7] = track.getTrackPointLat();
 						}
 						position++;
 					}
@@ -508,6 +632,21 @@ public class GUI extends JFrame {
 				}
 			}
 		}
+		for(TrackGPS a : trackGPS) {
+			if(name.equals(a.getName())) {
+				List<TrackSegment> list = a.getTrackSegments();
+				Waypoint waypoint;
+				for(TrackSegment l : list) {
+					List<TrackPoint> temp = l.getTrackPoint();
+					for(TrackPoint track : temp) {
+						if (track.getTrackPointLat() != null) {
+							waypoint = (new DefaultWaypoint(new GeoPosition(track.getTrackPointLat(), track.getTrackPointLon())));
+							waypoints.add(waypoint);
+						}
+					}
+				}
+			}
+		}
 		return waypoints;
 	}
 
@@ -515,7 +654,139 @@ public class GUI extends JFrame {
 		this.activityList = activityList;
 		refreshGui();
 	}
-	
+
+	public List<Activity> getActivities() {
+		return activityList;
+	}
+
+	public String activeView() {
+		for(int i = 0; i < viewFilter.length; i++) {
+			if(viewFilter[i].getState()) {
+				return viewFilter[i].getName();
+			}
+		}
+		return "";
+	}
+
+	public void aggrList(String view) {
+		String filter = "";
+		for(int i = 0; i < graphFilter.length; i++) {
+			if(graphFilter[i].getState()) {
+				filter = graphFilter[i].getName();
+			}
+		}
+		if(view.equals("day")) {
+			System.out.println(view);
+			aggrList = new double[10][365];
+			aggrListNames = new String[10][365];
+			for(int i = 0; i < activityList.size(); i++) {
+				if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+					int day = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getDayOfYear();
+					int dayOfMonth = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getDayOfMonth();
+					Month month = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getMonth();
+					int year = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getYear();
+					for(int j = 0; j < aggrList.length; j++){
+						if(aggrListNames[j][day-1] == null) {
+							aggrListNames[j][day-1] = dayOfMonth +"."+month+" "+year;
+							if(filter.equals("distance")) {
+								aggrList[j][day-1] = activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
+							} else if(filter.equals("bpm")) {
+								aggrList[j][day-1] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
+							} else if(filter.equals("speed")) {
+								aggrList[j][day-1] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60;
+							}
+						} else if(aggrListNames[j][day-1] != null && aggrListNames[j].equals(dayOfMonth +"."+month+" "+year)) {
+							if(filter.equals("distance")) {
+								aggrList[j][day-1] += activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
+							} else if(filter.equals("bpm")) {
+								aggrList[j][day-1] += (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
+							} else if(filter.equals("speed")) {
+								aggrList[j][day-1] += (aggrList[j][day-1]+(double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60)/2;
+							}
+						} else if (j == aggrList.length-1) {
+							extendList();
+						}
+					}
+				}
+			}
+		} else if (view.equals("month")) {
+			aggrList = new double[10][12];
+			aggrListNames = new String[10][12];
+			for(int i = 0; i < activityList.size(); i++) {
+				if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+					int month = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getMonth().getValue();
+					Month month2 = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getMonth();
+					int year = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getYear();
+					for(int j = 0; j < aggrList.length; j++){
+						if(aggrListNames[j][month-1] == null) {
+							aggrListNames[j][month-1] = month2 +" "+year;
+							if(filter.equals("distance")) {
+								aggrList[j][month-1] = activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
+							} else if(filter.equals("bpm")) {
+								aggrList[j][month-1] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
+							} else if(filter.equals("speed")) {
+								aggrList[j][month-1] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60;
+							}
+						} else if(aggrListNames[j][month-1] != null && aggrListNames[j].equals(month2 +" "+year)) {
+							if(filter.equals("distance")) {
+								aggrList[j][month-1] += activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
+							} else if(filter.equals("bpm")) {
+								aggrList[j][month-1] += (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
+							} else if(filter.equals("speed")) {
+								aggrList[j][month-1] = (aggrList[j][month-1]+(double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60)/2;
+							}
+						} else if (j == aggrList.length-1) {
+							extendList();
+						}
+					}
+				}
+			}
+		} else {
+			aggrList = new double[10][1];
+			aggrListNames = new String[10][1];
+			for(int i = 0; i < activityList.size(); i++) {
+				if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+					int year = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime().getYear();
+					for(int j = 0; j < aggrList.length; j++){
+						if(aggrListNames[j][0] != null && aggrListNames[j][0].equals(""+year)) {
+							if(filter.equals("distance")) {
+								aggrList[j][0] += activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
+							} else if(filter.equals("bpm")) {
+								aggrList[j][0] += (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
+							} else if(filter.equals("speed")) {
+								aggrList[j][0] = (aggrList[j][0]+(double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60)/2;
+							}
+							break;
+						} else if(aggrListNames[j][0] == null) {
+							aggrListNames[j][0] = ""+year;
+							if(filter.equals("distance")) {
+								aggrList[j][0] = activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
+							} else if(filter.equals("bpm")) {
+								aggrList[j][0] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
+							} else if(filter.equals("speed")) {
+								aggrList[j][0] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60;
+							}
+							break;
+						} else if (j == aggrList.length-1) {
+							extendList();
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void extendList() {
+		double[][] temp = new double[aggrList.length + 10][aggrList[0].length];
+		String[][] tempNames = new String[aggrListNames.length + 10][aggrListNames[0].length];
+		for(int i = 0; i < aggrList.length; i++) {
+			for(int j = 0; j < aggrList[i].length; j++) {
+				tempNames[i][j] = aggrListNames[i][j];
+				temp[i][j] = aggrList[i][j];
+			}
+		}
+	}
+
 	public class Filter{
 		private final String name;
 		private  boolean state;
@@ -535,7 +806,7 @@ public class GUI extends JFrame {
 		public boolean getState() {
 			return this.state;
 		}
-		
+
 		public int getNumber() {
 			return this.number;
 		}
@@ -543,7 +814,7 @@ public class GUI extends JFrame {
 		public String getName() {
 			return this.name;
 		}
-		
+
 		public JCheckBoxMenuItem getButton() {
 			return this.button;
 		}
@@ -553,98 +824,41 @@ public class GUI extends JFrame {
 		}
 	}
 
-	public class Map extends
-			JXMapViewer {
+	public class Map extends JXMapViewer {
 
 		private  final JXMapKit map;
-
-
 		private ArrayList<Waypoint> waypoints;
-
+		private RoutePainter routePainter;
 		public Map () {
 			this.map = new JXMapKit();
 			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
-			//map.setZoom(20);
 			map.setDataProviderCreditShown(true);
 			map.setAddressLocationShown(true);
 			lowerMapPanel.setLayout(new BorderLayout());
 			lowerMapPanel.add(map, BorderLayout.CENTER);
-			//map.removeAll();
-			this.setVisible(true);
+			map.setVisible(true);
 		}
 
-
-
 		public Map (ArrayList<Waypoint> waypoints) {
-			//super();
 			this.waypoints = waypoints;
 			Set<Waypoint> waypointsFirst = new HashSet<>();
 			this.map = new JXMapKit();
 			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
 			this.map.setCenterPosition(waypoints.get(0).getPosition());
-			WaypointPainter<Waypoint> painter = new WaypointPainter();
+			WaypointPainter<Waypoint> waypointPainter = new WaypointPainter();
 
 			waypointsFirst.add(waypoints.get(0));
 			waypointsFirst.add(waypoints.get(waypoints.size()-1));
-			painter.setWaypoints(waypointsFirst);
-			painter.setRenderer(new WaypointRenderer<Waypoint>() {
-				@Override
-				public void paintWaypoint(Graphics2D g, JXMapViewer jxMapViewer, Waypoint waypoint) {
-					g = (Graphics2D) g.create();
-					g.setColor(Color.BLUE);
+			waypointPainter.setWaypoints(waypointsFirst);
+			routePainter = new RoutePainter(this.waypoints);
+			List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
+			painters.add(routePainter);
+			painters.add(waypointPainter);
 
-
-					double lastX = 0.0;
-					double lastY = 0.0;
-
-					boolean first = true;
-					//Point2D pt = null;
-					for (Waypoint gp : waypoints)
-					{
-						// convert geo-coordinate to world bitmap pixel
-
-						Point2D pt = mapModel.getTileFactory().geoToPixel(gp.getPosition(),
-								mapModel.map.getMiniMap().getZoom());
-
-						//System.out.println("Point2D " + pt.getX() +  "  Y" + pt.getY() );
-						//pt = new Point((int) gp.getPosition().getLatitude(), (int) gp.getPosition().getLongitude());
-						if (first)
-						{
-							first = false;
-						}
-						else
-						{
-							//g.drawLine(lastX, lastY, (int) pt.getX(), (int) pt.getY());
-							g.setStroke(new BasicStroke(5));
-							g.draw(new Line2D.Double(lastX, lastY, pt.getX(), pt.getY()));
-							//paintComponent(g);
-							g.dispose();
-						}
-						//System.out.println("test");
-						//g.drawLine(545,350,550,357);
-						lastX = pt.getX();
-						lastY = pt.getY();
-
-						System.out.println("lastY " + lastY);
-						System.out.println("lastX " + lastX);
-					}
-
-					//g.setStroke(new BasicStroke(5));
-
-				}
-			});
-
-			// addMapPolygon
-			map.setAddressLocationShown(true);
+			CompoundPainter<JXMapViewer> painter = new CompoundPainter<JXMapViewer>(painters);
+			map.getMainMap().setOverlayPainter(painter);
 			lowerMapPanel.setLayout(new BorderLayout());
 			lowerMapPanel.add(map, BorderLayout.CENTER);
-			map.getMainMap().setOverlayPainter(painter);
-
-			//map.setZoom(20);
-			this.setVisible(true);
-
-			map.validate();
-			map.repaint();
 
 		}
 	}

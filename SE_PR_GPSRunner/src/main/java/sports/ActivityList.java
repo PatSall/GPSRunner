@@ -61,10 +61,6 @@ public class ActivityList {
 		System.out.println(activities.get(0).getId());
 		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
 
-		System.out.println("parse GPX Files");
-		temp = new Timestamp(System.currentTimeMillis());
-		//trackGPS = parseGPX();
-		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
 
 		trackGPS = parseSaxGPX();
 	}
@@ -310,15 +306,22 @@ public class ActivityList {
 
 
 	public void parseSaxTCX() {
+		//Thread Filelist übergeben , tcxFile komplett,
+		//ReadActivityThread thread = null;
+
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			Path file;
-			// Thread abändern 2 Threads
-			// Parser und Thread trennen
+			List<Path> filesTCX = new ArrayList<>();
+
 			for (int i = firstFiles; i < tcxFiles.size(); i++) {
 				file = tcxFiles.get(i).getFile();
-				if (file.getFileName().toString().endsWith(".tcx")) {
-					new ReadActivityThread(this, file).start();
+				System.out.println("first Files " + activities.size());
+				if (file.getFileName().toString().endsWith(".tcx") && file != null) {
+					filesTCX.add(file);
 				}
+			}
+			if (filesTCX != null) {
+				new ReadActivityThread(this, filesTCX).start();
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -335,7 +338,6 @@ public class ActivityList {
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			saxParser = factory.newSAXParser();
 			for (Path file : stream) {
-				System.out.println("ParseTX " + file.getFileName());
 				if (file.getFileName().toString().endsWith(".tcx")) {
 					MapActivityObjectHandlerSaxTimestamp handlerSaxTCX = new MapActivityObjectHandlerSaxTimestamp();
 					saxParser.parse(file.toString(), handlerSaxTCX);
@@ -361,7 +363,6 @@ public class ActivityList {
 			for (int i = 0; i < firstFiles; i++) {
 				if (tcxFiles.size() - 1 >= i) {
 					file = tcxFiles.get(i).getFile();
-					System.out.println("parseSaxFirstTCX " + file.getFileName());
 					if (file.getFileName().toString().endsWith(".tcx")) {
 						try {
 							saxParser = factory.newSAXParser();

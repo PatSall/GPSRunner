@@ -78,10 +78,6 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
             return;
         }
 
-       /* if (qName.equalsIgnoreCase("desc")) {
-            currentTrack.setDate(LocalDateTime.parse()currentValue.toString());
-            return;
-        }*/
 
         if (qName.equalsIgnoreCase("ele")) {
             currentTrackPoint.setElem(Double.parseDouble(currentValue.toString()));

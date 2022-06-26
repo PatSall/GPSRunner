@@ -11,14 +11,15 @@ public class Controller {
 	private final GUI view;
 	Timer timer = new Timer();
 	public Controller(ActivityList activities, GUI view){
+
 		this.activities = activities;
 		this.view = view;
-		
+
 		activities.setController(this);
 		view.setActivityList(activities.getActivities());
 		view.setTrackGPS(activities.getTrackGPS());
 		view.setController(this);
-		timer.schedule(new UpdateUITask(view,activities), 0, 1000);
+		timer.schedule(new UpdateUITask(view, activities), 0, 500);
 	}
 
 	public ActivityList getActivities() {
@@ -29,7 +30,6 @@ public class Controller {
 		return view;
 	}
 	public void setPath(String filepath) {
-		System.out.println("Controller " + filepath);
 		this.activities.setFilepath(filepath);
 	}
 

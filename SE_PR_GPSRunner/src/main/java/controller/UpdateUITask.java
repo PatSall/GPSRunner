@@ -14,6 +14,7 @@ public class UpdateUITask extends TimerTask {
     public UpdateUITask(GUI view, ActivityList activities) {
         this.view = view;
         this.activities = activities;
+
     }
 
 
@@ -24,9 +25,11 @@ public class UpdateUITask extends TimerTask {
             @Override
             public void run() {
                 System.out.println("UPDATE JETZT:" + activities.getActivities().size() + " Aktivitäten");
+                System.out.println("update Jet " + view.getActivities().size());
                 view.setActivities(activities.getActivities());
             }
         });
+
     }
 
 }
