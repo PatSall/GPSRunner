@@ -1,5 +1,6 @@
 package Test;
 
+import org.junit.jupiter.api.Test;
 import sports.FileTCX;
 import sports.MapActivityObjectHandlerSaxTimestamp;
 
@@ -12,11 +13,14 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.*;
 
 class FileTCXTest {
-    public String testfile = "test.tcx";
-    FileTCX tcxFile;
-    private Path file;
 
-    {
-        tcxFile.setFileName(file.getFileName().toString());
+    @Test
+    void testSetter_Getter_FileName() {
+        String testfile = "test.tcx";
+        FileTCX tcxFile = new FileTCX();
+        String file;
+
+        tcxFile.setFileName(testfile);
+        assertEquals(testfile, tcxFile.getFileName());
     }
 }
