@@ -8,9 +8,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-//zeile 21 in Lap entfernen!
-// getter und setter ordnen!
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class LapTest {
