@@ -11,27 +11,27 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
 
 
     private final StringBuilder currentValue = new StringBuilder();
-    List<TrackGPS> tracks;
-    TrackGPS track;
+    List<TrackGPX> tracks;
+    TrackGPX track;
     List<TrackSegment> segments ;
-    TrackGPS currentTrack;
+    TrackGPX currentTrack;
     TrackSegment currentSegment;
 
     List<TrackPoint> trackPoints;
     TrackPoint currentTrackPoint;
 
 
-    public List<TrackGPS> getTrackGPsResult() {
+    public List<TrackGPX> getTrackGPsResult() {
         return tracks;
     }
 
-    public TrackGPS getTrackGPSResult() {
+    public TrackGPX getTrackGPSResult() {
         return track;
     }
 
     @Override
     public void startDocument() {
-        track = new TrackGPS();
+        track = new TrackGPX();
         tracks = new ArrayList<>();
     }
 
@@ -47,7 +47,7 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
 
         if (qName.equalsIgnoreCase("trk")) {
             // new activity
-            currentTrack = new TrackGPS();
+            currentTrack = new TrackGPX();
             segments = new ArrayList<>();
         }
 

@@ -16,8 +16,9 @@ public class Controller {
 		this.view = view;
 
 		activities.setController(this);
-		view.setActivityList(activities.getActivities());
-		view.setTrackGPS(activities.getTrackGPS());
+		//view.setActivityList(activities.getActivities());
+		view.setActivities(activities.getActivities());
+		view.setTrackGPS(activities.getTrackGPX());
 		view.setController(this);
 		timer.schedule(new UpdateUITask(view, activities), 0, 500);
 	}

@@ -1,34 +1,32 @@
 package Test;
 
 import org.junit.jupiter.api.Test;
-import sports.TrackGPS;
-import sports.TrackSegment;
+import sports.TrackGPX;
 
 import java.util.Date;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TrackGPSTest {
+class TrackGPXTest {
 
     @Test
     void testSetter_Getter_Name() {
 
         String name = "testzwecke";
-        TrackGPS trackGPS = new TrackGPS();
-        trackGPS.setName(name);
+        TrackGPX trackGPX = new TrackGPX();
+        trackGPX.setName(name);
 
-        assertEquals(name, trackGPS.getName());
+        assertEquals(name, trackGPX.getName());
     }
 
     @Test
     void testSetter_Getter_Date() {
 
         Date date = new Date();
-        TrackGPS trackGPS = new TrackGPS();
-        trackGPS.setDate(date);
+        TrackGPX trackGPX = new TrackGPX();
+        trackGPX.setDate(date);
 
-        assertEquals(date, trackGPS.getDate());
+        assertEquals(date, trackGPX.getDate());
     }
 
    /*

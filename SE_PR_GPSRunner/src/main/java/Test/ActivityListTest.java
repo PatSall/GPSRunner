@@ -7,19 +7,17 @@ import sports.Lap;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class ActivityListTest {
 
-    @Test
+    /*@Test
     void testSetter_Getter_Filepath () {
         ActivityList activityList = new ActivityList();
         activityList.setFilepath("hallo");
 
         assertEquals("hallo", activityList.getFilepath());
-    }
+    }*/
 
     @Test
     void testAdd_Activity () {

@@ -5,7 +5,11 @@ import java.util.*;
 
 import gui.GUI.Filter;
 
-
+/**
+ * Activity ist Teil der Struktur der TCX Files,
+ * welche hierarchisch aufgebaut sind.
+ * @author Susanne Gumplmayr
+ */
 public class Activity {
 
     private List<Lap> lap;
@@ -22,30 +26,56 @@ public class Activity {
     }
 
 
+    /**
+     * @return liefert die Activtiy im Format Activity;
+     * z.B Laufen, Schwimmen...
+     */
     public String getActivity() {
         return activity;
     }
 
+    /**
+     * @param sport setzt die Activtiy im Format Activity;
+     * z.B Laufen, Schwimmen...
+     */
     public void setActivity(String sport) {
         this.activity = sport;
     }
 
+    /**
+     * @return liefert die ID in Format String;
+     * meist Ort
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @param id setzt die ID in Format String;
+     * meist Ort
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * @return liefert eine Liste mit Laps
+     */
     public List<Lap> getLap() {
         return lap;
     }
 
+    /**
+     * @param laps setzt eine Liste mit Laps
+     */
     public void setLap(List<Lap> laps) {
         this.lap = laps;
     }
 
+    /**
+     * @param laps eine Liste von Laps wird übergeben
+     * @return liefert den Durschnittswerte eines Laps pro Attribut
+     */
     public Lap averageLap(List<Lap> laps) {
         LocalDateTime startTime = null;
         Double totalTimeSeconds = 0.0;
@@ -54,23 +84,21 @@ public class Activity {
         Integer calories = 0;
         double averageHeartRateBpm = 0;
         Integer maximumHeartRateBpm = 0;
-        for(int i = 0; i < laps.size(); i++) {
+        for (Lap value : laps) {
             lapCounter++;
             startTime = laps.get(0).getStartTime();
-            totalTimeSeconds += laps.get(i).getTotalTimeSeconds();
-            if(laps.get(i).getDistanceMetersTracks() != null) {
-            	distanceMeters += laps.get(i).getDistanceMetersTracks();
+            totalTimeSeconds += value.getTotalTimeSeconds();
+            if (value.getDistanceMetersTracks() != null) {
+                distanceMeters += value.getDistanceMetersTracks();
             }
-            if (laps.get(i).getMaximumSpeed() != null && maximumSpeed < laps.get(i).getMaximumSpeed()){
-                maximumSpeed = laps.get(i).getMaximumSpeed();
+            if (value.getMaximumSpeed() != null && maximumSpeed < value.getMaximumSpeed()) {
+                maximumSpeed = value.getMaximumSpeed();
             }
-            calories += laps.get(i).getCalories();
-//            if(laps.get(i).getAverageHeartRateBpm() != null) {
-            	averageHeartRateBpm += laps.get(i).getAverageHeartRateBpm();
-            	//System.out.println(lapCounter);
-//            }
-            if (laps.get(i).getMaximumHeartRateBpm() != null && maximumHeartRateBpm < laps.get(i).getMaximumHeartRateBpm()) {
-                maximumHeartRateBpm = laps.get(i).getMaximumHeartRateBpm();
+            calories += value.getCalories();
+            averageHeartRateBpm += value.getAverageHeartRateBpm();
+
+            if (value.getMaximumHeartRateBpm() != null && maximumHeartRateBpm < value.getMaximumHeartRateBpm()) {
+                maximumHeartRateBpm = value.getMaximumHeartRateBpm();
             }
         }
         
@@ -80,11 +108,18 @@ public class Activity {
     }
 
 
+    /**
+     * @return String bestehend aus allen Activity & Laps
+     */
     @Override
     public String toString () {
         return "Activity " + this.activity + "\n ID " + this.id + "\n Lap" +  this.lap;
     }
-    
+
+    /**
+     * @param graphFilter
+     * @return
+     */
     public Double showInGraph(Filter[] graphFilter) {
     	if (graphFilter[0].getState()) { //Distance
     		return this.averageLap(this.getLap()).getDistanceMetersTracks();
@@ -95,21 +130,28 @@ public class Activity {
     	}
     	return 0.0;
     }
-    
+
+    /**
+     * @param sportsFilter
+     * @param distanceFilter
+     * @return
+     */
     public boolean showInGui(Filter[] sportsFilter, Filter[] distanceFilter) {
     	boolean sportOK = false;
     	boolean distanceOK = false;
     	if (sportsFilter[0].getState())
     		sportOK = true;
     	for(int j = 1; j < sportsFilter.length; j++) {
-    		if (this.getActivity().equals(sportsFilter[j].getName()) && sportsFilter[j].getState())
-    			sportOK = true;
+            if (this.getActivity().equals(sportsFilter[j].getName()) && sportsFilter[j].getState()) {
+                sportOK = true;
+                break;
+            }
     	}
-    	
-    	for (int i = 0; i < distanceFilter.length; i++) {
-    		if (distanceFilter[i].getState() && distanceFilter[i].getNumber() >= this.averageLap(this.getLap()).getDistanceMetersTracks())
-    			distanceOK = true;   		 
-    	}
+
+        for (Filter filter : distanceFilter) {
+            if (filter.getState() && filter.getNumber() >= this.averageLap(this.getLap()).getDistanceMetersTracks())
+                distanceOK = true;
+        }
     	return sportOK && distanceOK;
     }
 }

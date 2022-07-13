@@ -6,6 +6,12 @@ import java.util.TimerTask;
 import gui.GUI;
 import sports.ActivityList;
 
+
+/**
+ * Activity ist Teil der Struktur der TCX Files,
+ * welche hierarchisch aufgebaut sind.
+ * @author Patrick Sallaberger & Susanne Gumplmayr
+ */
 public class UpdateUITask extends TimerTask {
 
     GUI view;
@@ -18,16 +24,15 @@ public class UpdateUITask extends TimerTask {
     }
 
 
+    /**
+     *
+     */
     @Override
     public void run() {
-        EventQueue.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                System.out.println("UPDATE JETZT:" + activities.getActivities().size() + " Aktivitäten");
-                System.out.println("update Jet " + view.getActivities().size());
-                view.setActivities(activities.getActivities());
-            }
+        EventQueue.invokeLater(() -> {
+            System.out.println("UPDATE JETZT:" + activities.getActivities().size() + " Aktivitäten");
+            System.out.println("update getActivity " + view.getActivities().size());
+            view.setActivities(activities.getActivities());
         });
 
     }

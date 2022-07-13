@@ -8,6 +8,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity ist Teil der Struktur der TCX Files,
+ * welche hierarchisch aufgebaut sind.
+ * @author Susanne Gumplmayr
+ */
 public class MapActivityObjectHandlerSax extends DefaultHandler {
 
 
@@ -39,16 +44,35 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
         return activities;
     }
 
+    /**
+     * @return
+     */
     public Activity getActivityResult() {
         return activity;
     }
 
+    /**
+     *
+     */
     @Override
     public void startDocument() {
         activity = new Activity();
         activities = new ArrayList<>();
     }
 
+    /**
+     * @param uri        The Namespace URI, or the empty string if the
+     *                   element has no Namespace URI or if Namespace
+     *                   processing is not being performed.
+     * @param localName  The local name (without prefix), or the
+     *                   empty string if Namespace processing is not being
+     *                   performed.
+     * @param qName      The qualified name (with prefix), or the
+     *                   empty string if qualified names are not available.
+     * @param attributes The attributes attached to the element.  If
+     *                   there are no attributes, it shall be an empty
+     *                   Attributes object.
+     */
     @Override
     public void startElement(
             String uri,
@@ -114,6 +138,17 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
 
 
     }
+
+    /**
+     * @param uri       The Namespace URI, or the empty string if the
+     *                  element has no Namespace URI or if Namespace
+     *                  processing is not being performed.
+     * @param localName The local name (without prefix), or the
+     *                  empty string if Namespace processing is not being
+     *                  performed.
+     * @param qName     The qualified name (with prefix), or the
+     *                  empty string if qualified names are not available.
+     */
     public void endElement(String uri,
             String localName,
             String qName) {
@@ -203,17 +238,6 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
             return;
         }
 
-      /*if (qName.equalsIgnoreCase("Track")) {
-            currentTrack.setPosition(positions);
-            currentTrack.setExtension(extensions);
-            tracks.add(currentTrack);
-        }
-
-        if (qName.equalsIgnoreCase("Lap")) {
-            currentLap.setTrack(tracks);
-            laps.add(currentLap);
-        }*/
-
         if (qName.equalsIgnoreCase("Activity")) {
             currentActivity.setLap(laps);
             activity = currentActivity;
@@ -223,6 +247,12 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
 
     }
 
+    /**
+     * @param uri
+     * @param localName
+     * @param qName
+     * @param attributes
+     */
     public void endDocument (String uri,
                              String localName,
                              String qName,
@@ -233,6 +263,12 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
     }
 
 
+    /**
+     * @param ch     The characters.
+     * @param start  The start position in the character array.
+     * @param length The number of characters to use from the
+     *               character array.
+     */
     public void characters(char ch[], int start, int length) {
             currentValue.append(ch, start, length);
     }

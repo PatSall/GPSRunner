@@ -11,13 +11,17 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+
+/**
+ * Activity ist Teil der Struktur der TCX Files,
+ * welche hierarchisch aufgebaut sind.
+ * @author Susanne Gumplmayr
+ */
 public class ReadActivityThread extends Thread {
 
     final ActivityList parent;
-    //Path file;
     List<Path> file;
     SAXParserFactory factory = SAXParserFactory.newInstance();
-    //static int firstFiles;
     SAXParser saxParser = null;
     Activity activity = null;
 
@@ -27,6 +31,9 @@ public class ReadActivityThread extends Thread {
         this.file = file;
     }
 
+    /**
+     *
+     */
     public void run() {
         for (Path f : file) {
             try {

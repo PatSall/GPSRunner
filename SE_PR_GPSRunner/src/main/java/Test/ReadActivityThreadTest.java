@@ -1,11 +1,9 @@
 package Test;
 
 import org.junit.jupiter.api.Test;
-import sports.MapActivityObjectHandlerSax;
 import sports.ReadActivityThread;
 
-import java.nio.file.Path;
-import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 

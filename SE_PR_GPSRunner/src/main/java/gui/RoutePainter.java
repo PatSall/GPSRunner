@@ -9,17 +9,31 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-public class RoutePainter implements Painter<JXMapViewer>
-{
+
+/**
+ * RoutePainter ist Teil der Map,
+ * welche Methoden enthält diese überschrieben werden
+ * @author Susanne Gumplmayr
+ */
+public class RoutePainter implements Painter<JXMapViewer> {
     private final Color color = Color.blue;
 
     private final ArrayList<Waypoint> waypoint;
 
+    /**
+     * @param waypoint
+     */
     public RoutePainter(ArrayList<Waypoint> waypoint)
     {
         this.waypoint = new ArrayList<>(waypoint);
     }
 
+    /**
+     * @param g
+     * @param map
+     * @param w
+     * @param h
+     */
     @Override
     public void paint(Graphics2D g, JXMapViewer map, int w, int h)
     {
@@ -43,6 +57,10 @@ public class RoutePainter implements Painter<JXMapViewer>
         g.dispose();
     }
 
+    /**
+     * @param g
+     * @param map
+     */
     private void drawRoute(Graphics2D g, JXMapViewer map)
     {
         double lastX = 0;

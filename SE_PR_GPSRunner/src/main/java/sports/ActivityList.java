@@ -11,22 +11,32 @@ import java.nio.file.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-
+/**
+ * Activity ist Teil der Struktur der TCX Files,
+ * welche hierarchisch aufgebaut sind.
+ * @author Patrick Sallaberger & Susanne Gumplmayr
+ */
 public class ActivityList {
 
 	private static final int firstFiles = 10;
 	private List<Activity> activities;
 
-	private final List<TrackGPS> trackGPS;
+	private final List<TrackGPX> trackGPS;
 
 	Controller parent;
 	private ArrayList<FileTCX> tcxFiles;
 	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();
 
+	/**
+	 * @return
+	 */
 	public String getFilepath() {
 		return filepath;
 	}
 
+	/**
+	 * @param filepath
+	 */
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
 		tcxFiles = parseSaxTCXTimeStamp();
@@ -34,14 +44,23 @@ public class ActivityList {
 		parseSaxTCX();
 	}
 
+	/**
+	 * @param parent
+	 */
 	public void setController(Controller parent) {
 		this.parent = parent;
 	}
 
+	/**
+	 *
+	 */
 	public void readFiles() {
 		parseSaxTCX();
 	}
 
+	/**
+	 * @param activity
+	 */
 	public void addActivity(Activity activity) {
 		activities.add(activity);
 		activities.sort((o1, o2) -> o2.getLap().get(0).getStartTime().compareTo(o1.getLap().get(0).getStartTime()));
@@ -66,6 +85,9 @@ public class ActivityList {
 	}
 
 
+	/**
+	 * @return
+	 */
 	public List<Activity> parseDomTCX() {
 		List<Activity> activities = new ArrayList<>();
 
@@ -305,9 +327,10 @@ public class ActivityList {
 	}
 
 
+	/**
+	 *
+	 */
 	public void parseSaxTCX() {
-		//Thread Filelist übergeben , tcxFile komplett,
-		//ReadActivityThread thread = null;
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			Path file;
@@ -329,6 +352,9 @@ public class ActivityList {
 	}
 
 
+	/**
+	 * @return
+	 */
 	public ArrayList<FileTCX> parseSaxTCXTimeStamp() {
 		ArrayList<FileTCX> tcxFiles = new ArrayList<>();
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -354,6 +380,9 @@ public class ActivityList {
 		return tcxFiles;
 	}
 
+	/**
+	 * @return
+	 */
 	public List<Activity> parseSaxFirstTCX() {
 		activities = new ArrayList<>();
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
@@ -385,12 +414,15 @@ public class ActivityList {
 		return activities;
 	}
 
-	public List<TrackGPS> parseSaxGPX () {
+	/**
+	 * @return
+	 */
+	public List<TrackGPX> parseSaxGPX () {
 
-		List<TrackGPS> trackGPSs = new ArrayList<>();
+		List<TrackGPX> trackGPSses = new ArrayList<>();
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser;
-		TrackGPS track;
+		TrackGPX track;
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
 			saxParser = factory.newSAXParser();
@@ -399,24 +431,34 @@ public class ActivityList {
 					MapTrackGPXObjectHandlerSax handlerSax = new MapTrackGPXObjectHandlerSax();
 					saxParser.parse(file.toString(), handlerSax);
 					track = handlerSax.getTrackGPSResult();
-					trackGPSs.add(track);
+					trackGPSses.add(track);
 				}
 			}
 		} catch (SAXException | IOException | ParserConfigurationException e) {
 			throw new RuntimeException(e);
 		}
 
-		return trackGPSs;
+		return trackGPSses;
 	}
+
+	/**
+	 * @return liefert eine Liste von Aktivitäten
+	 */
 	public List<Activity> getActivities () {
 		return this.activities;
 	}
 
-	public List<TrackGPS> getTrackGPS () {
+	/**
+	 * @return liefert eine Liste von Tracks des GPX Files
+	 */
+	public List<TrackGPX> getTrackGPX() {
 		return this.trackGPS;
 	}
 
-	
+
+	/**
+	 * @param activities setzt eine Liste von activities
+	 */
 	public void setActivities(List<Activity> activities) {
 		this.activities = activities;
 	}
