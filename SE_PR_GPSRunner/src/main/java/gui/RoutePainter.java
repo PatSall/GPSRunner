@@ -59,7 +59,7 @@ public class RoutePainter implements Painter<JXMapViewer> {
 
     /**
      * @param g
-     * @param map
+     * @param map gehört
      */
     private void drawRoute(Graphics2D g, JXMapViewer map)
     {
