@@ -209,7 +209,6 @@ public class GUI extends JFrame {
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.showOpenDialog(null);
 				if (chooser.getSelectedFile() != null) {
-					String temp = chooser.getSelectedFile().getPath();
 					parent.setPath(chooser.getSelectedFile().getPath());
 				}
 			}
@@ -616,7 +615,6 @@ public class GUI extends JFrame {
 	}
 
 	public ArrayList<Waypoint> getEventMap(String name) {
-		//Set<Waypoint> waypoints = new HashSet<>();
 		ArrayList<Waypoint> waypoints = new ArrayList<>();
 		for(Activity a : activityList) {
 			if(name != null && name.equals(a.getId())) {

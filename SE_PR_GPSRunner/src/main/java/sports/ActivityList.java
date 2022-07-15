@@ -77,7 +77,6 @@ public class ActivityList {
 		System.out.println("parse die ersten tcxFiles");
 		temp = new Timestamp(System.currentTimeMillis());
 		activities = this.parseSaxFirstTCX();
-		System.out.println(activities.get(0).getId());
 		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
 
 
@@ -125,7 +124,6 @@ public class ActivityList {
 					assert builder != null;
 					document = builder.parse(filepath + File.separator+ file);
 				} catch (SAXException | IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				assert document != null;
@@ -240,13 +238,10 @@ public class ActivityList {
 								trackList = ((Element) lapNode).getElementsByTagName("Trackpoint");
 
 								for (int j = 0; j < trackList.getLength(); j++) {
-									//Node trackNode = lapNode.appendChild(trackList.item(j));
 									Node trackNode = trackList.item(j);
 									if (trackNode.getNodeType() == Node.ELEMENT_NODE) {
-										//Element tElement = (Element) node;
 										Element tElement = (Element) lapNode;
 								
-										// Create new Track Object
 										track = new Track();		
 										
 										Element timeElement = (Element) tElement.getElementsByTagName("Time").item(j);									
@@ -321,7 +316,8 @@ public class ActivityList {
 				}
 			 });
 		} catch (IOException | DirectoryIteratorException ex) {
-			ex.printStackTrace();
+			//ex.printStackTrace();
+			return activities;
 		}
 		return activities;
 	}
@@ -347,7 +343,7 @@ public class ActivityList {
 				new ReadActivityThread(this, filesTCX).start();
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
 		}
 	}
 
@@ -374,7 +370,8 @@ public class ActivityList {
 				}
 			}
 		} catch (ParserConfigurationException |SAXException | IOException e) {
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
+			return tcxFiles;
 		}
 		tcxFiles.sort((o1, o2) -> o2.getStartTime().compareTo(o1.getStartTime()));
 		return tcxFiles;
@@ -409,7 +406,8 @@ public class ActivityList {
 				}
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
+			return activities;
 		}
 		return activities;
 	}
@@ -435,7 +433,8 @@ public class ActivityList {
 				}
 			}
 		} catch (SAXException | IOException | ParserConfigurationException e) {
-			throw new RuntimeException(e);
+			//throw new RuntimeException(e);
+			return trackGPSses;
 		}
 
 		return trackGPSses;
