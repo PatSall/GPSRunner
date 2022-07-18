@@ -11,16 +11,16 @@ import java.nio.file.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+
 /**
- * Activity ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * ActivityList managed TCXData and
+ * GPX Data
  * @author Patrick Sallaberger & Susanne Gumplmayr
  */
 public class ActivityList {
 
 	private static final int firstFiles = 10;
 	private List<Activity> activities;
-
 	private final List<TrackGPX> trackGPS;
 
 	Controller parent;
@@ -28,14 +28,16 @@ public class ActivityList {
 	public String filepath = Paths.get(System.getProperty("user.home") + File.separator + "Testdaten").toString();
 
 	/**
-	 * @return
+	 * @return file path in String format
 	 */
 	public String getFilepath() {
 		return filepath;
 	}
 
 	/**
-	 * @param filepath
+	 * @param filepath in String format
+	 * call method parseSaxTCXTimeStamp &
+	 * call method  parseSaxFirstTCX()
 	 */
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
@@ -45,21 +47,23 @@ public class ActivityList {
 	}
 
 	/**
-	 * @param parent
+	 * @param parent in Controller format
 	 */
 	public void setController(Controller parent) {
 		this.parent = parent;
 	}
 
 	/**
-	 *
+	 * call method parseSaxTCX
 	 */
 	public void readFiles() {
 		parseSaxTCX();
 	}
 
 	/**
-	 * @param activity
+	 * @param activity in Activity format
+	 * add activity to activities list
+	 * & sort the activity list
 	 */
 	public void addActivity(Activity activity) {
 		activities.add(activity);
@@ -68,13 +72,13 @@ public class ActivityList {
 
 
 	public ActivityList() {
-		System.out.println("parse tcxFiles - für TimeStamps");
+		System.out.println("parse tcxFiles - for TimeStamps");
 		Timestamp temp = new Timestamp(System.currentTimeMillis());
 		tcxFiles = parseSaxTCXTimeStamp();
 		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
 
 
-		System.out.println("parse die ersten tcxFiles");
+		System.out.println("parse the first tcxFiles");
 		temp = new Timestamp(System.currentTimeMillis());
 		activities = this.parseSaxFirstTCX();
 		System.out.println("DONE " + (new Timestamp(System.currentTimeMillis()).getTime() - temp.getTime()));
@@ -85,9 +89,10 @@ public class ActivityList {
 
 
 	/**
-	 * @return
+	 * @return a list of activities in Activity format
 	 */
 	public List<Activity> parseDomTCX() {
+
 		List<Activity> activities = new ArrayList<>();
 
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(filepath))) {
@@ -141,7 +146,6 @@ public class ActivityList {
 						activity = new Activity();
 						activity.setActivity(eElement.getAttribute("Sport"));
 						activity.setId(eElement.getElementsByTagName("Id").item(temp).getTextContent());
-						//lapList = eElement.getElementsByTagName("Lap");
 						lapList = ((Element) node).getElementsByTagName("Lap");
 
 						for (int i = 0; i < lapList.getLength(); i++) {
@@ -316,7 +320,6 @@ public class ActivityList {
 				}
 			 });
 		} catch (IOException | DirectoryIteratorException ex) {
-			//ex.printStackTrace();
 			return activities;
 		}
 		return activities;
@@ -324,7 +327,7 @@ public class ActivityList {
 
 
 	/**
-	 *
+	 * parse the tcx data with sax parser
 	 */
 	public void parseSaxTCX() {
 
@@ -334,22 +337,20 @@ public class ActivityList {
 
 			for (int i = firstFiles; i < tcxFiles.size(); i++) {
 				file = tcxFiles.get(i).getFile();
-				System.out.println("first Files " + activities.size());
-				if (file.getFileName().toString().endsWith(".tcx") && file != null) {
+				if (file.getFileName().toString().endsWith(".tcx")) {
 					filesTCX.add(file);
 				}
 			}
-			if (filesTCX != null) {
-				new ReadActivityThread(this, filesTCX).start();
-			}
+			new ReadActivityThread(this, filesTCX).start();
 		} catch (IOException e) {
-			//throw new RuntimeException(e);
+			System.err.println(e);
 		}
 	}
 
 
 	/**
-	 * @return
+	 * @return an array list of tcx files
+	 * parse tcx data with sax parser
 	 */
 	public ArrayList<FileTCX> parseSaxTCXTimeStamp() {
 		ArrayList<FileTCX> tcxFiles = new ArrayList<>();
@@ -370,7 +371,7 @@ public class ActivityList {
 				}
 			}
 		} catch (ParserConfigurationException |SAXException | IOException e) {
-			//throw new RuntimeException(e);
+			System.err.println(e);
 			return tcxFiles;
 		}
 		tcxFiles.sort((o1, o2) -> o2.getStartTime().compareTo(o1.getStartTime()));
@@ -378,7 +379,8 @@ public class ActivityList {
 	}
 
 	/**
-	 * @return
+	 * @return a list of activities in Activity format
+	 * parse the first tcx files with sax parser
 	 */
 	public List<Activity> parseSaxFirstTCX() {
 		activities = new ArrayList<>();
@@ -397,7 +399,9 @@ public class ActivityList {
 						}
 						MapActivityObjectHandlerSax handlerSax = new MapActivityObjectHandlerSax();
 						try {
-							saxParser.parse(file.toString(), handlerSax);
+							if (saxParser != null) {
+								saxParser.parse(file.toString(), handlerSax);
+							}
 						} catch (SAXException | IOException | NullPointerException e) {
 							e.printStackTrace();
 						}
@@ -406,14 +410,15 @@ public class ActivityList {
 				}
 			}
 		} catch (IOException e) {
-			//throw new RuntimeException(e);
+			System.err.println(e);
 			return activities;
 		}
 		return activities;
 	}
 
 	/**
-	 * @return
+	 * @return a list of tracks in TrackGPX format
+	 * parse gpx data with sax parser
 	 */
 	public List<TrackGPX> parseSaxGPX () {
 
@@ -433,7 +438,7 @@ public class ActivityList {
 				}
 			}
 		} catch (SAXException | IOException | ParserConfigurationException e) {
-			//throw new RuntimeException(e);
+			System.err.println(e);
 			return trackGPSses;
 		}
 
@@ -441,14 +446,14 @@ public class ActivityList {
 	}
 
 	/**
-	 * @return liefert eine Liste von Aktivitäten
+	 * @return a list of activities in Activity format
 	 */
 	public List<Activity> getActivities () {
 		return this.activities;
 	}
 
 	/**
-	 * @return liefert eine Liste von Tracks des GPX Files
+	 * @return a list of tracks in GPX format
 	 */
 	public List<TrackGPX> getTrackGPX() {
 		return this.trackGPS;
@@ -456,7 +461,8 @@ public class ActivityList {
 
 
 	/**
-	 * @param activities setzt eine Liste von activities
+	 * @param activities in Activity format
+	 * set a list of activities
 	 */
 	public void setActivities(List<Activity> activities) {
 		this.activities = activities;

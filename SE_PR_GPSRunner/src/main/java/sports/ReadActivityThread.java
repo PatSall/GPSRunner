@@ -13,8 +13,7 @@ import org.xml.sax.SAXException;
 
 
 /**
- * Activity ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * generate thread for the read-in performance
  * @author Susanne Gumplmayr
  */
 public class ReadActivityThread extends Thread {
@@ -32,7 +31,8 @@ public class ReadActivityThread extends Thread {
     }
 
     /**
-     *
+     * iterate the list of file and
+     * generate a new object of MapActivityObjectHandlerSax
      */
     public void run() {
         for (Path f : file) {

@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * TrackGPX ist Teil der Struktur der GPX Files,
- * welche hierarchisch aufgebaut sind.
+ * TrackGPX is a part of the GPX Data Structure
+ * the GPX Data Structure is structured hierarchically
  * @author Susanne Gumplmayr
  */
 public class TrackGPX {
@@ -18,51 +18,53 @@ public class TrackGPX {
     public TrackGPX() {}
 
     /**
-     * @return liefert Namen in String Format;
-     * meist Ortnamen
+     * @return name in String format
+     * most of the time location name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return liefert Datum in Format date
+     * @return date in Date format
      */
     public Date getDate() {
         return date;
     }
 
     /**
-     * @return liefert eine Liste von Track Segmenten ab
+     * @return a track segment list in TrackSegment format
      */
     public List<TrackSegment> getTrackSegments() {
         return trackSegments;
     }
 
     /**
-     * @param name setzt Namen in String Format;
-     * meist Ortsnamen
+     * @param name in String format
+     * most of the time location name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     * @param date setzt in Date Format
+     * @param date in Date format
+     * set date
      */
     public void setDate(Date  date) {
         this.date = date;
     }
 
     /**
-     * @param trackSegments setzt eine Liste von Track Segmenten
+     * @param trackSegments is a list in TrackSegment format
+     * set track segments list
      */
     public void setTrackSegments(List<TrackSegment> trackSegments) {
         this.trackSegments = trackSegments;
     }
 
     /**
-     * @return String bestehend aus allen TrackGPX Attributen
+     * @return String of the track gpx elements
      */
     @Override
     public String toString() {

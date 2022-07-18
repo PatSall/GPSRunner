@@ -4,8 +4,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 /**
- * Activity ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * FileTCX main purpose for sorting the files
  * @author Patrick Sallaberger & Susanne Gumplmayr
  */
 public class FileTCX {
@@ -17,42 +16,42 @@ public class FileTCX {
     }
 
     /**
-     * @return
+     * @return file name in String format
      */
     public String getFileName() {
         return fileName;
     }
 
     /**
-     * @param fileName
+     * @param fileName in String format
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
     /**
-     * @return
+     * @return start time in LocalDateTime format
      */
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
     /**
-     * @param startTime
+     * @param startTime in LocalDateTime format
      */
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
     /**
-     * @return
+     * @return file path in Path format
      */
     public Path getFile() {
         return file;
     }
 
     /**
-     * @param file
+     * @param file in Path format
      */
     public void setFile(Path file) {
         this.file = file;

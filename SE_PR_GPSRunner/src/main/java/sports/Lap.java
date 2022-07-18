@@ -5,8 +5,8 @@ import java.util.*;
 
 
 /**
- * Lap ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * Lap is a part of the TCX Data Structure
+ * the TCX Data Structure is structured hierarchically
  * @author Susanne Gumplmayr
  */
 public class Lap {
@@ -23,7 +23,6 @@ public class Lap {
 
     private double averageHeartRateBpm;
 
-    //private Integer maximumHeartRateBpm;
     private Integer maximumHeartRateBpm;
 
     private String intensity;
@@ -59,14 +58,15 @@ public class Lap {
     }
 
     /**
-     * @return liefert Start Time im LocalDateTime Format
+     * @return start time in LocalDateTime format
      */
     public LocalDateTime getStartTime() {
         return startTime;
     }
 
     /**
-     * @return liefert die Total Time in der Einheit Sekunden im Double Format
+     * @return total time in Double format
+     * unit in seconds
      */
     public Double getTotalTimeSeconds() {
         return totalTimeSeconds;
@@ -74,7 +74,8 @@ public class Lap {
 
 
     /**
-     * @return liefert die Distance Track in der Einheit Meter im Double Format
+     * @return distance tracks in Double format
+     * unit in meters
      */
     public Double getDistanceMetersTracks() {
         return distanceMeters;
@@ -82,7 +83,7 @@ public class Lap {
 
 
     /**
-     * @return liefert die maximal Speed im Double Format
+     * @return maximum speed in Double format
      */
     public Double getMaximumSpeed() {
         return maximumSpeed;
@@ -90,14 +91,15 @@ public class Lap {
 
 
     /**
-     * @return liefert die Kalorien im Double Integer
+     * @return calories in Integer format
      */
     public Integer getCalories() {
         return calories;
     }
 
     /**
-     * @return  liefert die AverageHeartRate in der Einheit Bpm im Double Format
+     * @return average heart rate in Double format
+     * unit in BPM
      */
     public double getAverageHeartRateBpm() {
         return averageHeartRateBpm;
@@ -105,7 +107,8 @@ public class Lap {
 
 
     /**
-     * @return liefert die MaximumHeartRate in der Einheit Bpm im Double Format
+     * @return maximum heart rate in Integer format
+     * unit in BPM
      */
     public Integer getMaximumHeartRateBpm() {
         return maximumHeartRateBpm;
@@ -113,7 +116,7 @@ public class Lap {
 
 
     /**
-     * @return liefert die Intensity im String Format
+     * @return intensity in String format
      */
     public String getIntensity() {
         return intensity;
@@ -121,21 +124,22 @@ public class Lap {
 
 
     /**
-     * @return liefert die Trigger im String Format
+     * @return trigger method in String format
      */
     public String getTriggerMethod() {
         return triggerMethod;
     }
 
     /**
-     * @param startTime setzt Start Time im LocalDateTime Format
+     * @param startTime in LocalDateTime format
      */
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
     /**
-     * @param totalTimeSeconds setzt die Total Time in der Einheit Sekunden im Double Format
+     * @param totalTimeSeconds in Double format
+     * unit in seconds
      */
     public void setTotalTimeSeconds(Double totalTimeSeconds) {
         this.totalTimeSeconds = totalTimeSeconds;
@@ -143,7 +147,8 @@ public class Lap {
 
 
     /**
-     * @param distanceMetersTracks setzt die Distance Track in der Einheit Meter im Double Format
+     * @param distanceMetersTracks in Double format
+     * unit in meter
      */
     public void setDistanceMetersTracks(Double distanceMetersTracks) {
         this.distanceMeters = distanceMetersTracks;
@@ -151,7 +156,7 @@ public class Lap {
 
 
     /**
-     * @param maximumSpeed liefert die maximal Speed im Double Format
+     * @param maximumSpeed in Double format
      */
     public void setMaximumSpeed(Double maximumSpeed) {
         this.maximumSpeed = maximumSpeed;
@@ -159,7 +164,7 @@ public class Lap {
 
 
     /**
-     * @param calories setzt die Kalorien im Double Integer
+     * @param calories in Integer format
      */
     public void setCalories(Integer calories) {
         this.calories = calories;
@@ -167,21 +172,23 @@ public class Lap {
 
 
     /**
-     * @param averageHeartRateBpm setzt die AverageHeartRate in der Einheit Bpm im Double Format
+     * @param averageHeartRateBpm in Integer format
+     * unit in BPM
      */
     public void setAverageHeartRateBpm(Integer averageHeartRateBpm) {
         this.averageHeartRateBpm = averageHeartRateBpm;
     }
 
     /**
-     * @param maximumHeartRateBpm setzt die MaximumHeartRate in der Einheit Bpm im Double Format
+     * @param maximumHeartRateBpm in Integer format
+     * unit in BPM
      */
     public void setMaximumHeartRateBpm(Integer maximumHeartRateBpm) {
         this.maximumHeartRateBpm = maximumHeartRateBpm;
     }
 
     /**
-     * @param intensity setzt die Intensity im String Format
+     * @param intensity in String format
      */
     public void setIntensity(String intensity) {
         this.intensity = intensity;
@@ -189,21 +196,22 @@ public class Lap {
 
 
     /**
-     * @param triggerMethod setzt die Trigger im String Format
+     * @param triggerMethod in String format
      */
     public void setTriggerMethod(String triggerMethod) {
         this.triggerMethod = triggerMethod;
     }
 
     /**
-     * @return liefert eine Liste von Tracks zurück
+     * @return a list of tracks in Track format
      */
     public List<Track> getTrack() {
         return track;
     }
 
     /**
-     * @param track setzt eine Liste von Tracks
+     * @param track in Track format
+     * set a list of tracks
      */
     public void setTrack(List<Track> track) {
         this.track = track;
@@ -211,7 +219,7 @@ public class Lap {
 
 
     /**
-     * @return String bestehend aus allen Lap Attributen
+     * @return String  of the lap elements
      */
     @Override
     public String toString () {

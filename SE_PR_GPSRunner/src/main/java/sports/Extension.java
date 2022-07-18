@@ -1,8 +1,8 @@
 package sports;
 
 /**
- * Extension ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * Extension is a part of the TCX Data Structure
+ * the TCX Data Structure is structured hierarchically
  * @author Susanne Gumplmayr
  */
 public class Extension {
@@ -19,28 +19,28 @@ public class Extension {
 
 
     /**
-     * @return liefert Speed im Double Format
+     * @return speed in Double format
      */
     public Double getSpeed() {
         return speed;
     }
 
     /**
-     * @param speed setzt Speed im Double Format
+     * @param speed in Double format
      */
     public void setSpeed(Double speed) {
         this.speed = speed;
     }
 
     /**
-     * @return liefert RunCadence im Integer Format
+     * @return run cadence in Integer format
      */
     public Integer getRunCadence() {
         return runCadence;
     }
 
     /**
-     * @param runCadence setzt RunCadence im Integer Format
+     * @param runCadence in Integer format
      */
     public void setRunCadence(Integer runCadence) {
         this.runCadence = runCadence;
@@ -48,7 +48,7 @@ public class Extension {
 
 
     /**
-     * @return String bestehend aus allen Extension Attributen
+     * @return String of the extension elements
      */
     @Override
     public String toString() {

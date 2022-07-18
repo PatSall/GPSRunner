@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 
 /**
- * TrackPoint ist Teil der Struktur der GPX Files,
- * welche hierarchisch aufgebaut sind.
+ * TrackPoint is a part of the GPX Data Structure
+ * the GPX Data Structure is structured hierarchically
  * @author Susanne Gumplmayr
  */
 public class TrackPoint {
@@ -27,63 +27,67 @@ public class TrackPoint {
     }
 
     /**
-     * @return elem
+     * @return elem in Double format
      */
     public Double getElem() {
         return elem;
     }
 
     /**
-     * @param elem setzt elem im Double Format
+     * @param elem in Double format
+     * set elem in Double format
      */
     public void setElem(Double elem) {
         this.elem = elem;
     }
 
     /**
-     * @return LocalDateTime
+     * @return time in LocalDateTime format
      */
     public LocalDateTime getTime() {
         return time;
     }
 
     /**
-     * @param time setzt Zeit im LocalDateTime Format
+     * @param time in LocalDateTime format
+     * set time in LocalDateTime format
      */
     public void setTime(LocalDateTime time) {
         this.time = time;
     }
 
     /**
-     * @return Double trackPointLatitude
+     * @return track point latitude in Double format
      */
     public Double getTrackPointLat() {
         return trackPointLat;
     }
 
     /**
-     * @param trackPointLat setzt TrackPoint Latitude
+     * @param trackPointLat in Double format
+     * set time in LocalDateTime format
      */
     public void setTrackPointLat(Double trackPointLat) {
         this.trackPointLat = trackPointLat;
     }
 
     /**
-     * @return Double trackPointLongitude
+     * @return track point latitude in Double format
      */
     public Double getTrackPointLon() {
         return trackPointLon;
     }
 
     /**
-     * @param trackPointLon setzt TrackPoint Longitude
+     * @param trackPointLon  in Double format
+     * set time in LocalDateTime format
      */
     public void setTrackPointLon(Double trackPointLon) {
         this.trackPointLon = trackPointLon;
     }
 
     /**
-     * @return String bestehend aus allen TrackPoint Attributen
+     * @return String of the track point elements
      */
     @Override
     public String toString() {

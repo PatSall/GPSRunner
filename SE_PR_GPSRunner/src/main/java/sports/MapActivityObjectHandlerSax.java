@@ -9,13 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Activity ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * TCX sax parser class
  * @author Susanne Gumplmayr
  */
 public class MapActivityObjectHandlerSax extends DefaultHandler {
-
-
     private final StringBuilder currentValue = new StringBuilder();
     List<Activity> activities;
     Activity activity;
@@ -40,12 +37,16 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
     boolean trackHeartRateBpm;
 
     boolean trackTime;
+
+    /**
+     * @return a list of activities in Activity format
+     */
     public List<Activity> getActivitiesResult () {
         return activities;
     }
 
     /**
-     * @return
+     * @return activity in Activity format
      */
     public Activity getActivityResult() {
         return activity;
@@ -80,12 +81,9 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
             String qName,
             Attributes attributes) {
 
-        // reset the tag value
         currentValue.setLength(0);
 
         if (qName.equalsIgnoreCase("Activity")) {
-            // new activity
-
             currentActivity = new Activity();
             currentActivity.setActivity(attributes.getValue("Sport"));
             laps = new ArrayList<>();
@@ -93,7 +91,6 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
         }
 
         if (qName.equalsIgnoreCase("Lap")) {
-
             lapDistanceMeters = false;
             lapAverageHeartRateBpm = false;
             lapMaximumHeartRateBpm = false;
@@ -122,16 +119,12 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
 
         if (qName.equalsIgnoreCase("Position")) {
             currentPosition = new Position();
-//            positions.add(currentPosition);
             currentTrack.setPosition(positions);
             return;
         }
 
-
-
         if (qName.equalsIgnoreCase("Extensions")) {
             currentExtension = new Extension();
-//            extensions.add(currentExtension);
             currentTrack.setExtension(extensions);
         }
 
@@ -248,28 +241,12 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
     }
 
     /**
-     * @param uri
-     * @param localName
-     * @param qName
-     * @param attributes
-     */
-    public void endDocument (String uri,
-                             String localName,
-                             String qName,
-                             Attributes attributes) {
-        if (qName.equalsIgnoreCase("Activity")) {
-            return;
-        }
-    }
-
-
-    /**
      * @param ch     The characters.
      * @param start  The start position in the character array.
      * @param length The number of characters to use from the
      *               character array.
      */
-    public void characters(char ch[], int start, int length) {
+    public void characters(char[] ch, int start, int length) {
             currentValue.append(ch, start, length);
     }
 

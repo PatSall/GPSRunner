@@ -358,7 +358,6 @@ public class GUI extends JFrame {
 	}
 
 	public void refreshGui() {
-		System.out.println("refresh Gui " + activityList.size());
 		model.setDataVector(table(), columnNames);
 		model.fireTableChanged(null);
 		this.updateChart(activityList);
@@ -536,7 +535,6 @@ public class GUI extends JFrame {
 				}
 				actualDetail = new Object[counter][8];
 				int position = 0;
-				System.out.println("get Event : " + activityList.size());
 				for(Lap l : list) {
 					List<Track> temp = l.getTrack();
 					for(Track track : temp) {
@@ -651,7 +649,6 @@ public class GUI extends JFrame {
 
 	public void setActivities(List<Activity> activityList) {
 		this.activityList = activityList;
-		System.out.println("GUI getActivity " + activityList.size() );
 		refreshGui();
 	}
 
@@ -824,7 +821,7 @@ public class GUI extends JFrame {
 	}
 
 	/**
-	 *
+	 * inner class Map
 	 */
 	public class Map extends JXMapViewer {
 

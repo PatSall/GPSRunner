@@ -30,8 +30,6 @@ public class UpdateUITask extends TimerTask {
     @Override
     public void run() {
         EventQueue.invokeLater(() -> {
-            System.out.println("UPDATE JETZT:" + activities.getActivities().size() + " Aktivitäten");
-            System.out.println("update getActivity " + view.getActivities().size());
             view.setActivities(activities.getActivities());
         });
 

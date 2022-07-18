@@ -6,8 +6,8 @@ import java.util.*;
 import gui.GUI.Filter;
 
 /**
- * Activity ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * Activity is a part of the TCX Data Structure
+ * the TCX Data Structure is structured hierarchically
  * @author Susanne Gumplmayr
  */
 public class Activity {
@@ -27,54 +27,56 @@ public class Activity {
 
 
     /**
-     * @return liefert die Activtiy im Format Activity;
-     * z.B Laufen, Schwimmen...
+     * @return acitivty in String format
+     * e.g. running, swimming....
      */
     public String getActivity() {
         return activity;
     }
 
     /**
-     * @param sport setzt die Activtiy im Format Activity;
-     * z.B Laufen, Schwimmen...
+     * @param sport in String format
+     * e.g. running, swimming...
      */
     public void setActivity(String sport) {
         this.activity = sport;
     }
 
     /**
-     * @return liefert die ID in Format String;
-     * meist Ort
+     * @return id in String format
+     * most of the time location
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param id setzt die ID in Format String;
-     * meist Ort
+     * @param id in String format
+     * most of the time location
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * @return liefert eine Liste mit Laps
+     * @return a list of laps in Lap format
      */
     public List<Lap> getLap() {
         return lap;
     }
 
     /**
-     * @param laps setzt eine Liste mit Laps
+     * @param laps in Lap format
+     * set a list of laps
      */
     public void setLap(List<Lap> laps) {
         this.lap = laps;
     }
 
     /**
-     * @param laps eine Liste von Laps wird übergeben
-     * @return liefert den Durschnittswerte eines Laps pro Attribut
+     * @param laps in Lap format
+     * a list of laps
+     * @return a average lap in Lap format
      */
     public Lap averageLap(List<Lap> laps) {
         LocalDateTime startTime = null;
@@ -109,7 +111,7 @@ public class Activity {
 
 
     /**
-     * @return String bestehend aus allen Activity & Laps
+     * @return String of the activity elements
      */
     @Override
     public String toString () {

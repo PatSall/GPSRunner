@@ -2,8 +2,8 @@ package sports;
 
 
 /**
- * Position ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * Position is a part of the TCX Data Structure
+ * the TCX Data Structure is structured hierarchically
  * @author Susanne Gumplmayr
  */
 public class Position {
@@ -20,35 +20,39 @@ public class Position {
     }
 
     /**
-     * @return liefert Latitude Degress im Double Format
+     * @return latitude in Double format
+     * unit in degrees
      */
     public Double getLatitudeDegrees() {
         return latitudeDegrees;
     }
 
     /**
-     * @param latitudeDegrees setzt Latitude Degress im Double Format
+     * @param latitudeDegrees in Double format
+     * unit in degrees
      */
     public void setLatitudeDegrees(Double latitudeDegrees) {
         this.latitudeDegrees = latitudeDegrees;
     }
 
     /**
-     * @return liefert Longitude Degress im Double Format
+     * @return longitude in Double format
+     * unit in degrees
      */
     public Double getLongitudeDegrees() {
         return longitudeDegrees;
     }
 
     /**
-     * @param longitudeDegrees setzt Longitude Degress im Double Format
+     * @param longitudeDegrees in Double format
+     * unit in degrees
      */
     public void setLongitudeDegrees(Double longitudeDegrees) {
         this.longitudeDegrees = longitudeDegrees;
     }
 
     /**
-     * @return String bestehend aus allen Position Attributen
+     * @return String of the position elements
      */
     @Override
     public String toString() {

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * TrackSegment ist Teil der Struktur der GPX Files,
- * welche hierarchisch aufgebaut sind.
+ * TrackSegment is a part of the GPX Data Structure
+ * the GPX Data Structure is structured hierarchically
  * @author Susanne Gumplmayr
  */
 public class TrackSegment  {
@@ -19,7 +19,7 @@ public class TrackSegment  {
     }
 
     /**
-     * @return List of TrackPoints
+     * @return list of track points
      */
     public List<TrackPoint> getTrackPoint() {
         return trackPoint;
@@ -27,8 +27,8 @@ public class TrackSegment  {
 
 
     /**
-     * @param trackPoint setzt Track Point
-     *
+     * @param trackPoint is a list of tracks points
+     * set list of track points
      */
     public void setTrackPoint(List<TrackPoint> trackPoint) {
         this.trackPoint = trackPoint;
@@ -36,15 +36,16 @@ public class TrackSegment  {
 
 
     /**
-     * @param trackPoint fügt einen TrackPoint zur List of TrackPoints hinzu
-     */
+     * @param trackPoint is a track point of the type TrackPoint
+     * add a track point to the List trackPoint
+    */
     public void addTrackPoint(TrackPoint trackPoint) {
         this.trackPoint.add(trackPoint);
     }
 
 
     /**
-     * @return String bestehend aus allen TrackSegmenten Attributen
+     * @return String of the track segment elements
      */
     @Override
     public String toString() {

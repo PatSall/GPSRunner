@@ -7,9 +7,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * GPX sax parser class
+ * @author Susanne Gumplmayr
+ */
 public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
-
-
     private final StringBuilder currentValue = new StringBuilder();
     List<TrackGPX> tracks;
     TrackGPX track;
@@ -21,20 +24,43 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
     TrackPoint currentTrackPoint;
 
 
+    /**
+     * @return a list of tracks in TrackGPX format
+     */
     public List<TrackGPX> getTrackGPsResult() {
         return tracks;
     }
 
+    /**
+     * @return track in TrackGPX format
+     */
     public TrackGPX getTrackGPSResult() {
         return track;
     }
 
+    /**
+     * generate a new trackGPX and
+     * a track ArrayList
+     */
     @Override
     public void startDocument() {
         track = new TrackGPX();
         tracks = new ArrayList<>();
     }
 
+    /**
+     * @param uri        The Namespace URI, or the empty string if the
+     *                   element has no Namespace URI or if Namespace
+     *                   processing is not being performed.
+     * @param localName  The local name (without prefix), or the
+     *                   empty string if Namespace processing is not being
+     *                   performed.
+     * @param qName      The qualified name (with prefix), or the
+     *                   empty string if qualified names are not available.
+     * @param attributes The attributes attached to the element.  If
+     *                   there are no attributes, it shall be an empty
+     *                   Attributes object.
+     */
     @Override
     public void startElement(
             String uri,
@@ -42,11 +68,9 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
             String qName,
             Attributes attributes) {
 
-        // reset the tag value
         currentValue.setLength(0);
 
         if (qName.equalsIgnoreCase("trk")) {
-            // new activity
             currentTrack = new TrackGPX();
             segments = new ArrayList<>();
         }
@@ -66,9 +90,19 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
             currentTrackPoint.setTrackPointLon(Double.parseDouble(attributes.getValue("lon")));
             trackPoints.add(currentTrackPoint);
             currentSegment.setTrackPoint(trackPoints);
-            return;
         }
     }
+
+    /**
+     * @param uri       The Namespace URI, or the empty string if the
+     *                  element has no Namespace URI or if Namespace
+     *                  processing is not being performed.
+     * @param localName The local name (without prefix), or the
+     *                  empty string if Namespace processing is not being
+     *                  performed.
+     * @param qName     The qualified name (with prefix), or the
+     *                  empty string if qualified names are not available.
+     */
     public void endElement(String uri,
                            String localName,
                            String qName) {
@@ -85,7 +119,7 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
         }
 
         if (qName.equalsIgnoreCase("time")) {
-            currentTrackPoint.setTime(LocalDateTime.parse(currentValue.toString().substring(0, 19)));
+            currentTrackPoint.setTime(LocalDateTime.parse(currentValue.substring(0, 19)));
             return;
         }
 
@@ -98,17 +132,13 @@ public class MapTrackGPXObjectHandlerSax extends DefaultHandler {
 
     }
 
-    public void endDocument (String uri,
-                             String localName,
-                             String qName,
-                             Attributes attributes) {
-        if (qName.equalsIgnoreCase("trk")) {
-            return;
-        }
-    }
-
-
-    public void characters(char ch[], int start, int length) {
+    /**
+     * @param ch     The characters.
+     * @param start  The start position in the character array.
+     * @param length The number of characters to use from the
+     *               character array.
+     */
+    public void characters(char[] ch, int start, int length) {
         currentValue.append(ch, start, length);
     }
 

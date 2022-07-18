@@ -6,26 +6,21 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.time.LocalDateTime;
 
 /**
- * Activity ist Teil der Struktur der TCX Files,
- * welche hierarchisch aufgebaut sind.
+ * TCX sax parser class
  * @author Susanne Gumplmayr
  */
 public class MapActivityObjectHandlerSaxTimestamp extends DefaultHandler {
-
-
     private final StringBuilder currentValue = new StringBuilder();
     FileTCX currentFileTCX;
 
     /**
-     * @return
+     * @return the current file in FileTCX format
      */
     public FileTCX getFileResult () {
         return currentFileTCX;
     }
 
-    /**
-     *
-     */
+
     @Override
     public void startDocument() {
 
@@ -51,7 +46,6 @@ public class MapActivityObjectHandlerSaxTimestamp extends DefaultHandler {
             String qName,
             Attributes attributes) {
 
-        // reset the tag value
         currentValue.setLength(0);
 
 
