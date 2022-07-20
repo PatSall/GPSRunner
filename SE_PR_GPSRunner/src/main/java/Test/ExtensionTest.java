@@ -2,10 +2,6 @@ package Test;
 
 import org.junit.jupiter.api.Test;
 import sports.Extension;
-import sports.Lap;
-import sports.Track;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 /**

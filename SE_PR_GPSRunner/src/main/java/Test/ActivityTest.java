@@ -1,7 +1,6 @@
 package Test;
 
 import gui.GUI;
-import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import sports.Activity;
 import sports.Lap;
@@ -74,6 +73,7 @@ class ActivityTest {
         assertFalse(activity.showInGui(sportsFilter, distanceFilter));
         assertFalse(activity.showInGui(distanceFilter, sportsFilter));
     }
+
     /**
      * tests the function: averageLap Values
      */
@@ -98,7 +98,7 @@ class ActivityTest {
         assertEquals(lapList.stream().mapToInt(Lap::getMaximumHeartRateBpm).max().getAsInt(), averageLap.getMaximumHeartRateBpm());
 
 
-        // Kontrolle der Testfälle:
+
         assertEquals(2151.76, averageLap.getTotalTimeSeconds());
         assertEquals(15846.1, averageLap.getDistanceMetersTracks());
         assertEquals(13.4, averageLap.getMaximumSpeed());

@@ -19,6 +19,7 @@ class PositionTest {
         assertEquals(56.2, a.getLongitudeDegrees());
         assertEquals(23.4, a.getLatitudeDegrees());
     }
+
     /**
      * tests the function: position value
      */

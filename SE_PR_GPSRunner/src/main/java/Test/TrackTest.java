@@ -2,13 +2,12 @@ package Test;
 
 import org.junit.jupiter.api.Test;
 import sports.Extension;
-import sports.Lap;
+
 import sports.Position;
 import sports.Track;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+
 /**
  * Tracktest test-class
  * @author Stefan Gruber

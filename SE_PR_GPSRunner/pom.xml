@@ -7,13 +7,6 @@
   <description>-</description>
 
   <dependencies>
-
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-    </dependency>
-
     <!-- JAXB API only -->
     <dependency>
       <groupId>jakarta.xml.bind</groupId>

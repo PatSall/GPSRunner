@@ -1,6 +1,7 @@
 package Test;
 
 import org.junit.jupiter.api.Test;
+
 import sports.Activity;
 import sports.ActivityList;
 import sports.Lap;
@@ -8,7 +9,7 @@ import sports.Lap;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
+
 /**
  * ActivityList test-class
  * @author Stefan Gruber

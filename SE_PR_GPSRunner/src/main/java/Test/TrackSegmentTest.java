@@ -1,12 +1,12 @@
 package Test;
 
 import org.junit.jupiter.api.Test;
-import sports.Lap;
+
 import sports.TrackPoint;
 import sports.TrackSegment;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

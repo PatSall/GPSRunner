@@ -132,6 +132,5 @@ class LapTest {
         final Lap lap = new Lap();
         List<Track> tracks = new ArrayList<>();
         lap.setTrack(new ArrayList<>(tracks));
-        // Liste vergleichen!?
     }
 }
