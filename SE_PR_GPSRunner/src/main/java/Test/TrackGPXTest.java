@@ -6,9 +6,14 @@ import sports.TrackGPX;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * TrackGPX test-class
+ * @author Stefan Gruber
+ */
 class TrackGPXTest {
-
+    /**
+     * tests the function: Setter and Getter: name
+     */
     @Test
     void testSetter_Getter_Name() {
 
@@ -18,7 +23,9 @@ class TrackGPXTest {
 
         assertEquals(name, trackGPX.getName());
     }
-
+    /**
+     * tests the function: Setter and Getter: date
+     */
     @Test
     void testSetter_Getter_Date() {
 
@@ -28,19 +35,4 @@ class TrackGPXTest {
 
         assertEquals(date, trackGPX.getDate());
     }
-
-   /*
-    @Test
-    void testSetter_Getter_TrackSegment() {
-
-        TrackSegment trackSegment = new TrackSegment();
-        TrackGPS trackGPS = new TrackGPS();
-
-        trackGPS.setTrackSegments((List<TrackSegment>) trackSegment);
-
-        assertEquals(trackSegment, trackGPS.getTrackSegments());
-    }
-
-    */
-
 }

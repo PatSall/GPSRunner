@@ -8,9 +8,14 @@ import sports.Track;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Extensions test-class
+ * @author Stefan Gruber
+ */
 class ExtensionTest {
-
+    /**
+     * tests the function: Setter and Getter: speed
+     */
     @Test
     void testSetter_Getter_Speed() {
 
@@ -20,7 +25,9 @@ class ExtensionTest {
 
         assertEquals(speed, extension.getSpeed());
     }
-
+    /**
+     * tests the function: Setter and Getter: run cadence
+     */
     @Test
     void testSetter_Getter_RunCadence() {
 

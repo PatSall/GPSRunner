@@ -11,6 +11,10 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Activity test-class
+ * @author Stefan Gruber
+ */
 
 class ActivityTest {
 
@@ -22,7 +26,10 @@ class ActivityTest {
         double averageHeartRateBpm = 156;
         Integer maximumHeartRateBpm = 163;
 
-    @Test //showInGui
+    /**
+     * tests the function: sports and distance filter(true Value)
+     */
+    @Test
     void testShowInGuiTrue(){
 
         var sportsFilter = new GUI.Filter[1];
@@ -44,10 +51,11 @@ class ActivityTest {
         assertTrue(activity.showInGui(sportsFilter, distanceFilter));
 
     }
-    @Before //showInGui
 
-
-    @Test //showInGui
+    /**
+     * tests the function: sports and distance filter(false Value)
+     */
+    @Test
     void testShowInGuiFalse(){
         var sportsFilter = new GUI.Filter[1];
         sportsFilter[0] = new GUI().new Filter("run", false, null);
@@ -66,8 +74,10 @@ class ActivityTest {
         assertFalse(activity.showInGui(sportsFilter, distanceFilter));
         assertFalse(activity.showInGui(distanceFilter, sportsFilter));
     }
-
-    @Test //averageLap
+    /**
+     * tests the function: averageLap Values
+     */
+    @Test
     void lap(){
 
         var lapList = Arrays.asList(

@@ -11,9 +11,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * FileTCXTest test-class
+ * @author Stefan Gruber
+ */
 class FileTCXTest {
-
+    /**
+     * tests the function: Setter and Getter: file name
+     */
     @Test
     void testSetter_Getter_FileName() {
         String testfile = "test.tcx";

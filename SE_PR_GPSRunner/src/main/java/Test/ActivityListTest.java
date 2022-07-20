@@ -8,17 +8,16 @@ import sports.Lap;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import static org.junit.Assert.assertEquals;
+/**
+ * ActivityList test-class
+ * @author Stefan Gruber
+ */
 
 class ActivityListTest {
-
-    /*@Test
-    void testSetter_Getter_Filepath () {
-        ActivityList activityList = new ActivityList();
-        activityList.setFilepath("hallo");
-
-        assertEquals("hallo", activityList.getFilepath());
-    }*/
-
+    /**
+     * tests the function: add activity to activities list
+     */
     @Test
     void testAdd_Activity () {
         ActivityList activityList = new ActivityList();
@@ -33,7 +32,6 @@ class ActivityListTest {
         run.setLap(lapList);
         activityList.addActivity(run);
 
-      //  assertEquals(run, activityList.getActivities());
     }
 
 

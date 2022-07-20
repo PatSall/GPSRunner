@@ -7,9 +7,14 @@ import sports.TrackPoint;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Track Point test-class
+ * @author Stefan Gruber
+ */
 class TrackPointTest {
-
+    /**
+     * tests the function: Setter and Getter: element
+     */
     @Test
     void testSetter_Getter_Elem () {
 
@@ -19,7 +24,9 @@ class TrackPointTest {
 
         assertEquals(elem, tp.getElem());
     }
-
+    /**
+     * tests the function: Setter and Getter: time
+     */
     @Test
     void testSetter_Getter_Time () {
         LocalDateTime time = LocalDateTime.now();
@@ -32,7 +39,9 @@ class TrackPointTest {
 
         assertEquals(time, tp.getTime());
     }
-
+    /**
+     * tests the function: Setter and Getter: trackpoint lat
+     */
     @Test
     void testSetter_Getter_getTrackPointLat () {
 
@@ -42,7 +51,9 @@ class TrackPointTest {
 
         assertEquals(trackPointLat, tp.getTrackPointLat());
     }
-
+    /**
+     * tests the function: Setter and Getter: trackpoint latitude
+     */
     @Test
     void testSetter_Getter_getTrackPointLon () {
 

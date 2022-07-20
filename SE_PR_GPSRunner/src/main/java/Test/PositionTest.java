@@ -4,9 +4,14 @@ import org.junit.jupiter.api.Test;
 import sports.Position;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Position test-class
+ * @author Stefan Gruber
+ */
 class PositionTest {
-
+    /**
+     * tests the function: constructor
+     */
     @Test
     public void constructorTest() {
         Position a = new Position(23.4, 56.2);
@@ -14,7 +19,9 @@ class PositionTest {
         assertEquals(56.2, a.getLongitudeDegrees());
         assertEquals(23.4, a.getLatitudeDegrees());
     }
-
+    /**
+     * tests the function: position value
+     */
     @Test
     public void testPositionValue() {
         try {
@@ -25,28 +32,4 @@ class PositionTest {
             fail(e.getMessage());
         }
     }
-
-   /* @Test
-    public void testPositionIllegalValue() {
-        try {
-            new Position(null, null);
-            fail("Exception was expected for null input");
-        } catch (IllegalArgumentException e) {
-        }
-
-        try {
-            new Position(0.0, 0.0);
-            fail("Exception was expected for empty input");
-        } catch (IllegalArgumentException e) {
-        }
-
-        try {
-            new Position(6.7, 5.4);
-            fail("Exception was expected for non-number input");
-        } catch (IllegalArgumentException e) {
-        }
-
-    }
-
-    */
 }

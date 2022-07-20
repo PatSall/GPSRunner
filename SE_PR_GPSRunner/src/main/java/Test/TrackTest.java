@@ -9,11 +9,16 @@ import sports.Track;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
+/**
+ * Tracktest test-class
+ * @author Stefan Gruber
+ */
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrackTest {
-
+    /**
+     * tests the function: Setter and Getter: time
+     */
     @Test
     void testSetter_Getter_setsTime () {
 
@@ -27,7 +32,9 @@ class TrackTest {
 
         assertEquals(time, track.getTime());
     }
-
+    /**
+     * tests the function: Setter and Getter: altitude meters
+     */
     @Test
     void testSetter_Getter_setsAltitudeMeters () {
 
@@ -37,7 +44,9 @@ class TrackTest {
 
         assertEquals(AltitudeMeters, track.getAltitudeMeters());
     }
-
+    /**
+     * tests the function: Setter and Getter: distance meters tracks
+     */
     @Test
     void testSetter_Getter_setsDistanceMetersTracks () {
 
@@ -47,7 +56,9 @@ class TrackTest {
 
         assertEquals(DistanceMetersTracks, track.getDistanceMetersTracks());
     }
-
+    /**
+     * tests the function: Setter and Getter: heart rate bpm
+     */
     @Test
     void testSetter_Getter_HeartRateBpm () {
 
@@ -57,7 +68,9 @@ class TrackTest {
 
         assertEquals(HeartRateBpm, track.getHeartRateBpm());
     }
-
+    /**
+     * tests the function: Setter and Getter: position
+     */
     @Test
     void testSetter_Getter_Position () {
 
@@ -67,7 +80,9 @@ class TrackTest {
 
         assertEquals(position, track.getPosition());
     }
-
+    /**
+     * tests the function: Setter and Getter: extension
+     */
     @Test
     void testSetter_Getter_Extension () {
 

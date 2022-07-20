@@ -10,9 +10,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Track Point test-class
+ * @author Stefan Gruber
+ */
 class TrackSegmentTest {
-
+    /**
+     * tests the function: Setter and Getter: trackpoint
+     */
     @Test
     void testSetter_Getter_TrackPoint () {
 
@@ -22,7 +27,9 @@ class TrackSegmentTest {
 
         assertEquals(trackPoint, trackSegment.getTrackPoint());
     }
-
+    /**
+     * tests the function: Add and Getter: trackpoint
+     */
     @Test
     void testAdd_Getter_TrackPoint () {
 
@@ -36,8 +43,5 @@ class TrackSegmentTest {
         trackPoint.setTime(time);
 
         trackSegment.addTrackPoint(trackPoint);
-
-       // assertNotEquals(trackSegment.getTrackPoint(), trackSegment.getTrackPoint());
-       //assertEquals(trackPoint, trackSegment.getTrackPoint());
     }
 }
