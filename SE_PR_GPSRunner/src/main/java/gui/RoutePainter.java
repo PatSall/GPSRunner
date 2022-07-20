@@ -9,17 +9,32 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-public class RoutePainter implements Painter<JXMapViewer>
-{
+
+/**
+ * RoutePainter is part of the map
+ * @author Susanne Gumplmayr
+ */
+public class RoutePainter implements Painter<JXMapViewer> {
     private final Color color = Color.blue;
 
     private final ArrayList<Waypoint> waypoint;
 
+    /**
+     * @param waypoint in Waypoint format
+     * a list of waypoints
+     */
     public RoutePainter(ArrayList<Waypoint> waypoint)
     {
         this.waypoint = new ArrayList<>(waypoint);
     }
 
+
+    /**
+     * @param g graphic in Graphics2D format
+     * @param map in JXMapViewer format
+     * @param w weight in Integer format
+     * @param h height in Integer format
+     */
     @Override
     public void paint(Graphics2D g, JXMapViewer map, int w, int h)
     {
@@ -43,6 +58,10 @@ public class RoutePainter implements Painter<JXMapViewer>
         g.dispose();
     }
 
+    /**
+     * @param g graphic in Graphics2D format
+     * @param map in JXMapViewer format
+     */
     private void drawRoute(Graphics2D g, JXMapViewer map)
     {
         double lastX = 0;
@@ -52,7 +71,6 @@ public class RoutePainter implements Painter<JXMapViewer>
 
         for (Waypoint wp : waypoint)
         {
-            // convert geo-coordinate to world bitmap pixel
             Point2D pt = map.getTileFactory().geoToPixel(wp.getPosition(), map.getZoom());
 
             if (first)
@@ -64,7 +82,6 @@ public class RoutePainter implements Painter<JXMapViewer>
                 g.draw(new Line2D.Double(lastX, lastY,pt.getX(), pt.getY()));
 
             }
-
             lastX = pt.getX();
             lastY = pt.getY();
         }

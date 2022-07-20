@@ -23,7 +23,7 @@ import org.jxmapviewer.viewer.WaypointPainter;
 import sports.Activity;
 import sports.Lap;
 import sports.Track;
-import sports.TrackGPS;
+import sports.TrackGPX;
 
 
 import java.awt.event.ActionEvent;
@@ -37,11 +37,6 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 import org.jxmapviewer.painter.*;
 
-import org.jdesktop.swingx.mapviewer.*;
-
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
 import java.time.Month;
 
 import sports.TrackPoint;
@@ -51,7 +46,7 @@ import sports.TrackSegment;
 public class GUI extends JFrame {
 
 	List<Activity> activityList;
-	List<TrackGPS> trackGPS;
+	List<TrackGPX> trackGPS;
 	Object[][] actualData;
 	Object[][] actualDetail;
 
@@ -206,13 +201,14 @@ public class GUI extends JFrame {
 		//File
 		JMenuItem tcx = new JMenuItem("change directory");
 		tcx.addActionListener(new ActionListener() {
+			/**
+			 * @param e the event to be processed
+			 */
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser(parent.getActivities().getFilepath());
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.showOpenDialog(null);
 				if (chooser.getSelectedFile() != null) {
-					System.out.println(chooser.getSelectedFile().getPath());
-					String temp = chooser.getSelectedFile().getPath();
 					parent.setPath(chooser.getSelectedFile().getPath());
 				}
 			}
@@ -340,7 +336,6 @@ public class GUI extends JFrame {
 				JTable table =(JTable) me.getSource();
 				Point p = me.getPoint();
 				int row = table.rowAtPoint(p);
-				System.out.println(row);
 				if(row != -1) {
 					getEvent((String) actualData[row][0]);
 					refreshDetails();
@@ -375,7 +370,9 @@ public class GUI extends JFrame {
 		mapModel.map.getMainMap().removeAll();
 		lowerMapPanel.removeAll();
 
-		mapModel.map.getMainMap().add(new Map(waypoints));
+		if (waypoints.size() != 0) {
+			mapModel.map.getMainMap().add(new Map(waypoints));
+		}
 		mapModel.map.repaint();
 	}
 
@@ -389,6 +386,7 @@ public class GUI extends JFrame {
 				countEntries++;
 			}
 		}
+		int activityListBound = countEntries;
 		if(undefined.getState()) {
 			for(int i = 0; i < trackGPS.size(); i++) {
 				countEntries++;
@@ -407,23 +405,26 @@ public class GUI extends JFrame {
 				counter++;
 			}
 		}
-		for (int i = 0; i < activityList.size(); i++ ) {
+
+		for (int i = 0; i < activityListBound; i++ ) {
 			if (activityList.get(i).showInGui(sportsFilter, distanceFilter)) {
+
 				data[counter][0] = activityList.get(i).getId();
 				data[counter][1] = activityList.get(i).getActivity();
 				data[counter][2] = activityList.get(i).averageLap(activityList.get(i).getLap()).getStartTime();
-				data[counter][3] = Math.round(activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks()*100)/100.0;
+				data[counter][3] = Math.round(activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks() * 100) / 100.0;
 				String minutes = "";
-				if(((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600)%1*60) < 10) {
-					minutes = "0"+ (int)((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600)%1*60);
+				if (((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds() / 3600) % 1 * 60) < 10) {
+					minutes = "0" + (int) ((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds() / 3600) % 1 * 60);
 				} else {
-					minutes += (int)((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600)%1*60);
+					minutes += (int) ((activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds() / 3600) % 1 * 60);
 				}
-				data[counter][4] = (int)(activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds()/3600) + ":"+ minutes;
-				data[counter][5] = Math.round((activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60)*100)/100.0;
+				data[counter][4] = (int) (activityList.get(i).averageLap(activityList.get(i).getLap()).getTotalTimeSeconds() / 3600) + ":" + minutes;
+				data[counter][5] = Math.round((activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed() * 60) * 100) / 100.0;
 				data[counter][6] = activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumHeartRateBpm();
 				counter++;
 			}
+
 		}
 
 
@@ -432,10 +433,11 @@ public class GUI extends JFrame {
 	}
 
 	public void setActivityList(List<Activity> activityList) {
+
 		this.activityList = activityList;
 	}
 
-	public void setTrackGPS(List<TrackGPS> trackGPS) {
+	public void setTrackGPS(List<TrackGPX> trackGPS) {
 		this.trackGPS = trackGPS;
 	}
 
@@ -525,13 +527,12 @@ public class GUI extends JFrame {
 
 	public void getEvent(String name) {
 		for(Activity a : activityList) {
-			if(name.equals(a.getId())) {
+			if(name!=null && name.equals(a.getId())) {
 				List<Lap> list = a.getLap();
 				int counter = 0;
 				for(Lap l : list) {
 					counter += l.getTrack().size();
 				}
-				System.out.println(counter);
 				actualDetail = new Object[counter][8];
 				int position = 0;
 				for(Lap l : list) {
@@ -564,8 +565,6 @@ public class GUI extends JFrame {
 								actualDetail[position][5] = track.getExtension().getRunCadence();
 							}
 						}
-
-						System.out.println(track.getPosition());
 						if(track.getPosition() != null) {
 							actualDetail[position][6] = track.getPosition().getLongitudeDegrees();
 							actualDetail[position][7] = track.getPosition().getLatitudeDegrees();
@@ -576,8 +575,8 @@ public class GUI extends JFrame {
 			}
 		}
 
-		for(TrackGPS a : trackGPS) {
-			if(name.equals(a.getName())) {
+		for(TrackGPX a : trackGPS) {
+			if(name != null && name.equals(a.getName())) {
 				List<TrackSegment> list = a.getTrackSegments();
 				int counter = 0;
 				for(TrackSegment t : list) {
@@ -585,7 +584,6 @@ public class GUI extends JFrame {
 						counter++;
 					}
 				}
-				System.out.println(counter);
 				actualDetail = new Object[counter][8];
 				int position = 0;
 				for(TrackSegment t : list) {
@@ -615,10 +613,9 @@ public class GUI extends JFrame {
 	}
 
 	public ArrayList<Waypoint> getEventMap(String name) {
-		//Set<Waypoint> waypoints = new HashSet<>();
 		ArrayList<Waypoint> waypoints = new ArrayList<>();
 		for(Activity a : activityList) {
-			if(name.equals(a.getId())) {
+			if(name != null && name.equals(a.getId())) {
 				List<Lap> list = a.getLap();
 				Waypoint waypoint;
 				for(Lap l : list) {
@@ -632,8 +629,8 @@ public class GUI extends JFrame {
 				}
 			}
 		}
-		for(TrackGPS a : trackGPS) {
-			if(name.equals(a.getName())) {
+		for(TrackGPX a : trackGPS) {
+			if(name != null && name.equals(a.getName())) {
 				List<TrackSegment> list = a.getTrackSegments();
 				Waypoint waypoint;
 				for(TrackSegment l : list) {
@@ -676,7 +673,6 @@ public class GUI extends JFrame {
 			}
 		}
 		if(view.equals("day")) {
-			System.out.println(view);
 			aggrList = new double[10][365];
 			aggrListNames = new String[10][365];
 			for(int i = 0; i < activityList.size(); i++) {
@@ -695,7 +691,7 @@ public class GUI extends JFrame {
 							} else if(filter.equals("speed")) {
 								aggrList[j][day-1] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60;
 							}
-						} else if(aggrListNames[j][day-1] != null && aggrListNames[j].equals(dayOfMonth +"."+month+" "+year)) {
+						} else if(aggrListNames[j][day-1] != null && aggrListNames[j][day-1].equals(dayOfMonth +"."+month+" "+year)) {
 							if(filter.equals("distance")) {
 								aggrList[j][day-1] += activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
 							} else if(filter.equals("bpm")) {
@@ -727,7 +723,7 @@ public class GUI extends JFrame {
 							} else if(filter.equals("speed")) {
 								aggrList[j][month-1] = (double) activityList.get(i).averageLap(activityList.get(i).getLap()).getMaximumSpeed()*60;
 							}
-						} else if(aggrListNames[j][month-1] != null && aggrListNames[j].equals(month2 +" "+year)) {
+						} else if(aggrListNames[j][month-1] != null && aggrListNames[j][month-1].equals(month2 +" "+year)) {
 							if(filter.equals("distance")) {
 								aggrList[j][month-1] += activityList.get(i).averageLap(activityList.get(i).getLap()).getDistanceMetersTracks();
 							} else if(filter.equals("bpm")) {
@@ -824,11 +820,14 @@ public class GUI extends JFrame {
 		}
 	}
 
+	/**
+	 * inner class Map
+	 */
 	public class Map extends JXMapViewer {
 
 		private  final JXMapKit map;
-		private ArrayList<Waypoint> waypoints;
-		private RoutePainter routePainter;
+		ArrayList<Waypoint> waypoints;
+		RoutePainter routePainter;
 		public Map () {
 			this.map = new JXMapKit();
 			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
@@ -845,17 +844,17 @@ public class GUI extends JFrame {
 			this.map = new JXMapKit();
 			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
 			this.map.setCenterPosition(waypoints.get(0).getPosition());
-			WaypointPainter<Waypoint> waypointPainter = new WaypointPainter();
+			WaypointPainter<Waypoint> waypointPainter = new WaypointPainter<>();
 
 			waypointsFirst.add(waypoints.get(0));
 			waypointsFirst.add(waypoints.get(waypoints.size()-1));
 			waypointPainter.setWaypoints(waypointsFirst);
 			routePainter = new RoutePainter(this.waypoints);
-			List<Painter<JXMapViewer>> painters = new ArrayList<Painter<JXMapViewer>>();
+			List<Painter<JXMapViewer>> painters = new ArrayList<>();
 			painters.add(routePainter);
 			painters.add(waypointPainter);
 
-			CompoundPainter<JXMapViewer> painter = new CompoundPainter<JXMapViewer>(painters);
+			CompoundPainter<JXMapViewer> painter = new CompoundPainter<>(painters);
 			map.getMainMap().setOverlayPainter(painter);
 			lowerMapPanel.setLayout(new BorderLayout());
 			lowerMapPanel.add(map, BorderLayout.CENTER);

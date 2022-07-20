@@ -8,9 +8,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TCX sax parser class
+ * @author Susanne Gumplmayr
+ */
 public class MapActivityObjectHandlerSax extends DefaultHandler {
-
-
     private final StringBuilder currentValue = new StringBuilder();
     List<Activity> activities;
     Activity activity;
@@ -35,20 +37,43 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
     boolean trackHeartRateBpm;
 
     boolean trackTime;
+
+    /**
+     * @return a list of activities in Activity format
+     */
     public List<Activity> getActivitiesResult () {
         return activities;
     }
 
+    /**
+     * @return activity in Activity format
+     */
     public Activity getActivityResult() {
         return activity;
     }
 
+    /**
+     *
+     */
     @Override
     public void startDocument() {
         activity = new Activity();
         activities = new ArrayList<>();
     }
 
+    /**
+     * @param uri        The Namespace URI, or the empty string if the
+     *                   element has no Namespace URI or if Namespace
+     *                   processing is not being performed.
+     * @param localName  The local name (without prefix), or the
+     *                   empty string if Namespace processing is not being
+     *                   performed.
+     * @param qName      The qualified name (with prefix), or the
+     *                   empty string if qualified names are not available.
+     * @param attributes The attributes attached to the element.  If
+     *                   there are no attributes, it shall be an empty
+     *                   Attributes object.
+     */
     @Override
     public void startElement(
             String uri,
@@ -56,12 +81,9 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
             String qName,
             Attributes attributes) {
 
-        // reset the tag value
         currentValue.setLength(0);
 
         if (qName.equalsIgnoreCase("Activity")) {
-            // new activity
-
             currentActivity = new Activity();
             currentActivity.setActivity(attributes.getValue("Sport"));
             laps = new ArrayList<>();
@@ -69,7 +91,6 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
         }
 
         if (qName.equalsIgnoreCase("Lap")) {
-
             lapDistanceMeters = false;
             lapAverageHeartRateBpm = false;
             lapMaximumHeartRateBpm = false;
@@ -98,22 +119,29 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
 
         if (qName.equalsIgnoreCase("Position")) {
             currentPosition = new Position();
-//            positions.add(currentPosition);
             currentTrack.setPosition(positions);
             return;
         }
 
-
-
         if (qName.equalsIgnoreCase("Extensions")) {
             currentExtension = new Extension();
-//            extensions.add(currentExtension);
             currentTrack.setExtension(extensions);
         }
 
 
 
     }
+
+    /**
+     * @param uri       The Namespace URI, or the empty string if the
+     *                  element has no Namespace URI or if Namespace
+     *                  processing is not being performed.
+     * @param localName The local name (without prefix), or the
+     *                  empty string if Namespace processing is not being
+     *                  performed.
+     * @param qName     The qualified name (with prefix), or the
+     *                  empty string if qualified names are not available.
+     */
     public void endElement(String uri,
             String localName,
             String qName) {
@@ -203,17 +231,6 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
             return;
         }
 
-      /*if (qName.equalsIgnoreCase("Track")) {
-            currentTrack.setPosition(positions);
-            currentTrack.setExtension(extensions);
-            tracks.add(currentTrack);
-        }
-
-        if (qName.equalsIgnoreCase("Lap")) {
-            currentLap.setTrack(tracks);
-            laps.add(currentLap);
-        }*/
-
         if (qName.equalsIgnoreCase("Activity")) {
             currentActivity.setLap(laps);
             activity = currentActivity;
@@ -223,17 +240,13 @@ public class MapActivityObjectHandlerSax extends DefaultHandler {
 
     }
 
-    public void endDocument (String uri,
-                             String localName,
-                             String qName,
-                             Attributes attributes) {
-        if (qName.equalsIgnoreCase("Activity")) {
-            return;
-        }
-    }
-
-
-    public void characters(char ch[], int start, int length) {
+    /**
+     * @param ch     The characters.
+     * @param start  The start position in the character array.
+     * @param length The number of characters to use from the
+     *               character array.
+     */
+    public void characters(char[] ch, int start, int length) {
             currentValue.append(ch, start, length);
     }
 

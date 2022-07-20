@@ -19,6 +19,7 @@ class FileTCXTest {
         String testfile = "test.tcx";
         FileTCX tcxFile = new FileTCX();
 
+
         tcxFile.setFileName(testfile);
         assertEquals(testfile, tcxFile.getFileName());
     }
