@@ -14,14 +14,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ActivityListTest {
 
     @Test
-    void testSetter_Getter_Filepath () {
-        ActivityList activityList = new ActivityList();
-        activityList.setFilepath("hallo");
-
-        assertEquals("hallo", activityList.getFilepath());
-    }
-
-    @Test
     void testAdd_Activity () {
         ActivityList activityList = new ActivityList();
         Activity run = new Activity();
