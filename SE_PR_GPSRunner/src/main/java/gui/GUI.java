@@ -43,6 +43,10 @@ import sports.TrackPoint;
 import sports.TrackSegment;
 
 
+/**
+ * @author Patrick Sallaberger
+ *
+ */
 public class GUI extends JFrame {
 
 	List<Activity> activityList;
@@ -88,6 +92,10 @@ public class GUI extends JFrame {
 	String[][] aggrListNames;
 	double[][] aggrList;
 
+	/**
+	 * @param activities as a collection of activity-data
+	 * generates a graph
+	 */
 	public void updateChart(Collection<Activity> activities) {
 		this.activities = activities;
 		cd.clear();
@@ -139,6 +147,9 @@ public class GUI extends JFrame {
 		this.parent = parent;
 	}
 
+	/**
+	 * builds the grapical user interface
+	 */
 	@SuppressWarnings("deprecation")
 	public GUI() {
 
@@ -174,20 +185,16 @@ public class GUI extends JFrame {
 		tabbedPanel.addTab("Details", lowerDetailPanel);
 		tabbedPanel.addTab("Map", lowerMapPanel);
 
-
 		JSplitPane sp = new JSplitPane(JSplitPane.VERTICAL_SPLIT,upperPanel, tabbedPanel);
 		this.add(sp, BorderLayout.CENTER);
 
-		//menu elements
 		JMenuBar menu = new JMenuBar();
 		JMenu file = new JMenu("File");
 		JMenu tracks = new JMenu("Tracks");
 		JMenu segments = new JMenu("Segments");
 		JMenu graph = new JMenu("Graph");
 		JMenu view = new JMenu("View");
-
-
-		//submenu(s) elements
+		
 		JMenu open = new JMenu("Directory...");
 
 		menu.add(file);
@@ -198,11 +205,11 @@ public class GUI extends JFrame {
 
 		setJMenuBar(menu);
 
-		//File
 		JMenuItem tcx = new JMenuItem("change directory");
 		tcx.addActionListener(new ActionListener() {
 			/**
 			 * @param e the event to be processed
+			 * sets the selected path in the model
 			 */
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser(parent.getActivities().getFilepath());
@@ -214,7 +221,6 @@ public class GUI extends JFrame {
 			}
 		});
 
-		//Tracks
 		undefined = new JCheckBoxMenuItem("(undefined)", false);
 		JCheckBoxMenuItem all = new JCheckBoxMenuItem("All", true);
 		JCheckBoxMenuItem running = new JCheckBoxMenuItem("Running");
@@ -238,7 +244,6 @@ public class GUI extends JFrame {
 		flying.addActionListener(action());
 		hiking.addActionListener(action());
 
-		//view
 		day = new JCheckBoxMenuItem("day", false);
 		month = new JCheckBoxMenuItem("month", false);
 		year = new JCheckBoxMenuItem("year", false);
@@ -251,7 +256,6 @@ public class GUI extends JFrame {
 		viewFilter[1] = new Filter(month.getLabel(),month.getState(),month);
 		viewFilter[2] = new Filter(year.getLabel(),year.getState(),year);
 
-		//Segments
 		JCheckBoxMenuItem tenM = new JCheckBoxMenuItem("< 10m", true);
 		JCheckBoxMenuItem twentyM = new JCheckBoxMenuItem("< 20m", true);
 		JCheckBoxMenuItem fiftyM = new JCheckBoxMenuItem("< 50m", true);
@@ -285,7 +289,6 @@ public class GUI extends JFrame {
 		fiveKm.addActionListener(action());
 		moreThan.addActionListener(action());
 
-		//Graph
 		distance = new JCheckBoxMenuItem("distance", true);
 		bpm = new JCheckBoxMenuItem("bpm");
 		speed = new JCheckBoxMenuItem("speed");
@@ -297,9 +300,7 @@ public class GUI extends JFrame {
 		graphFilter[0] = new Filter(distance.getLabel(), distance.getState(), distance);
 		graphFilter[1] = new Filter(bpm.getLabel(), bpm.getState(), bpm);
 		graphFilter[2] = new Filter(speed.getLabel(), speed.getState(), speed);
-//		graphFilter
-
-		//add to menu-elems
+		
 		file.add(open);
 		tracks.add(undefined);
 		tracks.add(all);
@@ -325,10 +326,12 @@ public class GUI extends JFrame {
 		view.add(month);
 		view.add(year);
 
-		//add to submenu-elems
 		open.add(tcx);
 	}
 
+	/**
+	 * calls refresh-functions with the chosen activity
+	 */
 	public MouseListener click() {
 		return new MouseListener() {
 			@Override
@@ -357,12 +360,18 @@ public class GUI extends JFrame {
 		};
 	}
 
+	/**
+	 * refreshes table and chart
+	 */
 	public void refreshGui() {
 		model.setDataVector(table(), columnNames);
 		model.fireTableChanged(null);
 		this.updateChart(activityList);
 	}
 
+	/**
+	 * refreshes the detail-table
+	 */
 	public void refreshDetails() {
 		detailModel.setDataVector(actualDetail, detailColumnNames);
 	}
@@ -376,6 +385,10 @@ public class GUI extends JFrame {
 		mapModel.map.repaint();
 	}
 
+	/**
+	 * @return an array from datatype Object
+	 * generates an array for the table
+	 */
 	public Object[][] table() {
 		int counter = 0;
 		int countEntries = 0;
@@ -432,15 +445,26 @@ public class GUI extends JFrame {
 		return data;
 	}
 
+	/**
+	 * @param activityList contains all actual activities
+	 * sets the local variable activityList
+	 */
 	public void setActivityList(List<Activity> activityList) {
 
 		this.activityList = activityList;
 	}
 
+	/**
+	 * @param trackGPS contains all actual TrackGPS Files
+	 * sets the local variable trackGPS
+	 */
 	public void setTrackGPS(List<TrackGPX> trackGPS) {
 		this.trackGPS = trackGPS;
 	}
 
+	/**
+	 * sets actual filters and refreshes the GUI
+	 */
 	public ActionListener action() {
 		return new ActionListener() {
 			@Override
@@ -525,6 +549,10 @@ public class GUI extends JFrame {
 		};
 	}
 
+	/**
+	 * @param name represents the ID of the activity
+	 * shows the details of the selected event
+	 */
 	public void getEvent(String name) {
 		for(Activity a : activityList) {
 			if(name!=null && name.equals(a.getId())) {
@@ -612,6 +640,10 @@ public class GUI extends JFrame {
 		}
 	}
 
+	/**
+	 * @param name represents the ID of the activity
+	 * @return List of all waypoints from the selected activity
+	 */
 	public ArrayList<Waypoint> getEventMap(String name) {
 		ArrayList<Waypoint> waypoints = new ArrayList<>();
 		for(Activity a : activityList) {
@@ -647,15 +679,25 @@ public class GUI extends JFrame {
 		return waypoints;
 	}
 
+	/**
+	 * @param activityList contains all actual activities
+	 * sets the local variable activityList and calls refreshGui
+	 */
 	public void setActivities(List<Activity> activityList) {
 		this.activityList = activityList;
 		refreshGui();
 	}
 
+	/**
+	 * @return the actual list of activities
+	 */
 	public List<Activity> getActivities() {
 		return activityList;
 	}
 
+	/**
+	 * @return the name of the set view-filter
+	 */
 	public String activeView() {
 		for(int i = 0; i < viewFilter.length; i++) {
 			if(viewFilter[i].getState()) {
@@ -665,6 +707,10 @@ public class GUI extends JFrame {
 		return "";
 	}
 
+	/**
+	 * @param view represents the name of the set view-filter
+	 * aggregates the data according to the set view-filter
+	 */
 	public void aggrList(String view) {
 		String filter = "";
 		for(int i = 0; i < graphFilter.length; i++) {
@@ -772,6 +818,9 @@ public class GUI extends JFrame {
 		}
 	}
 
+	/**
+	 * extends the aggrList- and the aggrListNames-array
+	 */
 	public void extendList() {
 		double[][] temp = new double[aggrList.length + 10][aggrList[0].length];
 		String[][] tempNames = new String[aggrListNames.length + 10][aggrListNames[0].length];
@@ -781,17 +830,36 @@ public class GUI extends JFrame {
 				temp[i][j] = aggrList[i][j];
 			}
 		}
+		aggrListNames = tempNames;
+		aggrList = temp;
 	}
 
+	/**
+	 * @author Patrick Sallaberger
+	 * an inner class to define the properties of a filter
+	 */
 	public class Filter{
 		private final String name;
 		private  boolean state;
 		private final JCheckBoxMenuItem button;
 		private final int number;
 
+		/**
+		 * @param name represents the name of the button
+		 * @param state as a boolean value
+		 * @param button contains the used button-object
+		 * calls the constructor with the three parameters and 0
+		 */
 		public Filter(String name, boolean state, JCheckBoxMenuItem button) {
 			this(name, state, button, 0);
 		}
+		
+		/**
+		 * @param name represents the name of the button
+		 * @param state as a boolean value
+		 * @param button contains the used button-object
+		 * @param number contains a value used as upper or lower bound
+		 */
 		public Filter(String name, boolean state, JCheckBoxMenuItem button, int number) {
 			this.name = name;
 			this.state = state;
@@ -799,35 +867,54 @@ public class GUI extends JFrame {
 			this.number = number;
 		}
 
+		/**
+		 * @return the actual state of the filter-object
+		 */
 		public boolean getState() {
 			return this.state;
 		}
 
+		/**
+		 * @return the number of the filter-object
+		 */
 		public int getNumber() {
 			return this.number;
 		}
 
+		/**
+		 * @return the name of the filter-object
+		 */
 		public String getName() {
 			return this.name;
 		}
 
+		/**
+		 * @return the button-object of the filter-object
+		 */
 		public JCheckBoxMenuItem getButton() {
 			return this.button;
 		}
 
+		/**
+		 * @param state as a boolean value
+		 * sets the state of the filter-object
+		 */
 		public void setState(boolean state) {
 			this.state = state;
 		}
 	}
 
+
 	/**
-	 * inner class Map
+	 * @author Susanne Gumplmayr
+	 *
 	 */
 	public class Map extends JXMapViewer {
 
 		private  final JXMapKit map;
 		ArrayList<Waypoint> waypoints;
 		RoutePainter routePainter;
+		
 		public Map () {
 			this.map = new JXMapKit();
 			this.map.setDefaultProvider(JXMapKit.DefaultProviders.OpenStreetMaps);
@@ -858,7 +945,6 @@ public class GUI extends JFrame {
 			map.getMainMap().setOverlayPainter(painter);
 			lowerMapPanel.setLayout(new BorderLayout());
 			lowerMapPanel.add(map, BorderLayout.CENTER);
-
 		}
 	}
 }
